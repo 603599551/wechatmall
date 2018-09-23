@@ -90,14 +90,18 @@ public class ShoppingCartCtrl extends BaseCtrl {
             /**
              * 查询购物车商品列表
              */
-            String sql = "SELECT wpr.pid goodsId,wpr.picture url,wpr.price originalPrice,wpc.pcpcurrent_price presentPrice,wpr.pname name,wpr.pkeyword types,whs.scquantity number,wpr.pstatus status from w_customer wcu,w_product wpr,w_shoppingcart whs,w_product_currentprice wpc  where (wcu.cid = whs.cid and whs.pid = wpr.pid and wpr.pid = wpc.pid and wcu.cid = ?)";
+            String sql = "SELECT wpr.pid goodsId,wpr.picture url,wpr.price originalPrice,wpc.pcpcurrent_price presentPrice,wpr.pname name,wpr.pkeyword types,whs.scquantity number,wpr.pstatus status,wcu.ctype ctype from w_customer wcu,w_product wpr,w_shoppingcart whs,w_product_currentprice wpc where (wcu.cid = whs.cid and whs.pid = wpr.pid and wpr.pid = wpc.pid and wcu.cid = ?)";
             List<Record> shoppingCartList = Db.find(sql,userId);
             if(shoppingCartList != null && shoppingCartList.size() > 0){
+                String ctype = null;
                 for(Record r: shoppingCartList){
                     String typesStr = r.get("types");
+                    ctype = r.get("ctype");
+                    r.remove("ctype");
                     String[] types = typesStr.split(",");
                     r.set("types",types);
                 }
+                jhm.put("ctype",ctype);
                 jhm.put("goodsList",shoppingCartList);
             }else{
                 jhm.putCode(0).putMessage("查询失败!");
