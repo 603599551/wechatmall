@@ -1,6 +1,13 @@
 package com.wechatmall.mobile.mall;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
+import easy.util.DateTool;
+import easy.util.UUIDTool;
+import utils.bean.JsonHashMap;
+
+import java.util.List;
 
 /**
  * customerCtrl class
@@ -188,7 +195,36 @@ public class MallCtrl extends BaseCtrl {
      * }
      */
     public void queryMessage(){
-        renderJson("{\"code\":1,\"notice\":[{\"content\":\"内容\",\"time\":\"2018-01-01\"},{\"content\":\"内容\",\"time\":\"2018-01-01\"}]}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+        * 接收前端参数
+        */
+        //用户的id
+        String userId = getPara("userId");
+        //非空验证
+        if(userId == null||userId.length() <=0) {
+            jhm.putCode(0).putMessage("客户id为空");
+            renderJson(jhm);
+            return;
+        }
+        try {
+            /*
+            *消息查询
+            * 从w_notice表中查询ncontent和nmodify_time字段
+             */
+            String sql = "select ncontent content,nmodify_time time from w_notice where ncreator_id = ?";
+            List<Record> showHarvestMassageList = Db.find(sql,userId);
+            if(showHarvestMassageList != null && showHarvestMassageList.size()>0) {
+                jhm.put("notice",showHarvestMassageList);
+            } else {
+                jhm.putCode(0).putMessage("查询失败!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"notice\":[{\"content\":\"内容\",\"time\":\"2018-01-01\"},{\"content\":\"内容\",\"time\":\"2018-01-01\"}]}");
     }
 
 }
