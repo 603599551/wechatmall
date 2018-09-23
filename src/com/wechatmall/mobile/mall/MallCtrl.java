@@ -67,7 +67,31 @@ public class MallCtrl extends BaseCtrl {
          * }
      */
     public void showGoodsList(){
-        renderJson("{\"code\":1,\"goodsId\":\"11\",\"goodsList\":{\"人气热卖\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]},\"荤菜\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]}},\"notice\":\"我是公告\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //用户id
+        String userId = getPara("userId");
+
+        //非空验证
+        if (userId==null||userId.length()<=0){
+            jhm.putCode(0).putMessage("客户id为空！");
+            renderJson(jhm);
+            return;
+        }
+        try{
+            /**
+             * 商品列表查询
+             */
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        //renderJson("{\"code\":1,\"goodsId\":\"11\",\"goodsList\":{\"人气热卖\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]},\"荤菜\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]}},\"notice\":\"我是公告\"}");
     }
 
     /**
