@@ -33,27 +33,27 @@ public class MyCtrl extends BaseCtrl {
      * 返回格式：JSON
      * 成功：
      * {
-    "code": 1,
-    "contacts":[{
-    "name":"名字",
-    "phone":1313000589,
-    "isDefault":0
-    },{
-    "name":"名字",
-    "phone":1313000589,
-    "isDefault":0
-    }]
+        "code": 1,
+        "contacts":[{
+        "name":"名字",
+        "phone":1313000589,
+        "isDefault":0
+        },{
+        "name":"名字",
+        "phone":1313000589,
+        "isDefault":0
+        }]
     }
      * 失败：
      * {
-    "code": 0,
-    "message": "查询失败！"
+        "code": 0,
+        "message": "查询失败！"
     }
 
      * 报错：
      * {
-    "code": -1,
-    "message": "服务器发生异常！"
+        "code": -1,
+        "message": "服务器发生异常！"
      * }
      */
     public void viewContact(){
@@ -114,19 +114,19 @@ public class MyCtrl extends BaseCtrl {
      * 返回格式：JSON
      * 成功：
      * {
-    "code":1,
-    "message":"新增成功！"
+        "code":1,
+        "message":"新增成功！"
     }
      * 失败：
      * {
-    "code": 0,
-    "message": "新增失败！"
+        "code": 0,
+        "message": "新增失败！"
     }
 
      * 报错：
      * {
-    "code": -1,
-    "message": "服务器发生异常！"
+        "code": -1,
+        "message": "服务器发生异常！"
      * }
      */
     public void addHarvestAddress(){
@@ -235,7 +235,7 @@ public class MyCtrl extends BaseCtrl {
         }
 
         renderJson(jhm);
-        // renderJson("{\"code\":1,\"message\":\"新增成功！\"}");
+       // renderJson("{\"code\":1,\"message\":\"新增成功！\"}");
     }
 
 
@@ -257,19 +257,19 @@ public class MyCtrl extends BaseCtrl {
      * 返回格式：JSON
      * 成功：
      * {
-    "code":1,
-    "message":"删除成功！"
+        "code":1,
+        "message":"删除成功！"
     }
      * 失败：
      * {
-    "code": 0,
-    "message": "删除失败！"
+        "code": 0,
+        "message": "删除失败！"
     }
 
      * 报错：
      * {
-    "code": -1,
-    "message": "服务器发生异常！"
+        "code": -1,
+        "message": "服务器发生异常！"
      * }
      */
     public void deleteHarvestAddress(){
@@ -308,7 +308,7 @@ public class MyCtrl extends BaseCtrl {
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-        // renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
+       // renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
     }
 
     /**
@@ -328,21 +328,21 @@ public class MyCtrl extends BaseCtrl {
      * 返回格式：JSON
      * 成功：
      * {
-    "code":1,
-    "list":[{
-    "address":"地址",
-    "name":"小明",
-    "phone":13130005589
-    },{
-    "address":"地址",
-    "name":"小米",
-    "phone":13130005589
-    }]
+        "code":1,
+        "list":[{
+        "address":"地址",
+        "name":"小明",
+        "phone":13130005589
+        },{
+        "address":"地址",
+        "name":"小米",
+        "phone":13130005589
+        }]
     }
      * 失败：
      * {
-    "code": 0,
-    "message": "查询失败！"
+        "code": 0,
+        "message": "查询失败！"
     }
 
      * 报错：
@@ -376,11 +376,11 @@ public class MyCtrl extends BaseCtrl {
                 jhm.putCode(0).putMessage("查询失败！");
             }
         }catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常!");
-        }
+                e.printStackTrace();
+                jhm.putCode(-1).putMessage("服务器发生异常!");
+            }
         renderJson(jhm);
-        // renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
+      // renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
     }
 
     /**
@@ -585,7 +585,7 @@ public class MyCtrl extends BaseCtrl {
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-        // renderJson("{\"code\":1,\"message\":\"修改成功！\"}");
+       // renderJson("{\"code\":1,\"message\":\"修改成功！\"}");
     }
 
     /**
@@ -658,7 +658,7 @@ public class MyCtrl extends BaseCtrl {
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-        // renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
+       // renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
     }
 
     /**
