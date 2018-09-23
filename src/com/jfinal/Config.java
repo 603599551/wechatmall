@@ -15,6 +15,10 @@ import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
 import com.jfinal.render.ViewType;
 import com.jfinal.template.Engine;
+import com.wechatmall.mobile.mall.MallCtrl;
+import com.wechatmall.mobile.my.MyCtrl;
+import com.wechatmall.mobile.order.OrderCtrl;
+import com.wechatmall.mobile.shoppingcart.ShoppingCartCtrl;
 import easy.util.FileUploadPath;
 import utils.DictionaryConstants;
 
@@ -50,9 +54,11 @@ public class Config extends JFinalConfig {
 		routes.add("/mgr/menu",MenuCtrl.class);
 		routes.add("/mgr/user", UserCtrl.class);
 		routes.add("/mgr/job", JobCtrl.class);
-
 		routes.add("/mgr/dict", DictionaryCtrl.class);
-
+		routes.add("/wm/mobile/my", MyCtrl.class);
+		routes.add("/wm/mobile/mall", MallCtrl.class);
+		routes.add("/wm/mobile/order", OrderCtrl.class);
+		routes.add("/wm/mobile/shoppingcart", ShoppingCartCtrl.class);
 	}
 
 	@Override
@@ -106,7 +112,7 @@ public class Config extends JFinalConfig {
 	}
 
 	private void loadDictionary(){
-		List<Record> dictList = Db.find("select * from h_dictionary order by sort");
+		List<Record> dictList = Db.find("select * from w_dictionary order by sort");
 		Map<String, List<Record>> dictMap = new HashMap<>();
 		Map<String, String> dictIdValueMap = new HashMap<>();
 		if(dictList != null && dictList.size() > 0){

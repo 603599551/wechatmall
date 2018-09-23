@@ -1,20 +1,14 @@
 package com.filter;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSONObject;
 import com.utils.UserSessionUtil;
 import easy.web.UrlKit;
 import utils.bean.JsonHashMap;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author mym
@@ -42,10 +36,13 @@ public class AccessFilter implements Filter{
 		String domain=UrlKit.getDomain(req);
 		req.setAttribute("domain",domain);
 
-		boolean isLogin=isLong4Hrms(req,resp);//处理自动登录
-		if(isLogin){
-			chain.doFilter(request, response);
-		}
+//		boolean isLogin=isLong4Hrms(req,resp);//处理自动登录
+//		if(isLogin){
+//			chain.doFilter(request, response);
+//		}
+		//将请求转发给过滤器链的下一个Filter,如果没有Filter则是请求的资源。
+		//如果不写这一句，请求将会被卡在这里。
+		chain.doFilter(request, response);
 	}
 
 	private static final String[] STATIC_SUCCESS_RESOURCES = {"/static","/login","/index","/mobile"};

@@ -1,7 +1,6 @@
 package com.utils;
 
 import com.bean.UserBean;
-import com.jfinal.Config;
 import com.jfinal.KEY;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
