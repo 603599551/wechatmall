@@ -371,9 +371,10 @@ public class MyCtrl extends BaseCtrl {
             /**
              * 查看收货地址
              */
-            String sql = "select caname name,caphone phone,caaddress address from w_customer_address  where cid = ?";
+            String sql = "select caid id,caname name,caphone phone,caaddress address from w_customer_address  where cid = ?";
             List<Record>  showHarvestAddressList = Db.find(sql,userId);
             if(showHarvestAddressList != null && showHarvestAddressList.size() > 0){
+                jhm.putCode(1).putMessage("查询成功");
                 jhm.put("list",showHarvestAddressList);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
