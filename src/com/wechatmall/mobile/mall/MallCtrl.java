@@ -8,6 +8,7 @@ import easy.util.UUIDTool;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +68,7 @@ public class MallCtrl extends BaseCtrl {
         "message": "服务器发生异常！"
          * }
      */
-    public void showGoodsList(){
+    public void showGoodsList() {
         JsonHashMap jhm = new JsonHashMap();
         /**
          * 接收前端参数
@@ -82,19 +83,70 @@ public class MallCtrl extends BaseCtrl {
             return;
         }
         try{
+            //分类名字
+            List<String> classify = new ArrayList<String>();
+
             /**
-             * 商品列表查询
+             * 根据w_product_currentprice, w_customer 和 w_customer_group三表关联查询：商品id：goodsId, 商品名称name,
+             * 商品原价:originalPrice, 商品现价:presentPrice, 商品标签:label, 客户类型:customerType
              */
+            String sql = "SELECT wp.pid as goodsId, wp.pname as name, pc.pcname , wp.price as originalPrice, w.pcpcurrent_price as presentPrice, wp.picture as pic, wp.pkeyword, w.ctype from w_product_category pc, w_product wp, (SELECT pid, wpc.cgid, ctype, wpc.pcpcurrent_price from (SELECT pid, cgid, pcpcurrent_price FROM w_product_currentprice)wpc ,(SELECT cgid, ctype FROM w_customer WHERE cid = ?)wc WHERE wpc.cgid = wc.cgid)w where w.pid = wp.pid and pc.pcid = wp.pcid ORDER BY pcname";
+            List<Record> recordList = Db.find(sql, userId);
+            if(recordList == null){
+                jhm.putCode(0).putMessage("商品为空！");
+                renderJson(jhm);
+            }
 
+            /**
+             *根据w_notice查询:最新公告：ncontent
+             */
+            String noticeSql = "SELECT ncontent from w_notice ORDER BY nmodify_time desc";
+            Record record = Db.findFirst(noticeSql);
+            if (record==null){
+                jhm.put("notice", "");
+            } else {
+                jhm.put("notice", record.getStr("ncontent"));
+            }
 
+            //记录分类名称
+            String className = "";
+
+            //记录每一个分类的商品
+            List<Record>records = new ArrayList<Record>();
+
+            //商品标签
+            String[] label = new String [10];
+
+            jhm.put("customerType", recordList.get(0).getStr("ctype"));
+
+            //对查出来的商品数据按照分类进行分类并放入jsonHashMap
+            for(int i = 0; i < recordList.size(); i++ ){
+                className = recordList.get(i).getStr("pcname");
+                label = recordList.get(i).getStr("pkeyword").split(",");
+                recordList.get(i).set("label",label);
+                recordList.get(i).remove("pkeyword");
+                recordList.get(i).remove("ctype");
+                recordList.get(i).remove("pcname");
+                records.add(recordList.get(i));
+                if(i != recordList.size()-1 && !StringUtils.equals(recordList.get(i+1).getStr("pcname"), className)){
+                    jhm.put(className,records);
+                    classify.add(className);
+                    records.clear();
+                } else if(i == recordList.size() -1){
+                    jhm.put(className,records);
+                    classify.add(className);
+                }
+            }
+            jhm.put("classify", classify);
+            jhm.putCode(1);
 
         }catch (Exception e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
-        //renderJson("{\"code\":1,\"goodsId\":\"11\",\"goodsList\":{\"人气热卖\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]},\"荤菜\":{\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"图片地址\",\"label\":[\"标签1\",\"标签2\"]}},\"notice\":\"我是公告\"}");
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"customerType\":\"客户类型\",\"classify\":[\"人气热卖\",\"荤菜\"],\"人气热卖\":[{\"goodsId\":\"11\",\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"http://a4.att.hudong.com/12/20/20300000929429131579208829151.jpg\",\"label\":[\"标签1\",\"标签2\"]},{\"goodsId\":\"11\",\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"http://a4.att.hudong.com/12/20/20300000929429131579208829151.jpg\",\"label\":[\"标签1\",\"标签2\"]}],\"荤菜\":[{\"goodsId\":\"11\",\"name\":\"过水手擀面\",\"originalPrice\":\"20.0\",\"presentPrice\":\"18.0\",\"pic\":\"http://a4.att.hudong.com/12/20/20300000929429131579208829151.jpg\",\"label\":[\"标签1\",\"标签2\"]}],\"notice\":\"我是公告\"}");
     }
-
     /**
      * @author liushiwen
      * @date 2018-9-22
