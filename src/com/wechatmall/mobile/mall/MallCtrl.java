@@ -258,6 +258,7 @@ public class MallCtrl extends BaseCtrl {
         try{
             /**
              *商品列表点击加入购物车
+             * 根据商品id和用户id修改时间，id，数量
              */
             String modifyTime = DateTool.GetDateTime();
             int flag = Db.update("update w_shoppingcart set scquantity = ?, scmodifier = ? ,scmodify_time = ? where pid=? and cid=?",goodsNum,userId,modifyTime,goodsId,userId);
