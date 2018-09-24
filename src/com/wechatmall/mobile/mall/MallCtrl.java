@@ -5,6 +5,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import easy.util.DateTool;
 import easy.util.UUIDTool;
+import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.List;
@@ -75,7 +76,7 @@ public class MallCtrl extends BaseCtrl {
         String userId = getPara("userId");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
@@ -149,14 +150,14 @@ public class MallCtrl extends BaseCtrl {
         String goodsId = getPara("goodsId");
 
         //用户id非空验证
-        if (userId == null||userId.length() <= 0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
 
         //商品id非空验证
-        if(goodsId == null||goodsId.length() <= 0) {
+        if(StringUtils.isEmpty(goodsId)) {
             jhm.putCode(0).putMessage("商品id为空！");
             renderJson(jhm);
             return;
@@ -235,21 +236,21 @@ public class MallCtrl extends BaseCtrl {
         String goodsNum = getPara("goodsNum");
 
         //用户id非空验证
-        if (userId == null||userId.length() <= 0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
 
         //商品id非空验证
-        if(goodsId == null||goodsId.length() <= 0) {
+        if(StringUtils.isEmpty(goodsId)) {
             jhm.putCode(0).putMessage("商品id为空！");
             renderJson(jhm);
             return;
         }
 
         //商品数量非空验证
-        if(goodsNum == null || goodsNum.length() <=0){
+        if(StringUtils.isEmpty(goodsNum)){
             jhm.putCode(0).putMessage("商品数量为空！");
             renderJson(jhm);
             return;
@@ -322,7 +323,7 @@ public class MallCtrl extends BaseCtrl {
         //用户的id
         String userId = getPara("userId");
         //非空验证
-        if(userId == null||userId.length() <=0) {
+        if(StringUtils.isEmpty(userId)) {
             jhm.putCode(0).putMessage("客户id为空");
             renderJson(jhm);
             return;
