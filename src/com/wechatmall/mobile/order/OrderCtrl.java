@@ -221,7 +221,7 @@ public class OrderCtrl extends BaseCtrl {
 
             //根据userId查询
             //订单详情列表
-            List<Record> orderDetailList= Db.find(sql1,userId);
+            List<Record> orderDetailList= Db.find(sql2,userId);
 
             if (orderList!=null||orderList.size()>0){
                 //遍历订单列表
@@ -241,8 +241,10 @@ public class OrderCtrl extends BaseCtrl {
                             String []productsCurrentPrice=orderDetail.getStr("productsCP").split(",");
                             //订单详情商品列表
                             List<Record> goodsList=new ArrayList<>();
-                            //订单详情商品数
+                            //订单详情商品项数
                             int goodsListLen=productsName.length;
+                            //商品个数=每个商品的数量总和
+                            int productSum=0;
                             //将四个GROUP_CONCAT的数据分开后，对应起来，再放到goodsList中
                             for (int i=0;i<goodsListLen;i++){
                                 Record product=new Record();
@@ -251,7 +253,9 @@ public class OrderCtrl extends BaseCtrl {
                                 product.set("originalPrice",productsOriginalPrice[i]);
                                 product.set("presentPrice",productsCurrentPrice[i]);
                                 goodsList.add(product);
+                                productSum+=Integer.parseInt(productsQuantity[i]);
                             }
+                            order.set("productSum",productSum);
                             order.set("goodsList",goodsList);
                             break;
                         }
