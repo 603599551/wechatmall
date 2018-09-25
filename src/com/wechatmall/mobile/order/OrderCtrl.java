@@ -87,23 +87,55 @@ public class OrderCtrl extends BaseCtrl {
         JsonHashMap jhm=new JsonHashMap();
         //接收前端参数 userId
         String userId=getPara("userId");
+        //非空验证
+        if (StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("客户id为空");
+            renderJson(jhm);
+            return;
+        }
+
+        String transportType="transport_type";
+        String payType="pay_type";
+        //查询store表得到所有的自提点地址address， 还没有查距离
+        String sql1="SELECT saddress AS address FROM w_store ";
+        //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
+        String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
+        //根据value值查询dictionary表得到 物流类型和支付类型
+        String sql3="SELECT dname AS name FROM w_dictionary WHERE dparent_id = (SELECT did FROM w_dictionary WHERE dvalue =?)";
 
         try{
-            //查询store表得到所有的自提点地址address， 还没有查距离
-            String sql1="SELECT saddress AS address FROM w_store ";
+            //自提点列表
             List<Record> storeList=Db.find(sql1);
-            //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
-            String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
+            //收货地址列表
             List<Record> contactList=Db.find(sql2,userId);
-
-
+            //物流类型列表
+            List<Record> transportList=Db.find(sql3,transportType);
+            List<String> receivingMethod=new ArrayList<>(10);
+            if (transportList!=null||transportList.size()>0){
+                for (Record tl:transportList){
+                    receivingMethod.add(tl.getStr("name"));
+                }
+            }
+            //支付类型列表
+            List<Record> payList=Db.find(sql3,payType);
+            List<String> payMethod =new ArrayList<>(10);
+            if (payList!=null||payList.size()>0){
+                for (Record pl:payList){
+                    payMethod.add(pl.getStr("name"));
+                }
+            }
+            jhm.putCode(1).putMessage("查询成功");
+            jhm.put("selfAddressedAddress",storeList);
+            jhm.put("contacts",contactList);
+            jhm.put("receivingMethod",receivingMethod);
+            jhm.put("payMethod",payMethod);
 
         }catch (Exception e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常");
         }
-
-        renderJson("{\"code\":1,\"selfAddressedAddress\":[{\"address\":\"最近的地址\",\"miles\":75},{\"address\":\"地址二\",\"miles\":75}],\"contacts\":[{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":1},{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":0}],\"receivingMethod\":[\"自提\",\"快递\"],\"payMethod\":[\"微信\",\"账期\"]}");
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"selfAddressedAddress\":[{\"address\":\"最近的地址\",\"miles\":75},{\"address\":\"地址二\",\"miles\":75}],\"contacts\":[{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":1},{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":0}],\"receivingMethod\":[\"自提\",\"快递\"],\"payMethod\":[\"微信\",\"账期\"]}");
     }
     /**
      * @author liushiwen
