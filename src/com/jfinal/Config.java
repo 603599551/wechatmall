@@ -19,6 +19,15 @@ import com.wechatmall.mobile.mall.MallCtrl;
 import com.wechatmall.mobile.my.MyCtrl;
 import com.wechatmall.mobile.order.OrderCtrl;
 import com.wechatmall.mobile.shoppingcart.ShoppingCartCtrl;
+import com.wechatmall.pc.customer.CustomerGroupCtrl;
+import com.wechatmall.pc.customer.CustomerInfoCtrl;
+import com.wechatmall.pc.notice.NoticeCtrl;
+import com.wechatmall.pc.price.PriceCtrl;
+import com.wechatmall.pc.product.ProductCategoryCtrl;
+import com.wechatmall.pc.product.ProductManageCtrl;
+import com.wechatmall.pc.system.PayCtrl;
+import com.wechatmall.pc.system.StoreCtrl;
+import com.wechatmall.pc.system.TransportCtrl;
 import easy.util.FileUploadPath;
 import utils.DictionaryConstants;
 
@@ -59,6 +68,17 @@ public class Config extends JFinalConfig {
 		routes.add("/wm/mobile/mall", MallCtrl.class);
 		routes.add("/wm/mobile/order", OrderCtrl.class);
 		routes.add("/wm/mobile/shoppingcart", ShoppingCartCtrl.class);
+		routes.add("/wm/pc/customer/group", CustomerGroupCtrl.class);
+		routes.add("/wm/pc/customer/info", CustomerInfoCtrl.class);
+		routes.add("/wm/pc/notice", NoticeCtrl.class);
+		routes.add("/wm/pc/order", OrderCtrl.class);
+		routes.add("/wm/pc/price", PriceCtrl.class);
+		routes.add("/wm/pc/product/category", ProductCategoryCtrl.class);
+		routes.add("/wm/pc/product/manage", ProductManageCtrl.class);
+		routes.add("/wm/pc/system/job", JobCtrl.class);
+		routes.add("/wm/pc/system/pay", PayCtrl.class);
+		routes.add("/wm/pc/system/store", StoreCtrl.class);
+		routes.add("/wm/pc/system/transport", TransportCtrl.class);
 	}
 
 	@Override
