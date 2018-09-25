@@ -3,6 +3,10 @@ package com.wechatmall.mobile.order;
 import com.common.controllers.BaseCtrl;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import easy.util.DateTool;
+import easy.util.UUIDTool;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
@@ -80,6 +84,25 @@ public class OrderCtrl extends BaseCtrl {
      */
 
     public void querySubmitOrder(){
+        JsonHashMap jhm=new JsonHashMap();
+        //接收前端参数 userId
+        String userId=getPara("userId");
+
+        try{
+            //查询store表得到所有的自提点地址address， 还没有查距离
+            String sql1="SELECT saddress AS address FROM w_store ";
+            List<Record> storeList=Db.find(sql1);
+            //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
+            String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
+            List<Record> contactList=Db.find(sql2,userId);
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常");
+        }
+
         renderJson("{\"code\":1,\"selfAddressedAddress\":[{\"address\":\"最近的地址\",\"miles\":75},{\"address\":\"地址二\",\"miles\":75}],\"contacts\":[{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":1},{\"name\":\"小明\",\"phone\":13130005589,\"address\":\"地址\",\"isDefult\":0}],\"receivingMethod\":[\"自提\",\"快递\"],\"payMethod\":[\"微信\",\"账期\"]}");
     }
     /**
@@ -97,15 +120,19 @@ public class OrderCtrl extends BaseCtrl {
      * userId	string		            不允许	 用户的id
      * address   string                 不允许   自提地址/收货地址
      * name      string                 不允许   用户姓名
-     * phone      int                   不允许   用户手机号
+     * phone     string                   不允许   用户手机号
      * goodsList   array                不允许   订单商品列表
+     * receivingMethod    string           不允许   收货方式
+     * payMethod          string           不允许   支付方式
+     * orderOriginalSum   string           不允许   订单原总价
+     * 	orderCurrentSum   string           不允许   订单现总价
      *
      * 返回数据：
      * 返回格式：JSON
      * 成功：
      * {
-        "code": 1,
-        "message": "提交成功！"
+    "code": 1,
+    "message": "提交成功！"
     }
 
      * 失败：
@@ -121,7 +148,144 @@ public class OrderCtrl extends BaseCtrl {
      * }
      */
     public void placeOrder(){
-        renderJson("{\"code\":1,\"message\":\"提交成功！\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //用户的id
+        String userId = getPara("userId");
+        //自提地址/收货地址
+        String address = getPara("address");
+        //用户姓名
+        String name = getPara("name");
+        //用户手机号
+        String phone = getPara("phone");
+        //订单商品列表
+        String goodsString = getPara("goodsList");
+        JSONArray goodsList = JSONArray.fromObject(goodsString);
+
+        //收货方式
+        String receivingMethod = getPara("receivingMethod");
+        //支付方式
+        String payMethod = getPara("payMethod");
+        //订单原总价
+        float orderOriginalSum = Float.valueOf(getPara("orderOriginalSum"));
+        //订单现总价
+        float orderCurrentSum = Float.valueOf(getPara("orderCurrentSum"));
+
+        //非空验证
+        if (userId==null||userId.length()<=0){
+            jhm.putCode(0).putMessage("用户的id为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (address==null||address.length()<=0){
+            jhm.putCode(0).putMessage("自提地址/收货地址为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (name==null||name.length()<=0){
+            jhm.putCode(0).putMessage("用户姓名为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (phone==null||phone.length()<=0){
+            jhm.putCode(0).putMessage("用户手机号为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (goodsList==null||goodsList.size()<=0){
+            jhm.putCode(0).putMessage("订单商品列表为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (receivingMethod==null||receivingMethod.length()<=0){
+            jhm.putCode(0).putMessage("收货方式为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (payMethod==null||payMethod.length()<=0){
+            jhm.putCode(0).putMessage("支付方式为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (orderOriginalSum < 0){
+            jhm.putCode(0).putMessage("订单原总价为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (orderCurrentSum < 0){
+            jhm.putCode(0).putMessage("订单现总价为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        try{
+            /**
+             * 新增订单
+             */
+            //订单信息表对象
+            Record w_orderform = new Record();
+            w_orderform.set("oid", UUIDTool.getUUID());
+            w_orderform.set("caid","");
+            w_orderform.set("cid",userId);
+            w_orderform.set("oname",name);
+            w_orderform.set("ophone",phone);
+            w_orderform.set("oaddress",address);
+            w_orderform.set("ooriginal_sum",orderOriginalSum);
+            w_orderform.set("ocurrent_sum",orderCurrentSum);
+            w_orderform.set("ostatus","pending_pay");
+            w_orderform.set("otransport_type",receivingMethod);
+            w_orderform.set("opay_type",payMethod);
+            w_orderform.set("ocreate_time", DateTool.GetDateTime());
+            w_orderform.set("omodify_time", DateTool.GetDateTime());
+            w_orderform.set("ocreator_id",userId);
+            w_orderform.set("omodifier_id",userId);
+            w_orderform.set("odesc","");
+            boolean orderFormFlag = Db.save("w_orderform","oid",w_orderform);
+
+            /**
+             * 新增订单详情
+             */
+            //订单详情表对象
+            Record w_orderform_detail = new Record();
+            //定义新增订单后的布尔值
+            boolean orderFormDetailFlag = false;
+
+            //获取商品
+            for(int i = 0; i < goodsList.size(); i++){
+                //遍历json数组，转换成json对象
+                JSONObject goodsListJSON = goodsList.getJSONObject(i);
+                String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
+                Record product = Db.findFirst(sql,goodsListJSON.get("id"));
+                w_orderform_detail.set("odid", UUIDTool.getUUID());
+                w_orderform_detail.set("oid",w_orderform.get("oid"));
+                w_orderform_detail.set("pid",goodsListJSON.get("id"));
+                w_orderform_detail.set("odname",goodsListJSON.get("name"));
+                w_orderform_detail.set("odoriginal_price",product.get("odoriginal_price"));
+                w_orderform_detail.set("odcurrent_price", goodsListJSON.get("price"));
+                w_orderform_detail.set("odquantity",goodsListJSON.get("number"));
+                w_orderform_detail.set("odkeyword",product.get("odkeyword"));
+                Double sum =  (Double) goodsListJSON.get("price") * (Integer) goodsListJSON.get("number");
+                w_orderform_detail.set("odsingle_sum",sum);
+                w_orderform_detail.set("odcreate_time",DateTool.GetDateTime());
+                w_orderform_detail.set("odmodify_time",DateTool.GetDateTime());
+                w_orderform_detail.set("odcreator_id",userId);
+                w_orderform_detail.set("odmodifier_id",userId);
+                w_orderform_detail.set("oddesc","");
+                orderFormDetailFlag = Db.save("w_orderform_detail","odid",w_orderform_detail);
+            }
+            if(orderFormFlag && orderFormDetailFlag){
+                jhm.putMessage("提交成功！");
+            }else {
+                jhm.putCode(0).putMessage("提交失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"message\":\"提交成功！\"}");
     }
 
 
