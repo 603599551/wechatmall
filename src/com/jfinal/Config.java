@@ -66,12 +66,12 @@ public class Config extends JFinalConfig {
 		routes.add("/mgr/dict", DictionaryCtrl.class);
 		routes.add("/wm/mobile/my", MyCtrl.class);
 		routes.add("/wm/mobile/mall", MallCtrl.class);
-		routes.add("/wm/mobile/order", OrderCtrl.class);
+		routes.add("/wm/mobile/order", com.wechatmall.mobile.order.OrderCtrl.class);
 		routes.add("/wm/mobile/shoppingcart", ShoppingCartCtrl.class);
 		routes.add("/wm/pc/customer/group", CustomerGroupCtrl.class);
 		routes.add("/wm/pc/customer/info", CustomerInfoCtrl.class);
 		routes.add("/wm/pc/notice", NoticeCtrl.class);
-		routes.add("/wm/pc/order", OrderCtrl.class);
+		routes.add("/wm/pc/order", com.wechatmall.pc.order.OrderCtrl.class);
 		routes.add("/wm/pc/price", PriceCtrl.class);
 		routes.add("/wm/pc/product/category", ProductCategoryCtrl.class);
 		routes.add("/wm/pc/product/manage", ProductManageCtrl.class);
