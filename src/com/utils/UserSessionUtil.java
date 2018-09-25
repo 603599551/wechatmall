@@ -23,28 +23,28 @@ public class UserSessionUtil {
     public UserSessionUtil(HttpServletRequest request){
         HttpSession session=request.getSession();
         userBean=(UserBean)session.getAttribute(KEY.SESSION_USER);
-        if (false) {//
+        if (true) {//
             userBean=new UserBean();
             //长大店长
 //            Record r = Db.findFirst("select * from staff where id=?", "60a6f36a65f341c78ee07c9fc250e916");
             //红旗街店长
 //            Record r = Db.findFirst("select * from staff where id=?", "713765d2815845efbbdeafc6ede3310c");
-            Record r = Db.findFirst("select sta.*, sto.city city, sto.store_color store_color from h_admin sta left join h_store sto on sta.dept_id=sto.id and sta.id=?", "1");
-            userBean.setId(r.get("id"));
-            userBean.setName(r.getStr("username"));
-            userBean.setRealName(r.getStr("name" ));
-            userBean.setDeptId(r.getStr("dept_id"));
-            userBean.setDeptName(r.getStr("dept_name"));
-            Object job=r.get("job");
-            if(job==null)
-                job="";
-            else
-                job=job+"";
-            userBean.setJobId((String)job);
-            userBean.setJobName(r.getStr("job_name"));
-            userBean.put("store_id", r.getStr("dept_id"));
-            userBean.put("store_color", r.getStr("store_color"));
-            userBean.put("city", r.getStr("city"));
+//            Record r = Db.findFirst("select sta.*, sto.city city, sto.store_color store_color from h_admin sta left join h_store sto on sta.dept_id=sto.id and sta.id=?", "1");
+            userBean.setId("1");
+//            userBean.setName(r.getStr("username"));
+//            userBean.setRealName(r.getStr("name" ));
+//            userBean.setDeptId(r.getStr("dept_id"));
+//            userBean.setDeptName(r.getStr("dept_name"));
+//            Object job=r.get("job");
+//            if(job==null)
+//                job="";
+//            else
+//                job=job+"";
+//            userBean.setJobId((String)job);
+//            userBean.setJobName(r.getStr("job_name"));
+//            userBean.put("store_id", r.getStr("dept_id"));
+//            userBean.put("store_color", r.getStr("store_color"));
+//            userBean.put("city", r.getStr("city"));
 
             userId = userBean.getId();
             realName = userBean.getRealName();
