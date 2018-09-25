@@ -1,40 +1,40 @@
-package com.wechatmall.pc.notice;
+package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
 
 /**
- * NoticeCtrl class
+ * JobCtrl class
  * @author liushiwen
  * @date   2018-9-25
  */
-public class NoticeCtrl extends BaseCtrl {
+public class JobCtrl extends BaseCtrl{
 
     /**
      * @author liushiwen
      * @date 2018-9-22
-     * 名称  	新增通知
+     * 名称  	新增职务
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addNotice
+     * URL	    http://localhost:8080/wm/pc/customer/addJob
      * 请求方式     post
      *
      * 请求参数：
      * 参数名	       类型	       最大长度	允许空	  描述
-     *  type          string                  不允许      	通知类型
-     *  content      string                 不允许       通知内容
-     *
+     *  jobName          string                  不允许      	职务名称
+     *  jobDesc          string                  不允许         职务描述
+     *  jobPermission    string                  不允许        	职务权限
      * 返回数据：
      * 返回格式：JSON
      * 成功：
      * {
     "code":1,
-    "message":"提交成功"
+    "message":"操作成功"
     }
      * 失败：
      * {
     "code":"0",
-    "message":"提交失败！"
+    "message":"操作失败！"
     }
      * 报错：
      * {
@@ -42,26 +42,25 @@ public class NoticeCtrl extends BaseCtrl {
     "message": "服务器发生异常！"
      * }
      */
-    public void addNotice(){
-        renderJson("{\"code\":1,\"message\":\"提交成功\"}");
+    public void addJob(){
+        renderJson("{\"code\":1,\"message\":\"操作成功\"}");
     }
-
     /**
      * @author liushiwen
      * @date 2018-9-22
-     * 名称  	修改通知
+     * 名称  	修改职务
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/updateNoticeById
+     * URL	    http://localhost:8080/wm/pc/customer/modifyJobById
      * 请求方式     post
      *
      * 请求参数：
      * 参数名	       类型	       最大长度	允许空	  描述
-     *  id             string               不允许       通知id
-     *  type           string               不允许       通知类型
-     *  content        string               不允许       通知内容
-     *
+     *  jobName          string                  不允许      	职务名称
+     *  jobId            string                  不允许          职务id
+     *  jobDesc          string                  不允许         职务描述
+     *  jobPermission    string                  不允许        	职务权限
      * 返回数据：
      * 返回格式：JSON
      * 成功：
@@ -80,24 +79,23 @@ public class NoticeCtrl extends BaseCtrl {
     "message": "服务器发生异常！"
      * }
      */
-    public void updateNoticeById(){
-        renderJson("{\"code\":1,\"message\":\"提交成功\"}");
+    public void modifyJobById(){
+        renderJson("{\"code\":1,\"message\":\"修改成功\"}");
     }
 
     /**
      * @author liushiwen
      * @date 2018-9-22
-     * 名称  	删除通知
+     * 名称  	删除职务
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteNoticeById
+     * URL	    http://localhost:8080/wm/pc/customer/deleteJobById
      * 请求方式     post
      *
      * 请求参数：
      * 参数名	       类型	       最大长度	允许空	  描述
-     *  id             string               不允许       通知id
-     *
+     *  jobId            string                  不允许          职务id
      * 返回数据：
      * 返回格式：JSON
      * 成功：
@@ -116,47 +114,50 @@ public class NoticeCtrl extends BaseCtrl {
     "message": "服务器发生异常！"
      * }
      */
-    public void deleteNoticeById(){
+    public void deleteJobById(){
         renderJson("{\"code\":1,\"message\":\"删除成功\"}");
     }
 
     /**
      * @author liushiwen
      * @date 2018-9-22
-     * 名称  	查询通知列表页面
+     * 名称  	根据id查询职务信息
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listNotice
+     * URL	    http://localhost:8080/wm/pc/customer/showJobById
      * 请求方式     post
      *
      * 请求参数：
      * 参数名	       类型	       最大长度	允许空	  描述
-     *  content             string               不允许       查询添加，根据通知内容模糊查询
-     *  type                string                不允许      查询添加，根据通知类型完全匹配查询
+     *  jobId            string                  不允许          职务id
      * 返回数据：
      * 返回格式：JSON
      * 成功：
      * {
     "code":1,
-    "message":"修改成功！",
-    "data":{
-    "totalRow":1,
-    "pageNumber":1,
-    "firstPage":true,
-    "lastPage":true,
-    "totalPage":1,
-    "pageSize":10,
-    "list":[
-    {
-    "id":"通知id",
-    "content":"通知内容",
-    "type":"通知类型",
-    "createTime":"创建时间",
-    "modifyTime":"修改时间"
-    }
+    "job":{
+    "name":"职务名称",
+    "desc":"职务描述",
+    "id":"职务id"
+    },
+    "menuList":[
+    "5",
+    "30",
+    "6",
+    "40",
+    "8",
+    "7",
+    "43",
+    "24",
+    "11",
+    "31",
+    "21",
+    "42",
+    "29",
+    "39",
+    "38"
     ]
-    }
     }
      * 失败：
      * {
@@ -169,38 +170,47 @@ public class NoticeCtrl extends BaseCtrl {
     "message": "服务器发生异常！"
      * }
      */
-    public void listNotice(){
-        renderJson("{\"code\":1,\"message\":\"修改成功！\",\"data\":{\"totalRow\":1,\"pageNumber\":1,\"firstPage\":true,\"lastPage\":true,\"totalPage\":1,\"pageSize\":10,\"list\":[{\"id\":\"通知id\",\"content\":\"通知内容\",\"type\":\"通知类型\",\"createTime\":\"创建时间\",\"modifyTime\":\"修改时间\"}]}}");
+    public void showJobById(){
+        renderJson("{\"code\":1,\"job\":{\"name\":\"职务名称\",\"desc\":\"职务描述\",\"id\":\"职务id\"},\"menuList\":[\"5\",\"30\",\"6\",\"40\",\"8\",\"7\",\"43\",\"24\",\"11\",\"31\",\"21\",\"42\",\"29\",\"39\",\"38\"]}");
     }
 
     /**
      * @author liushiwen
      * @date 2018-9-22
-     * 名称  	根据id查看通知
+     * 名称  	查询职务列表页面
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showNoticeById
+     * URL	    http://localhost:8080/wm/pc/customer/showJobList
      * 请求方式     post
      *
      * 请求参数：
      * 参数名	       类型	       最大长度	允许空	  描述
-     *  id             string               不允许       通知id
+     *
      * 返回数据：
      * 返回格式：JSON
      * 成功：
      * {
-    "code": "1",
-    "data": {
-    "id": "通知id",
-    "content": "通知内容",
-    "type":"通知类型"
+    "code":"1",
+    "list":[
+    {
+    "name":"职务名称",
+    "id":"职务id",
+    "staffCount":"人数",
+    "staffsName":"人员名字"
+    },
+    {
+    "name":"职务名称",
+    "id":"职务id",
+    "staffCount":"人数",
+    "staffsName":"人员名字"
     }
+    ]
     }
      * 失败：
      * {
     "code":"0",
-    "message":"查看失败！"
+    "message":"查询失败！"
     }
      * 报错：
      * {
@@ -208,7 +218,7 @@ public class NoticeCtrl extends BaseCtrl {
     "message": "服务器发生异常！"
      * }
      */
-    public void showNoticeById(){
-        renderJson("{\"code\":\"1\",\"data\":{\"id\":\"通知id\",\"content\":\"通知内容\",\"type\":\"通知类型\"}}");
+    public void showJobList(){
+        renderJson("{\"code\":\"1\",\"list\":[{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"},{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"}]}");
     }
 }
