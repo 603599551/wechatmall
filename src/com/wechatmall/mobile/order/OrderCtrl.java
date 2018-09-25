@@ -201,27 +201,27 @@ public class OrderCtrl extends BaseCtrl {
         //支付方式
         String payMethod = getPara("payMethod");
         //订单原总价
-        float orderOriginalSum = Float.valueOf(getPara("orderOriginalSum"));
+        String orderOriginalSumStr = getPara("orderOriginalSum");
         //订单现总价
-        float orderCurrentSum = Float.valueOf(getPara("orderCurrentSum"));
+        String orderCurrentSumStr = getPara("orderCurrentSum");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("用户的id为空！");
             renderJson(jhm);
             return;
         }
-        if (address==null||address.length()<=0){
+        if (StringUtils.isEmpty(address)){
             jhm.putCode(0).putMessage("自提地址/收货地址为空！");
             renderJson(jhm);
             return;
         }
-        if (name==null||name.length()<=0){
+        if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("用户姓名为空！");
             renderJson(jhm);
             return;
         }
-        if (phone==null||phone.length()<=0){
+        if (StringUtils.isEmpty(phone)){
             jhm.putCode(0).putMessage("用户手机号为空！");
             renderJson(jhm);
             return;
@@ -231,26 +231,30 @@ public class OrderCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (receivingMethod==null||receivingMethod.length()<=0){
+        if (StringUtils.isEmpty(receivingMethod)){
             jhm.putCode(0).putMessage("收货方式为空！");
             renderJson(jhm);
             return;
         }
-        if (payMethod==null||payMethod.length()<=0){
+        if (StringUtils.isEmpty(payMethod)){
             jhm.putCode(0).putMessage("支付方式为空！");
             renderJson(jhm);
             return;
         }
-        if (orderOriginalSum < 0){
+        if (StringUtils.isEmpty(orderOriginalSumStr)){
             jhm.putCode(0).putMessage("订单原总价为空！");
             renderJson(jhm);
             return;
         }
-        if (orderCurrentSum < 0){
+        if (StringUtils.isEmpty(orderCurrentSumStr)){
             jhm.putCode(0).putMessage("订单现总价为空！");
             renderJson(jhm);
             return;
         }
+        //订单原总价
+        float orderOriginalSum = Float.valueOf("orderOriginalSum");
+        //订单现总价
+        float orderCurrentSum = Float.valueOf("orderCurrentSum");
 
         try{
             /**
@@ -275,7 +279,11 @@ public class OrderCtrl extends BaseCtrl {
             w_orderform.set("omodifier_id",userId);
             w_orderform.set("odesc","");
             boolean orderFormFlag = Db.save("w_orderform","oid",w_orderform);
-
+            if(orderFormFlag == false){
+                jhm.putCode(0).putMessage("提交失败!");
+                renderJson(jhm);
+                return;
+            }
             /**
              * 新增订单详情
              */
@@ -284,11 +292,11 @@ public class OrderCtrl extends BaseCtrl {
             //定义新增订单后的布尔值
             boolean orderFormDetailFlag = false;
 
+            String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
             //获取商品
             for(int i = 0; i < goodsList.size(); i++){
                 //遍历json数组，转换成json对象
                 JSONObject goodsListJSON = goodsList.getJSONObject(i);
-                String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
                 Record product = Db.findFirst(sql,goodsListJSON.get("id"));
                 w_orderform_detail.set("odid", UUIDTool.getUUID());
                 w_orderform_detail.set("oid",w_orderform.get("oid"));
@@ -306,12 +314,14 @@ public class OrderCtrl extends BaseCtrl {
                 w_orderform_detail.set("odmodifier_id",userId);
                 w_orderform_detail.set("oddesc","");
                 orderFormDetailFlag = Db.save("w_orderform_detail","odid",w_orderform_detail);
+                if(orderFormDetailFlag == false){
+                    jhm.putCode(0).putMessage("提交失败！");
+                    renderJson(jhm);
+                    return;
+                }
             }
-            if(orderFormFlag && orderFormDetailFlag){
                 jhm.putMessage("提交成功！");
-            }else {
-                jhm.putCode(0).putMessage("提交失败！");
-            }
+
         }catch (Exception e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常！");

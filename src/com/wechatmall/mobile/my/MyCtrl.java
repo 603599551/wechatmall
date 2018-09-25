@@ -5,6 +5,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import easy.util.DateTool;
 import easy.util.UUIDTool;
+import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class MyCtrl extends BaseCtrl {
         String userId  = getPara("userId");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
@@ -160,48 +161,47 @@ public class MyCtrl extends BaseCtrl {
         String isDefault=getPara("isDefult");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
-        if (name==null||name.length()<=0){
+        if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("收货人姓名为空！");
             renderJson(jhm);
             return;
         }
-        if (phone==null||phone.length()<=0){
+        if (StringUtils.isEmpty(phone)){
             jhm.putCode(0).putMessage("联系电话为空！");
             renderJson(jhm);
             return;
         }
-        if (province==null||province.length()<=0){
+        if (StringUtils.isEmpty(province)){
             jhm.putCode(0).putMessage("所在省为空！");
             renderJson(jhm);
             return;
         }
-        if (city==null||city.length()<=0){
+        if (StringUtils.isEmpty(city)){
             jhm.putCode(0).putMessage("所在市为空！");
             renderJson(jhm);
             return;
         }
-        if (district==null||district.length()<=0){
+        if (StringUtils.isEmpty(district)){
             jhm.putCode(0).putMessage("所在区为空！");
             renderJson(jhm);
             return;
         }
-        if (street==null||street.length()<=0){
+        if (StringUtils.isEmpty(street)){
             jhm.putCode(0).putMessage("所在街道为空！");
             renderJson(jhm);
             return;
         }
-        if (address==null||address.length()<=0){
+        if (StringUtils.isEmpty(address)){
             jhm.putCode(0).putMessage("详细地址为空！");
             renderJson(jhm);
             return;
         }
-        System.err.println(isDefault);
-        if (isDefault==null||isDefault.length()<=0){
+        if (StringUtils.isEmpty(isDefault)){
             jhm.putCode(0).putMessage("默认状态为空！");
             renderJson(jhm);
             return;
@@ -288,12 +288,12 @@ public class MyCtrl extends BaseCtrl {
         //记录的id（收货地址id）
         String listId = getPara("listId");
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
-        if (listId==null||listId.length()<=0){
+        if (StringUtils.isEmpty(listId)){
             jhm.putCode(0).putMessage("记录id为空！");
             renderJson(jhm);
             return;
@@ -365,7 +365,7 @@ public class MyCtrl extends BaseCtrl {
         //客户id
         String userId = getPara("userId");
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
@@ -440,22 +440,22 @@ public class MyCtrl extends BaseCtrl {
         String type = getPara("type");
 
         //非空验证
-        if (name==null||name.length()<=0){
+        if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("收货人姓名为空！");
             renderJson(jhm);
             return;
         }
-        if (phone==null||phone.length()<=0){
+        if (StringUtils.isEmpty(phone)){
             jhm.putCode(0).putMessage("联系电话为空！");
             renderJson(jhm);
             return;
         }
-        if (sex==null||sex.length()<=0){
+        if (StringUtils.isEmpty(sex)){
             jhm.putCode(0).putMessage("客户性别为空！");
             renderJson(jhm);
             return;
         }
-        if (type==null||type.length()<=0){
+        if (StringUtils.isEmpty(type)){
             jhm.putCode(0).putMessage("客户类型为空！");
             renderJson(jhm);
             return;
@@ -548,27 +548,27 @@ public class MyCtrl extends BaseCtrl {
         //客户类型
         String type = getPara("type");
 
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
-        if (name==null||name.length()<=0){
+        if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("客户姓名为空！");
             renderJson(jhm);
             return;
         }
-        if (phone==null||phone.length()<=0){
+        if (StringUtils.isEmpty(phone)){
             jhm.putCode(0).putMessage("客户电话为空！");
             renderJson(jhm);
             return;
         }
-        if (sex==null||sex.length()<=0){
+        if (StringUtils.isEmpty(sex)){
             jhm.putCode(0).putMessage("客户性别为空！");
             renderJson(jhm);
             return;
         }
-        if (type==null||type.length()<=0){
+        if (StringUtils.isEmpty(type)){
             jhm.putCode(0).putMessage("客户类型为空！");
             renderJson(jhm);
             return;
@@ -670,47 +670,47 @@ public class MyCtrl extends BaseCtrl {
         String address=getPara("address");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
-        if (listId==null||listId.length()<=0){
+        if (StringUtils.isEmpty(listId)){
             jhm.putCode(0).putMessage("记录id为空！");
             renderJson(jhm);
             return;
         }
-        if (name==null||name.length()<=0){
+        if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("收货人姓名为空！");
             renderJson(jhm);
             return;
         }
-        if (phone==null||phone.length()<=0){
+        if (StringUtils.isEmpty(phone)){
             jhm.putCode(0).putMessage("联系电话为空！");
             renderJson(jhm);
             return;
         }
-        if (province==null||province.length()<=0){
+        if (StringUtils.isEmpty(province)){
             jhm.putCode(0).putMessage("所在省为空！");
             renderJson(jhm);
             return;
         }
-        if (city==null||city.length()<=0){
+        if (StringUtils.isEmpty(city)){
             jhm.putCode(0).putMessage("所在市为空！");
             renderJson(jhm);
             return;
         }
-        if (district==null||district.length()<=0){
+        if (StringUtils.isEmpty(district)){
             jhm.putCode(0).putMessage("所在区为空！");
             renderJson(jhm);
             return;
         }
-        if (street==null||street.length()<=0){
+        if (StringUtils.isEmpty(street)){
             jhm.putCode(0).putMessage("所在街道为空！");
             renderJson(jhm);
             return;
         }
-        if (address==null||address.length()<=0){
+        if (StringUtils.isEmpty(address)){
             jhm.putCode(0).putMessage("详细地址为空！");
             renderJson(jhm);
             return;

@@ -3,6 +3,7 @@ package com.wechatmall.mobile.shoppingcart;
 import com.common.controllers.BaseCtrl;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.List;
@@ -81,7 +82,7 @@ public class ShoppingCartCtrl extends BaseCtrl {
         String userId = getPara("userId");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
@@ -158,12 +159,12 @@ public class ShoppingCartCtrl extends BaseCtrl {
         String listId = getPara("listId");
 
         //非空验证
-        if (userId==null||userId.length()<=0){
+        if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
             renderJson(jhm);
             return;
         }
-        if (listId==null||listId.length()<=0){
+        if (StringUtils.isEmpty(listId)){
             jhm.putCode(0).putMessage("商品id为空！");
             renderJson(jhm);
             return;
