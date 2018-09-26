@@ -350,7 +350,7 @@ public class NoticeCtrl extends BaseCtrl {
         String sql = " from w_notice where 1=1 ";
         if(content != null && content.length() > 0){
             content = "%" + content + "%";
-            sql += " and ncontent = ? ";
+            sql += " and ncontent like ? ";
             params.add(content);
         }
         if(type != null && type.length() > 0){

@@ -1,6 +1,16 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+import easy.util.NumberUtils;
+import easy.util.UUIDTool;
+import org.apache.commons.lang.StringUtils;
+import utils.bean.JsonHashMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TransportCtrl class
@@ -43,7 +53,71 @@ public class TransportCtrl extends BaseCtrl {
      * }
      */
     public void addTransportType(){
-        renderJson("{\"code\":\"1\",\"message\":\"添加成功！\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //物流类型名称
+        String name = getPara("name");
+        //物流类型备注
+        String desc = getPara("desc");
+        //物流类型英文名
+        String value = getPara("value");
+        //物流分类值
+        String sortStr = getPara("sort");
+
+        //非空验证
+        if(StringUtils.isEmpty(name)){
+            jhm.putCode(0).putMessage("物流类型名称为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(desc)){
+            jhm.putCode(0).putMessage("物流类型备注为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(value)){
+            jhm.putCode(0).putMessage("物流类型英文名为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(sortStr)){
+            jhm.putCode(0).putMessage("物流分类值为空！");
+            renderJson(jhm);
+            return;
+        }
+        int sort = Integer.valueOf(sortStr);
+        Record addTransportType = new Record();
+
+        //查找字典值中英文字段和分类字段是否有重复的
+        String sql = "SELECT did id from w_dictionary where dvalue = ? or sort = ? or dname = ? ";
+        try{
+            Record idRecord = Db.findFirst(sql,value,sort,name);
+            if(idRecord != null){
+                jhm.putCode(0).putMessage("添加失败！字段名重复！");
+                renderJson(jhm);
+                return;
+            }
+            addTransportType.set("did", UUIDTool.getUUID());
+            addTransportType.set("dparent_id","700");
+            addTransportType.set("dname",name);
+            addTransportType.set("dvalue",value);
+            addTransportType.set("sort",sort);
+            addTransportType.set("ddesc",desc);
+            boolean flag = Db.save("w_dictionary","did",addTransportType);
+            if(flag){
+                jhm.putMessage("添加成功！");
+            }else{
+                jhm.putCode(0).putMessage("添加失败！");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(0).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":\"1\",\"message\":\"添加成功！\"}");
     }
 
     /**
@@ -82,7 +156,53 @@ public class TransportCtrl extends BaseCtrl {
      */
 
     public  void modifyTransportTypeById(){
-        renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //物流类型id
+        String id = getPara("id");
+        //物流类型名称
+        String name = getPara("name");
+        //物流类型备注
+        String desc = getPara("desc");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("物流类型id为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(name)){
+            jhm.putCode(0).putMessage("物流类型名称为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(desc)){
+            jhm.putCode(0).putMessage("物流类型备注为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        Record modifyTransportType = new Record();
+        modifyTransportType.set("did",id);
+        modifyTransportType.set("dname",name);
+        modifyTransportType.set("ddesc",desc);
+        try{
+            /**
+             * 修改物流类型
+             */
+            boolean flag = Db.update("w_dictionary","did",modifyTransportType);
+            if(flag){
+                jhm.putMessage("修改成功！");
+            }else{
+                jhm.putCode(0).putMessage("修改失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
     }
 
     /**
@@ -118,7 +238,36 @@ public class TransportCtrl extends BaseCtrl {
      * }
      */
     public void deleteTransportTypeById(){
-        renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //物流类型id
+        String id = getPara("id");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("物流类型id为空!");
+            renderJson(jhm);
+            return;
+        }
+        try{
+        /**
+         * 删除物流分类
+         */
+            String sql = "DELETE from w_dictionary where did=? ";
+            int num = Db.update(sql,id);
+            if(num > 0){
+                jhm.putCode(1).putMessage("删除成功！");
+            }else{
+                jhm.putCode(0).putMessage("删除失败！");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+       // renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
     }
     /**
      * @author liushiwen
@@ -155,7 +304,37 @@ public class TransportCtrl extends BaseCtrl {
      * }
      */
     public void showTransportTypeById(){
-        renderJson("{\"code\":1,\"message\":\"查询成功\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //物流类型id
+        String id = getPara("id");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("物流类型id为空!");
+            renderJson(jhm);
+            return;
+        }
+        String sql = "select dname ,ddesc from w_dictionary where did = ?";
+        try{
+            /**
+             * 根据id查询物流分类
+             */
+            Record transportType = Db.findFirst(sql,id);
+            if(transportType != null){
+                jhm.putMessage("查询成功");
+                jhm.put("name",transportType.get("dname"));
+                jhm.put("desc",transportType.get("ddesc"));
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"message\":\"查询成功\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"}");
     }
     /**
      * @author liushiwen
@@ -199,6 +378,59 @@ public class TransportCtrl extends BaseCtrl {
      * }
      */
     public void listTransportType(){
-        renderJson("{\"code\":1,\"message\":\"查询成功\",\"list\":[{\"id\":\"物流类型编号\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"},{\"id\":\"物流类型编号\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"}]}");
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //物流类型名称
+        String type = getPara("type");
+        //当前页
+        String pageNumStr = getPara("pageNum");
+        //页面显示的条数
+        String pageSizeStr = getPara("pageSize");
+
+        int pageNum,pageSize;
+        //非空验证
+        if(StringUtils.isEmpty(type)){
+            jhm.putCode(0).putMessage("物流类型名称为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(pageNumStr)){
+            pageNum = NumberUtils.parseInt(pageNumStr,1);
+        }else {
+            pageNum = Integer.parseInt(pageNumStr);
+        }
+        if(StringUtils.isEmpty(pageSizeStr)){
+            pageSize = NumberUtils.parseInt(pageSizeStr,10);
+        }else {
+            pageSize = Integer.parseInt(pageSizeStr);
+        }
+        //新建集合，放入替换参数
+        List<Object> params = new ArrayList<>();
+        String select = "select did id,dname name,ddesc 'desc'  ";
+        String sql = " from w_dictionary  where dparent_id = '700'  ";
+        if(type != null && type.length() > 0){
+            type = "%" + type + "%";
+            sql += "  and dname like ? ";
+            params.add(type);
+        }
+        try{
+            /**
+             * 查询物流类型列表
+             */
+            Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
+            if(page != null && page.getList().size() > 0){
+                jhm.putMessage("查询成功！");
+                jhm.put("list",page);
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\"message\":\"查询成功\",\"list\":[{\"id\":\"物流类型编号\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"},{\"id\":\"物流类型编号\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"}]}");
     }
 }
