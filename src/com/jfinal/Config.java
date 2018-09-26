@@ -21,6 +21,7 @@ import com.wechatmall.mobile.order.OrderCtrl;
 import com.wechatmall.mobile.shoppingcart.ShoppingCartCtrl;
 import com.wechatmall.pc.customer.CustomerGroupCtrl;
 import com.wechatmall.pc.customer.CustomerInfoCtrl;
+import com.wechatmall.pc.finance.FinanceCtrl;
 import com.wechatmall.pc.notice.NoticeCtrl;
 import com.wechatmall.pc.price.PriceCtrl;
 import com.wechatmall.pc.product.ProductCategoryCtrl;
@@ -79,6 +80,8 @@ public class Config extends JFinalConfig {
 		routes.add("/wm/pc/system/pay", PayCtrl.class);
 		routes.add("/wm/pc/system/store", StoreCtrl.class);
 		routes.add("/wm/pc/system/transport", TransportCtrl.class);
+		routes.add("/wm/pc/system/user", com.wechatmall.pc.system.UserCtrl.class);
+		routes.add("/wm/pc/finance", FinanceCtrl.class);
 	}
 
 	@Override
