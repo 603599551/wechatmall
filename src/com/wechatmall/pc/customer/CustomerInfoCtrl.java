@@ -63,7 +63,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
      */
 
     public void listCustomer(){
-        renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":\"1\",\"pageNumber\":\"1\",\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":\"1\",\"pageSize\":\"10\",\"list\":[{\"name\":\"客户姓名\",\"gender\":\"客户性别\",\"phone\":\"客户电话\",\"type\":\"客户类型\",\"group\":\"客户分组\",\"createTime\":\"创建时间\"}]}}");
+        renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":1,\"pageNumber\":1,\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":1,\"pageSize\":10,\"list\":[{\"name\":\"客户姓名\",\"gender\":\"客户性别\",\"phone\":\"客户电话\",\"type\":\"客户类型\",\"group\":\"客户分组\",\"createTime\":\"创建时间\"}]}}");
     }
 
 

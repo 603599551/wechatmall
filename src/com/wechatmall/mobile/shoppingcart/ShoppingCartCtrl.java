@@ -74,45 +74,45 @@ public class ShoppingCartCtrl extends BaseCtrl {
      * }
      */
     public void shoppingCartList(){
-        JsonHashMap jhm = new JsonHashMap();
-        /**
-         * 接收前端参数
-         */
-        //用户id
-        String userId = getPara("userId");
-
-        //非空验证
-        if (StringUtils.isEmpty(userId)){
-            jhm.putCode(0).putMessage("客户id为空！");
-            renderJson(jhm);
-            return;
-        }
-        try{
-            /**
-             * 查询购物车商品列表
-             */
-            String sql = "SELECT wpr.pid goodsId,wpr.picture url,wpr.price originalPrice,wpc.pcpcurrent_price presentPrice,wpr.pname name,wpr.pkeyword types,whs.scquantity number,wpr.pstatus status,wcu.ctype ctype from w_customer wcu,w_product wpr,w_shoppingcart whs,w_product_currentprice wpc where (wcu.cid = whs.cid and whs.pid = wpr.pid and wpr.pid = wpc.pid and wcu.cid = ?)";
-            List<Record> shoppingCartList = Db.find(sql,userId);
-            if(shoppingCartList != null && shoppingCartList.size() > 0){
-                String ctype = null;
-                for(Record r: shoppingCartList){
-                    String typesStr = r.get("types");
-                    ctype = r.get("ctype");
-                    r.remove("ctype");
-                    String[] types = typesStr.split(",");
-                    r.set("types",types);
-                }
-                jhm.put("ctype",ctype);
-                jhm.put("goodsList",shoppingCartList);
-            }else{
-                jhm.putCode(0).putMessage("查询失败!");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常！");
-        }
-        renderJson(jhm);
-        //renderJson("{\"code\":1,\"goodsList\":[{\"goodsId\":\"11\",\"url\":\"http://img0.imgtn.bdimg.com/it/u=3405249702,185540826&fm=27&gp=0.jpg\",\"originalPrice\":20,\"presentPrice\":18,\"name\":\"过水手擀面\",\"types\":[\"芥末味\",\"番茄味\"],\"number\":1},{\"goodsId\":\"11\",\"url\":\"http://img0.imgtn.bdimg.com/it/u=3405249702,185540826&fm=27&gp=0.jpg\",\"originalPrice\":20,\"presentPrice\":18,\"name\":\"过水手擀面\",\"types\":[\"芥末味\",\"番茄味\"],\"number\":2}]}");
+//        JsonHashMap jhm = new JsonHashMap();
+//        /**
+//         * 接收前端参数
+//         */
+//        //用户id
+//        String userId = getPara("userId");
+//
+//        //非空验证
+//        if (StringUtils.isEmpty(userId)){
+//            jhm.putCode(0).putMessage("客户id为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        try{
+//            /**
+//             * 查询购物车商品列表
+//             */
+//            String sql = "SELECT wpr.pid goodsId,wpr.picture url,wpr.price originalPrice,wpc.pcpcurrent_price presentPrice,wpr.pname name,wpr.pkeyword types,whs.scquantity number,wpr.pstatus status,wcu.ctype ctype from w_customer wcu,w_product wpr,w_shoppingcart whs,w_product_currentprice wpc where (wcu.cid = whs.cid and whs.pid = wpr.pid and wpr.pid = wpc.pid and wcu.cid = ?)";
+//            List<Record> shoppingCartList = Db.find(sql,userId);
+//            if(shoppingCartList != null && shoppingCartList.size() > 0){
+//                String ctype = null;
+//                for(Record r: shoppingCartList){
+//                    String typesStr = r.get("types");
+//                    ctype = r.get("ctype");
+//                    r.remove("ctype");
+//                    String[] types = typesStr.split(",");
+//                    r.set("types",types);
+//                }
+//                jhm.put("ctype",ctype);
+//                jhm.put("goodsList",shoppingCartList);
+//            }else{
+//                jhm.putCode(0).putMessage("查询失败!");
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            jhm.putCode(-1).putMessage("服务器发生异常！");
+//        }
+//        renderJson(jhm);
+        renderJson("{\"code\":1,\"goodsList\":[{\"goodsId\":\"11\",\"url\":\"http://img0.imgtn.bdimg.com/it/u=3405249702,185540826&fm=27&gp=0.jpg\",\"originalPrice\":20,\"presentPrice\":18,\"name\":\"过水手擀面\",\"types\":[\"芥末味\",\"番茄味\"],\"number\":1},{\"goodsId\":\"11\",\"url\":\"http://img0.imgtn.bdimg.com/it/u=3405249702,185540826&fm=27&gp=0.jpg\",\"originalPrice\":20,\"presentPrice\":18,\"name\":\"过水手擀面\",\"types\":[\"芥末味\",\"番茄味\"],\"number\":2}]}");
     }
 
     /**
@@ -149,43 +149,43 @@ public class ShoppingCartCtrl extends BaseCtrl {
      * }
      */
     public void deleteGoods(){
-        JsonHashMap jhm = new JsonHashMap();
-        /**
-         * 接收前端参数
-         */
-        //用户id
-        String userId = getPara("userId");
-        //商品id
-        String listId = getPara("listId");
-
-        //非空验证
-        if (StringUtils.isEmpty(userId)){
-            jhm.putCode(0).putMessage("客户id为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(listId)){
-            jhm.putCode(0).putMessage("商品id为空！");
-            renderJson(jhm);
-            return;
-        }
-        try{
-            /**
-             * 删除购物车商品
-             */
-            String sql = "DELETE from w_shoppingcart where (pid = ? and cid = ?)";
-            int num = Db.update(sql,userId,listId);
-            if(num > 0){
-                jhm.putCode(1).putMessage("删除成功!");
-            }else{
-                jhm.putCode(1).putMessage("删除失败!");
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常！");
-        }
-        renderJson(jhm);
-        // renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
+//        JsonHashMap jhm = new JsonHashMap();
+//        /**
+//         * 接收前端参数
+//         */
+//        //用户id
+//        String userId = getPara("userId");
+//        //商品id
+//        String listId = getPara("listId");
+//
+//        //非空验证
+//        if (StringUtils.isEmpty(userId)){
+//            jhm.putCode(0).putMessage("客户id为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(listId)){
+//            jhm.putCode(0).putMessage("商品id为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        try{
+//            /**
+//             * 删除购物车商品
+//             */
+//            String sql = "DELETE from w_shoppingcart where (pid = ? and cid = ?)";
+//            int num = Db.update(sql,userId,listId);
+//            if(num > 0){
+//                jhm.putCode(1).putMessage("删除成功!");
+//            }else{
+//                jhm.putCode(1).putMessage("删除失败!");
+//            }
+//        }catch(Exception e){
+//            e.printStackTrace();
+//            jhm.putCode(-1).putMessage("服务器发生异常！");
+//        }
+//        renderJson(jhm);
+         renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
     }
 
 }
