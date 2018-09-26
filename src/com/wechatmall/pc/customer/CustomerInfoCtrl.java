@@ -102,7 +102,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
 
         //查询添加，按照客户姓名模糊查询
         if (StringUtils.isNotEmpty(name)){
-            sql=sql.append("AND cname LIKE '%?%'");
+            sql=sql.append("AND cname LIKE CONCAT('%',?,'%')");
             params.add(name);
         }
         //查询添加，按照客户类型完全匹配查询
