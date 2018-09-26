@@ -474,10 +474,10 @@ public class OrderCtrl extends BaseCtrl {
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器出现异常！");
         }
-        renderJson(jhm);
+//        renderJson(jhm);
 
 
-//        renderJson("{\"code\":1,\"type\":\"客户类型\",\"orderList\":[{\"orderId\":\"订单id\",\"status\":0,\"receivingMethod\":1,\"payMethod\":0,\"goodsList\":[{\"name\":\"产品1\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15},{\"name\":\"产品2\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15}],\"originalPrice\":20,\"presentPrice\":18,\"goodsAddress\":\"地址\",\"consigneeName\":\"小明\",\"consigneePhone\":13130005589,\"storePhone\":\"自提点联系电话（客户类型为消费者时需要有此字段）\"},{\"orderId\":\"订单id\",\"status\":1,\"receivingMethod\":1,\"payMethod\":0,\"goodsList\":[{\"name\":\"产品1\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15},{\"name\":\"产品2\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15}],\"originalPriceAll\":20,\"presentPriceAll\":18,\"goodsAddress\":\"地址\",\"consigneeName\":\"小明\",\"consigneePhone\":13130005589}]}");
+        renderJson("{\"code\":1,\"type\":\"客户类型\",\"orderList\":[{\"orderId\":\"订单id\",\"productSum\":\"商品总数\",\"status\":0,\"receivingMethod\":1,\"payMethod\":0,\"goodsList\":[{\"name\":\"产品1\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15},{\"name\":\"产品2\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15}],\"originalPriceAll\":20,\"presentPriceAll\":18,\"goodsAddress\":\"地址\",\"consigneeName\":\"小明\",\"countNum\":5,\"consigneePhone\":13130005589,\"storePhone\":\"自提点联系电话（客户类型为消费者时需要有此字段）\"},{\"orderId\":\"订单id\",\"status\":1,\"receivingMethod\":1,\"payMethod\":0,\"goodsList\":[{\"name\":\"产品1\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15},{\"name\":\"产品2\",\"number\":1,\"originalPrice\":18,\"presentPrice\":15}],\"originalPriceAll\":20,\"presentPriceAll\":18,\"goodsAddress\":\"地址\",\"consigneeName\":\"小明\",\"countNum\":5,\"consigneePhone\":13130005589}]}");
     }
 
 }
