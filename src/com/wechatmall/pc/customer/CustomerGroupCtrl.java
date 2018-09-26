@@ -157,6 +157,19 @@ public class CustomerGroupCtrl extends BaseCtrl{
         String groupName=getPara("groupName");
         //分组排序
         String sort=getPara("sort");
+
+        //非空验证
+        if (StringUtils.isEmpty(groupName)){
+            jhm.putCode(0).putMessage("分组名称为空");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(sort)){
+            jhm.putCode(0).putMessage("分组排序为空");
+            renderJson(jhm);
+            return;
+        }
+
         //分组id
         String id=UUIDTool.getUUID();
         //查询product表得到所有商品id
