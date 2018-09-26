@@ -75,7 +75,7 @@ public class Config extends JFinalConfig {
 		routes.add("/wm/pc/price", PriceCtrl.class);
 		routes.add("/wm/pc/product/category", ProductCategoryCtrl.class);
 		routes.add("/wm/pc/product/manage", ProductManageCtrl.class);
-		routes.add("/wm/pc/system/job", JobCtrl.class);
+		routes.add("/wm/pc/system/job", com.wechatmall.pc.system.JobCtrl.class);
 		routes.add("/wm/pc/system/pay", PayCtrl.class);
 		routes.add("/wm/pc/system/store", StoreCtrl.class);
 		routes.add("/wm/pc/system/transport", TransportCtrl.class);
