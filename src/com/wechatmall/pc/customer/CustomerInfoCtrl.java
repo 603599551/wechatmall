@@ -1,6 +1,17 @@
 package com.wechatmall.pc.customer;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.plugin.activerecord.ActiveRecordException;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+import easy.util.NumberUtils;
+import org.apache.commons.lang.StringUtils;
+import utils.bean.JsonHashMap;
+
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * customerCtrl class
@@ -63,7 +74,60 @@ public class CustomerInfoCtrl extends BaseCtrl{
      */
 
     public void listCustomer(){
-        renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":1,\"pageNumber\":1,\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":1,\"pageSize\":10,\"list\":[{\"name\":\"客户姓名\",\"gender\":\"客户性别\",\"phone\":\"客户电话\",\"type\":\"客户类型\",\"group\":\"客户分组\",\"createTime\":\"创建时间\"}]}}");
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //客户姓名
+        String name=getPara("name");
+        //客户类型
+        String type=getPara("type");
+        //客户所在组
+        String groupId=getPara("groupId");
+        //页码
+        String pageNumStr=getPara("pageNumber");
+        //每页限制的记录数
+        String pageSizeStr=getPara("pageSize");
+
+        //为空时赋予默认值
+        int pageNum = NumberUtils.parseInt(pageNumStr, 1);
+        int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
+
+        //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
+        String select="SELECT DISTINCT c.cid AS id,c.cname AS name,c.cgender AS gender,d.dname AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group' ";
+
+        StringBuilder sql=new StringBuilder("FROM w_customer c,w_customer_group cg,w_dictionary d WHERE c.cgid=cg.cgid AND FIND_IN_SET(c.ctype,d.dvalue)");
+
+        List<Object> params = new ArrayList<>();
+
+        //查询添加，按照客户姓名模糊查询
+        if (StringUtils.isNotEmpty(name)){
+            sql=sql.append("AND cname LIKE '%?%'");
+            params.add(name);
+        }
+        //查询添加，按照客户类型完全匹配查询
+        if (StringUtils.isNotEmpty(type)){
+            sql=sql.append("AND ctype=?");
+            params.add(type);
+        }
+        //查询添加，按照客户所在组完全匹配查询
+        if (StringUtils.isNotEmpty(groupId)){
+            sql=sql.append("AND cgid=?");
+            params.add(groupId);
+        }
+
+        try{
+            //分页查询
+            Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
+            jhm.putCode(1);
+            jhm.put("data", page);
+        }catch (ActiveRecordException e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("Record异常");
+        }
+
+        renderJson(jhm);
+//        renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":1,\"pageNumber\":1,\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":1,\"pageSize\":10,\"list\":[{\"name\":\"客户姓名\",\"gender\":\"客户性别\",\"phone\":\"客户电话\",\"type\":\"客户类型\",\"group\":\"客户分组\",\"createTime\":\"创建时间\"}]}}");
     }
 
 
@@ -116,7 +180,41 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * }
      */
     public void showCustomerById(){
-        renderJson("{\"code\":\"1\",\"data\":{\"id\":\"用户id\",\"customerName\":\"用户姓名\",\"gender\":\"用户性别\",\"customerPhone\":\"用户电话\",\"wechatNumber\":\"用户微信号\",\"list\":[{\"receiverName\":\"收货人姓名\",\"receiverPhone\":\"收货人电话\",\"receiverAddress\":\"收货人地址\"}],\"type\":\"用户类型\",\"group\":\"用户分组\",\"createTime\":\"创建时间\",\"desc\":\"备注\"}}");
+        JsonHashMap jhm=new JsonHashMap();
+        //接收前端参数 客户id
+        String id=getPara("id");
+
+        //非空验证
+        if (StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("客户id为空");
+            renderJson(jhm);
+            return;
+        }
+
+        //根据客户id关联查询customer,customer_group,dictionary表得到 客户id，姓名，性别，类型，联系电话，创建时间，所在组，微信号，备注
+        String sql1="SELECT c.cid AS id,c.cname AS customerName,c.cgender AS gender,d.dname AS 'type',c.cphone AS customerPhone,c.ccreate_time AS createTime,cg.cgname AS 'group',cwechat AS wechatNumber ,cremark AS 'desc' FROM w_customer c,w_customer_group cg,w_dictionary d WHERE c.cgid=cg.cgid AND FIND_IN_SET(c.ctype,d.dvalue) AND cid=?";
+        //根据客户id查customer_address表得到多个 收货地址信息
+        String sql2="SELECT CONCAT(caprovince,cacity,cadistrict,castreet,caaddress) AS receiverAddress,caphone AS receiverPhone,caname AS receiverName FROM w_customer_address WHERE cid =?";
+
+        try{
+
+            Record r=Db.findFirst(sql1,id);
+            List<Record> addressList=Db.find(sql2,id);
+            if (r==null){
+                jhm.putCode(0).putMessage("没有该客户的信息");
+                renderJson(jhm);
+                return;
+            }
+            r.set("list",addressList);
+            jhm.putCode(1);
+            jhm.put("data",r);
+
+        }catch (ActiveRecordException e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("Record异常");
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":\"1\",\"data\":{\"id\":\"用户id\",\"customerName\":\"用户姓名\",\"gender\":\"用户性别\",\"customerPhone\":\"用户电话\",\"wechatNumber\":\"用户微信号\",\"list\":[{\"receiverName\":\"收货人姓名\",\"receiverPhone\":\"收货人电话\",\"receiverAddress\":\"收货人地址\"}],\"type\":\"用户类型\",\"group\":\"用户分组\",\"createTime\":\"创建时间\",\"desc\":\"备注\"}}");
     }
 
     /**
@@ -154,7 +252,44 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * }
      */
     public void modifyCustomerById(){
-        renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //客户id
+        String id=getPara("id");
+        //客户分组id
+        String group=getPara("group");
+        //客户备注
+        String desc=getPara("desc");
+
+        //非空验证
+        if (StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("客户id为空");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(group)){
+            jhm.putCode(0).putMessage("客户分组id为空");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(desc)){
+            jhm.putCode(0).putMessage("客户备注为空");
+            renderJson(jhm);
+            return;
+        }
+
+        try{
+            Db.update("UPDATE w_customer SET cgid=?,cremark=? WHERE cid=?",group,desc,id);
+            jhm.putCode(1).putMessage("修改成功");
+        }catch (ActiveRecordException e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("Record异常");
+        }
+        renderJson(jhm);
+
+        //renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
     }
 
     /**
@@ -190,6 +325,38 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * }
      */
     public void setTypeById(){
-        renderJson("{\"code\":\"1\",\"message\":\"设置成功！\"}");
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //客户id
+        String id=getPara("id");
+        //客户分组id
+        String type=getPara("type");
+
+        //非空验证
+        if (StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("客户id为空");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(type)){
+            jhm.putCode(0).putMessage("客户类型为空");
+            renderJson(jhm);
+            return;
+        }
+
+
+        try{
+            Db.update("UPDATE w_customer SET ctype=? WHERE cid=?",type,id);
+            jhm.putCode(1).putMessage("设置成功");
+        }catch (ActiveRecordException e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("Record异常");
+        }
+        renderJson(jhm);
+
+
+        //renderJson("{\"code\":\"1\",\"message\":\"设置成功！\"}");
     }
 }
