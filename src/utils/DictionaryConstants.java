@@ -14,8 +14,28 @@ import java.util.Map;
  */
 public class DictionaryConstants {
 
-    //岗位常量
-    public static final String KIND = "post";
+    //客户类型
+    public static final String CUSTOMERType = "customer_type";
+    //收货地址状态
+    public static final String ADDRESSSTATUS = "address_status";
+    //在职状态
+    public static final String WORKSTATUS = "work_status";
+    //订单状态
+    public static final String ORDERSTATUS = "order_status";
+    //商品状态
+    public static final String PRODUCTSTATUS = "product_status";
+    //自提点状态
+    public static final String STORESTATUS = "store_status";
+    //通知类型
+    public static final String NOTICETYPE = "notice_type";
+    //物流类型
+    public static final String TRANSPORTTYPE = "transport_type";
+    //支付类型
+    public static final String PAYTYPE = "pay_type";
+    //客户性别
+    public static final String GENDER = "gender";
+
+
 
     /**
      * dictionary表中的常量，tomcat启动时将字典值读取到内存中

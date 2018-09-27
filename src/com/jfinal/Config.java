@@ -162,5 +162,16 @@ public class Config extends JFinalConfig {
                 }
             }
         }
+        if(DictionaryConstants.DICT_RECORD_MAP != null && DictionaryConstants.DICT_RECORD_MAP.size() > 0){
+			for(String key : DictionaryConstants.DICT_RECORD_MAP.keySet()){
+				Map<String, Record> recordMap = DictionaryConstants.DICT_RECORD_MAP.get(key);
+				List<Record> recordList = new ArrayList<>();
+				for(String rKey : recordMap.keySet()){
+					recordList.add(recordMap.get(rKey));
+				}
+				DictionaryConstants.DICT_RECORD_LIST.put(key, recordList);
+			}
+		}
+
 	}
 }
