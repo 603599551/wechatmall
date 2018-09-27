@@ -14,7 +14,9 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * CustomerGroupCtrl class
@@ -148,6 +150,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      */
     public void addCustomerGroup(){
         JsonHashMap jhm=new JsonHashMap();
+
         UserSessionUtil usu=new UserSessionUtil(getRequest());
 
         /**
@@ -170,45 +173,14 @@ public class CustomerGroupCtrl extends BaseCtrl{
             return;
         }
 
-        //分组id
-        String id=UUIDTool.getUUID();
-        //查询product表得到所有商品id
-        String sql="SELECT pid,price AS pcpcurrent_price FROM w_product ";
-
         try{
-            //往customer_group表存储新的分组信息
-            Record r=new Record();
-            r.set("cgid",id);
-            r.set("cgname", groupName);
-            r.set("cgsort", sort);
-            r.set("cgcreate_time", DateTool.GetDateTime());
-            r.set("cgmodify_time", DateTool.GetDateTime());
-            r.set("cgcreator_id", usu.getUserId());
-            r.set("cgmodifier_id", usu.getUserId());
-            r.set("cgdesc", "");
-            boolean flag1=Db.save("w_customer_group",r);
-            if (flag1){
-                jhm.putCode(1).putMessage("添加成功");
-            }else{
-                jhm.putCode(0).putMessage("添加失败");
-            }
-
-            List<Record> productList=Db.find(sql);
-            if (productList!=null||productList.size()>0){
-                for (Record pr:productList){
-                    pr.set("pcpid",UUIDTool.getUUID());
-                    pr.set("cgid",id);
-                    pr.set("pcpcreate_time",DateTool.GetDateTime());
-                    pr.set("pcpmodify_time",DateTool.GetDateTime());
-                    pr.set("pcpcreator_id",usu.getUserId());
-                    pr.set("pcpmodifier_id",usu.getUserId());
-                    pr.set("pcpdesc","");
-                    boolean flag2=Db.save("w_product_currentprice",pr);
-                    if (!flag2){
-                        jhm.putCode(0).putMessage("添加商品失败");
-                    }
-                }
-            }
+            String userId=usu.getUserId();
+            Map paraMap =new HashMap();
+            paraMap.put("groupName", groupName);
+            paraMap.put("sort", sort);
+            paraMap.put("userId", userId);
+            CustomerGroupService srv = enhance(CustomerGroupService.class);
+            jhm = srv.addCustomerGroup(paraMap);
 
         }catch (ActiveRecordException e){
             e.printStackTrace();

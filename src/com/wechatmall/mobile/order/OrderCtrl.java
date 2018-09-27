@@ -3,6 +3,7 @@ package com.wechatmall.mobile.order;
 import com.common.controllers.BaseCtrl;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.wechatmall.pc.customer.CustomerGroupService;
 import easy.util.DateTool;
 import easy.util.UUIDTool;
 import net.sf.json.JSONArray;
@@ -11,7 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * customerCtrl class
@@ -194,8 +197,6 @@ public class OrderCtrl extends BaseCtrl {
         String phone = getPara("phone");
         //订单商品列表
         String goodsString = getPara("goodsList");
-        JSONArray goodsList = JSONArray.fromObject(goodsString);
-
         //收货方式
         String receivingMethod = getPara("receivingMethod");
         //支付方式
@@ -226,7 +227,7 @@ public class OrderCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (goodsList==null||goodsList.size()<=0){
+        if (StringUtils.isEmpty(goodsString)){
             jhm.putCode(0).putMessage("订单商品列表为空！");
             renderJson(jhm);
             return;
@@ -251,76 +252,21 @@ public class OrderCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        //订单原总价
-        float orderOriginalSum = Float.valueOf("orderOriginalSum");
-        //订单现总价
-        float orderCurrentSum = Float.valueOf("orderCurrentSum");
+
 
         try{
-            /**
-             * 新增订单
-             */
-            //订单信息表对象
-            Record w_orderform = new Record();
-            w_orderform.set("oid", UUIDTool.getUUID());
-            w_orderform.set("caid","");
-            w_orderform.set("cid",userId);
-            w_orderform.set("oname",name);
-            w_orderform.set("ophone",phone);
-            w_orderform.set("oaddress",address);
-            w_orderform.set("ooriginal_sum",orderOriginalSum);
-            w_orderform.set("ocurrent_sum",orderCurrentSum);
-            w_orderform.set("ostatus","pending_pay");
-            w_orderform.set("otransport_type",receivingMethod);
-            w_orderform.set("opay_type",payMethod);
-            w_orderform.set("ocreate_time", DateTool.GetDateTime());
-            w_orderform.set("omodify_time", DateTool.GetDateTime());
-            w_orderform.set("ocreator_id",userId);
-            w_orderform.set("omodifier_id",userId);
-            w_orderform.set("odesc","");
-            boolean orderFormFlag = Db.save("w_orderform","oid",w_orderform);
-            if(orderFormFlag == false){
-                jhm.putCode(0).putMessage("提交失败!");
-                renderJson(jhm);
-                return;
-            }
-            /**
-             * 新增订单详情
-             */
-            //订单详情表对象
-            Record w_orderform_detail = new Record();
-            //定义新增订单后的布尔值
-            boolean orderFormDetailFlag = false;
-
-            String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
-            //获取商品
-            for(int i = 0; i < goodsList.size(); i++){
-                //遍历json数组，转换成json对象
-                JSONObject goodsListJSON = goodsList.getJSONObject(i);
-                Record product = Db.findFirst(sql,goodsListJSON.get("id"));
-                w_orderform_detail.set("odid", UUIDTool.getUUID());
-                w_orderform_detail.set("oid",w_orderform.get("oid"));
-                w_orderform_detail.set("pid",goodsListJSON.get("id"));
-                w_orderform_detail.set("odname",goodsListJSON.get("name"));
-                w_orderform_detail.set("odoriginal_price",product.get("odoriginal_price"));
-                w_orderform_detail.set("odcurrent_price", goodsListJSON.get("price"));
-                w_orderform_detail.set("odquantity",goodsListJSON.get("number"));
-                w_orderform_detail.set("odkeyword",product.get("odkeyword"));
-                Double sum =  (Double) goodsListJSON.get("price") * (Integer) goodsListJSON.get("number");
-                w_orderform_detail.set("odsingle_sum",sum);
-                w_orderform_detail.set("odcreate_time",DateTool.GetDateTime());
-                w_orderform_detail.set("odmodify_time",DateTool.GetDateTime());
-                w_orderform_detail.set("odcreator_id",userId);
-                w_orderform_detail.set("odmodifier_id",userId);
-                w_orderform_detail.set("oddesc","");
-                orderFormDetailFlag = Db.save("w_orderform_detail","odid",w_orderform_detail);
-                if(orderFormDetailFlag == false){
-                    jhm.putCode(0).putMessage("提交失败！");
-                    renderJson(jhm);
-                    return;
-                }
-            }
-                jhm.putMessage("提交成功！");
+            Map paraMap=new HashMap();
+            paraMap.put("userId", userId);
+            paraMap.put("address", address);
+            paraMap.put("name", name);
+            paraMap.put("phone", phone);
+            paraMap.put("goodsString", goodsString);
+            paraMap.put("receivingMethod", receivingMethod);
+            paraMap.put("payMethod", payMethod);
+            paraMap.put("orderOriginalSumStr", orderOriginalSumStr);
+            paraMap.put("orderCurrentSumStr", orderCurrentSumStr);
+            OrderService srv = enhance(OrderService.class);
+            jhm = srv.placeOrder(paraMap);
 
         }catch (Exception e){
             e.printStackTrace();
