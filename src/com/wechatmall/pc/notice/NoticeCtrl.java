@@ -4,6 +4,7 @@ import com.common.controllers.BaseCtrl;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.utils.UserSessionUtil;
 import easy.util.DateTool;
 import easy.util.NumberUtils;
 import easy.util.UUIDTool;
@@ -34,8 +35,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 参数名	       类型	       最大长度	允许空	  描述
      *  type          string                  不允许      	通知类型
      *  content       string                  不允许       通知内容
-     *  adminId       string                  不允许       系统用户id
-     *
+
      * 返回数据：
      * 返回格式：JSON
      * 成功：
@@ -56,6 +56,7 @@ public class NoticeCtrl extends BaseCtrl {
      */
     public void addNotice(){
         JsonHashMap jhm = new JsonHashMap();
+        UserSessionUtil usu=new UserSessionUtil(getRequest());
         /**
          * 接收前端参数
          */
@@ -63,8 +64,6 @@ public class NoticeCtrl extends BaseCtrl {
         String type = getPara("type");
         //通知内容
         String content = getPara("content");
-        //系统用户id
-        String adminId = getPara("adminId");
 
         //非空验证
         if(StringUtils.isEmpty(type)){
@@ -74,11 +73,6 @@ public class NoticeCtrl extends BaseCtrl {
         }
         if(StringUtils.isEmpty(content)){
             jhm.putCode(0).putMessage("通知内容为空！");
-            renderJson(jhm);
-            return;
-        }
-        if(StringUtils.isEmpty(adminId)){
-            jhm.putCode(0).putMessage("系统用户id为空！");
             renderJson(jhm);
             return;
         }
@@ -92,8 +86,8 @@ public class NoticeCtrl extends BaseCtrl {
             addNoticeRecord.set("ntype",type);
             addNoticeRecord.set("ncreate_time", DateTool.GetDateTime());
             addNoticeRecord.set("nmodify_time",DateTool.GetDateTime());
-            addNoticeRecord.set("ncreator_id",adminId);
-            addNoticeRecord.set("nmodifier_id",adminId);
+            addNoticeRecord.set("ncreator_id",usu.getUserId());
+            addNoticeRecord.set("nmodifier_id",usu.getUserId());
             addNoticeRecord.set("ndesc","");
             boolean flag = Db.save("w_notice","nid",addNoticeRecord);
             if(flag){
@@ -124,7 +118,6 @@ public class NoticeCtrl extends BaseCtrl {
      *  id             string               不允许       通知id
      *  type           string               不允许       通知类型
      *  content        string               不允许       通知内容
-     *  adminId        string               不允许       系统用户id
      * 返回数据：
      * 返回格式：JSON
      * 成功：
@@ -145,6 +138,7 @@ public class NoticeCtrl extends BaseCtrl {
      */
     public void updateNoticeById(){
         JsonHashMap jhm = new JsonHashMap();
+        UserSessionUtil usu=new UserSessionUtil(getRequest());
         /**
          * 接收前端参数
          */
@@ -154,8 +148,6 @@ public class NoticeCtrl extends BaseCtrl {
         String type = getPara("type");
         //通知内容
         String content = getPara("content");
-        //系统用户id
-        String adminId = getPara("adminId");
 
         //非空验证
         if(StringUtils.isEmpty(id)){
@@ -173,11 +165,6 @@ public class NoticeCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if(StringUtils.isEmpty(adminId)){
-            jhm.putCode(0).putMessage("系统用户id为空！");
-            renderJson(jhm);
-            return;
-        }
         try{
             /**
              * 修改通知
@@ -187,7 +174,7 @@ public class NoticeCtrl extends BaseCtrl {
             updateNoticeById.set("ncontent",content);
             updateNoticeById.set("ntype",type);
             updateNoticeById.set("nmodify_time",DateTool.GetDateTime());
-            updateNoticeById.set("nmodifier_id",adminId);
+            updateNoticeById.set("nmodifier_id",usu.getUserId());
             boolean flag = Db.update("w_notice","nid",updateNoticeById);
             if(flag){
                 jhm.putMessage("修改成功！");
@@ -346,6 +333,7 @@ public class NoticeCtrl extends BaseCtrl {
 
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
+        //查询通知id，通知内容，通知类型，通知创建时间，通知修改时间。通知内容模糊查询，通知类型完全匹配查询
         String select = "select nid id,ncontent content,ntype type,ncreate_time createTime,nmodify_time modifyTime  ";
         String sql = " from w_notice where 1=1 ";
         if(content != null && content.length() > 0){

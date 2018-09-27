@@ -1,6 +1,7 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -91,10 +92,10 @@ public class TransportCtrl extends BaseCtrl {
         Record addTransportType = new Record();
 
         //查找字典值中英文字段和分类字段是否有重复的
-        String sql = "SELECT did id from w_dictionary where dvalue = ? or sort = ? or dname = ? ";
+        String sql = "SELECT count(1) count from w_dictionary where dvalue = ? or sort = ?  ";
         try{
-            Record idRecord = Db.findFirst(sql,value,sort,name);
-            if(idRecord != null){
+            int idRecord = Db.queryInt(sql,value,sort);
+            if(idRecord > 0){
                 jhm.putCode(0).putMessage("添加失败！字段名重复！");
                 renderJson(jhm);
                 return;
@@ -329,9 +330,9 @@ public class TransportCtrl extends BaseCtrl {
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }
-        }catch (Exception e){
+        }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常！");
+            jhm.putCode(-1).putMessage("Record异常！");
         }
         renderJson(jhm);
         //renderJson("{\"code\":1,\"message\":\"查询成功\",\"name\":\"物流类型名称\",\"desc\":\"物流类型备注\"}");
@@ -391,11 +392,6 @@ public class TransportCtrl extends BaseCtrl {
 
         int pageNum,pageSize;
         //非空验证
-        if(StringUtils.isEmpty(type)){
-            jhm.putCode(0).putMessage("物流类型名称为空!");
-            renderJson(jhm);
-            return;
-        }
         if(StringUtils.isEmpty(pageNumStr)){
             pageNum = NumberUtils.parseInt(pageNumStr,1);
         }else {
