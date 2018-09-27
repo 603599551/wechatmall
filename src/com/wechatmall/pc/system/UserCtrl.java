@@ -1,9 +1,18 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
+import com.jfinal.plugin.activerecord.Record;
+import com.utils.UserSessionUtil;
+import easy.util.DateTool;
 import easy.util.NumberUtils;
+import easy.util.UUIDTool;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TransportCtrl class
@@ -89,16 +98,6 @@ public class UserCtrl extends BaseCtrl{
         String pageSizeStr = getPara("pageSize");
         int pageNum,pageSize;
         //非空验证
-//        if(StringUtils.isEmpty(name)){
-//            jhm.putCode(0).putMessage("用户姓名为空!");
-//            renderJson(jhm);
-//            return;
-//        }
-//        if(StringUtils.isEmpty(job)){
-//            jhm.putCode(0).putMessage("用户职位为空!");
-//            renderJson(jhm);
-//            return;
-//        }
         if(StringUtils.isEmpty(pageNumStr)){
             pageNum = NumberUtils.parseInt(pageNumStr,1);
         }else {
@@ -109,6 +108,36 @@ public class UserCtrl extends BaseCtrl{
         }else {
             pageSize = Integer.parseInt(pageSizeStr);
         }
+        List<Object> params = new ArrayList<>();
+        String select = "select *";
+        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status from w_admin wa) a where 1=1";
+        if(name != null && name.length() > 0){
+            name = "%" + name + "%";
+            sql += "  and wa.name like ? ";
+            params.add(name);
+
+        }
+        if(job != null && job.length() > 0){
+            job = "%" + job + "%";
+            sql += "  and hj.name like ? ";
+            params.add(job);
+        }
+        try{
+            /**
+             * 查询物流类型列表
+             */
+            Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
+            if(page != null && page.getList().size() > 0){
+                jhm.putMessage("查询成功！");
+                jhm.put("list",page);
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
        // renderJson("{\"code\":1,\"data\":{\"firstPage\":false,\"lastPage\":false,\"pageNumber\":\"2\",\"pageSize\":\"10\",\"totalPage\":\"20\",\"totalRow\":\"200\",\"list\":[{\"username\":\"登录名\",\"password\":\"登录密码\",\"nickname\":\"姓名\",\"job\":\"职位\",\"status\":\"在职状态\",\"creatorId\":\"创建人id\"},{\"username\":\"登录名\",\"password\":\"登录密码\",\"nickname\":\"姓名\",\"job\":\"职位\",\"status\":\"在职状态\",\"creatorId\":\"创建人id\"}]}}");
     }
 
@@ -150,6 +179,81 @@ public class UserCtrl extends BaseCtrl{
      */
 
     public void addUser(){
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //登录名
+        String username = getPara("username");
+        //登录密码
+        String password = getPara("password");
+        //姓名
+        String name = getPara("nickname");
+        //职位
+        String job = getPara("job");
+        //在职状态
+        String status = getPara("status");
+        UserSessionUtil usu = new UserSessionUtil(getRequest());
+        //非空验证
+        if(StringUtils.isEmpty(username)){
+            jhm.putCode(0).putMessage("登录名为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(password)){
+            jhm.putCode(0).putMessage("登录密码为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(name)){
+            jhm.putCode(0).putMessage("姓名为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(job)){
+            jhm.putCode(0).putMessage("职位为空！");
+            renderJson(jhm);
+            return;
+        }
+        Record addUser = new Record();
+        String sql = "select count(1) from w_admin where username=? ";
+        try{
+           int num = Db.queryInt(sql,username);
+            if(num > 0){
+                jhm.putCode(0).putMessage("添加失败！该用户已存在");
+                renderJson(jhm);
+                return;
+            }
+            String sql_job = "select hj.id job_id,wd.dvalue status from h_job hj,w_dictionary wd where hj.name=? and wd.dname=? ";
+            Record  r = Db.findFirst(sql_job,job,status);
+            if(r==null){
+                jhm.putCode(0).putMessage("查询失败");
+                renderJson(jhm);
+                return;
+            }
+            addUser.set("id", UUIDTool.getUUID());
+            addUser.set("username",username);
+            addUser.set("password",password);
+            addUser.set("name",name);
+            addUser.set("job_id",r.getStr("job_id"));
+            addUser.set("status",r.getStr("status"));
+            String time = DateTool.GetDateTime();
+            addUser.set("creater_id", usu.getUserId());
+            addUser.set("modifier_id", usu.getUserId());
+            addUser.set("create_time", time);
+            addUser.set("modify_time", time);
+            boolean flag = Db.save("w_admin",addUser);
+            if(flag){
+                jhm.putMessage("添加成功！");
+            }else{
+                jhm.putCode(0).putMessage("添加失败！");
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(0).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
     }
 
@@ -191,6 +295,77 @@ public class UserCtrl extends BaseCtrl{
      * }
      */
     public void modifyUserById(){
+        JsonHashMap jhm = new JsonHashMap();
+        //用户id
+        String id = getPara("id");
+        //登录名
+        String username = getPara("username");
+        //登录密码
+        String password = getPara("password");
+        //姓名
+        String name = getPara("nickname");
+        //职位
+        String job = getPara("job");
+        //在职状态
+        String status = getPara("status");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("用户id为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(username)){
+            jhm.putCode(0).putMessage("登录名为空!");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(password)){
+            jhm.putCode(0).putMessage("登录密码为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(name)){
+            jhm.putCode(0).putMessage("姓名为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(job)){
+            jhm.putCode(0).putMessage("职位为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(status)){
+            jhm.putCode(0).putMessage("在职状态为空！");
+            renderJson(jhm);
+            return;
+        }
+        String sql = "select hj.id job_id,wd.dvalue status from h_job hj,w_dictionary wd where hj.name=? and wd.dname=? ";
+        Record  r = Db.findFirst(sql,job,status);
+        Record modifyUserById = new Record();
+        if(r != null) {
+            modifyUserById.set("id", id);
+            modifyUserById.set("username", username);
+            modifyUserById.set("password", password);
+            modifyUserById.set("name", name);
+            modifyUserById.set("job_id", r.getStr("job_id"));
+            modifyUserById.set("status", r.getStr("status"));
+        }
+        try{
+            System.out.println("ssjsj");
+            /**
+             * 修改用户信息
+             */
+            boolean flag = Db.update("w_admin","id",modifyUserById);
+            if(flag){
+                jhm.putMessage("修改成功！");
+            }else{
+                jhm.putCode(0).putMessage("修改失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
         //renderJson("{\"code\":1,\"message\":\"修改成功\"}");
     }
 
@@ -227,6 +402,39 @@ public class UserCtrl extends BaseCtrl{
      * }
      */
     public void deleteUserById(){
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //系统用户id
+        String id = getPara("id");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("系统用户id为空!");
+            renderJson(jhm);
+            return;
+        }
+        try{
+            /**
+             * 删除该用户
+             */
+            String sql = "DELETE from w_admin where id=? ";
+            int num = Db.update(sql,id);
+            if(num > 0){
+                jhm.putCode(1).putMessage("删除成功！");
+                renderJson(jhm);
+                return;
+            }else{
+                jhm.putCode(0).putMessage("删除失败！");
+                renderJson(jhm);
+                return;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
     }
 
@@ -269,6 +477,38 @@ public class UserCtrl extends BaseCtrl{
      * }
      */
     public void showUserById(){
+        JsonHashMap jhm = new JsonHashMap();
+        /**
+         * 接收前台参数
+         */
+        //系统用户id
+        String id = getPara("id");
+        //非空验证
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("系统用户id为空!");
+            renderJson(jhm);
+            return;
+        }
+        try{
+            /**
+             * 查询该用户
+             */
+            String sql = "select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status from w_admin wa where id=?";
+            Record idRecord = Db.findFirst(sql,id);
+            if(idRecord!=null){
+                jhm.putCode(1).putMessage("查询成功");
+                renderJson(jhm);
+                return;
+            }else{
+                jhm.putCode(0).putMessage("查询失败");
+                renderJson(jhm);
+                return;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
         //renderJson("{\"code\":1,\"data\":{\"username\":\"登录名\",\"password\":\"登录密码\",\"nickname\":\"姓名\",\"job\":\"职位\",\"status\":\"在职状态\"}}");
     }
 }
