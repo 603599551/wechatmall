@@ -316,9 +316,9 @@ public class OrderCtrl extends BaseCtrl{
         /**
          *根据订单表w_orderform和客户信息表w_customer查询 : 订单id : orderId , 客户姓名 : customerName , 客户电话 : customerPhone
          * 收货地址 : address , 订单创建时间 : crateTime , 物流类型 : transportType , 支付方式 : payType
-         * 订单原总价 : orderOriginalSum , 订单总现价 : orderPresentSum
+         * 订单原总价 : orderOriginalSum , 订单总现价 : orderPresentSum , 订单支付状态 : orderPayType
          */
-        String orderSearch = "SELECT wo.oid as orderId, wc.cname as customerName, wc.cphone as customerPhone, wo.oaddress as address, wo.ocreate_time as crateTime, wo.otransport_type as transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum FROM w_orderform wo, w_customer wc where wo.oid IN("+ order.toString() +") and wc.cid = wo.cid";
+        String orderSearch = "SELECT wo.oid as orderId, wc.cname as customerName, wo.ostatus as orderPayStatus, wc.cphone as customerPhone, wo.oaddress as address, wo.ocreate_time as crateTime, wo.otransport_type as transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum FROM w_orderform wo, w_customer wc where wo.oid IN("+ order.toString() +") and wc.cid = wo.cid";
 
         /**
          *根据订单表w_orderform和订单详情表w_orderfrom_detail查询 : 商品名称 : name , 商品所属订单号 ： oid
