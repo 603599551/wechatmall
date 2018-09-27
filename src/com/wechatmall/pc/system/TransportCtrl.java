@@ -92,7 +92,7 @@ public class TransportCtrl extends BaseCtrl {
         Record addTransportType = new Record();
 
         //查找字典值中英文字段和分类字段是否有重复的
-        String sql = "SELECT count(1) count from w_dictionary where dvalue = ? or sort = ?  ";
+        String sql = "SELECT count(1) count from w_dictionary where value = ? or sort = ?  ";
         try{
             int idRecord = Db.queryInt(sql,value,sort);
             if(idRecord > 0){
@@ -100,13 +100,13 @@ public class TransportCtrl extends BaseCtrl {
                 renderJson(jhm);
                 return;
             }
-            addTransportType.set("did", UUIDTool.getUUID());
-            addTransportType.set("dparent_id","700");
-            addTransportType.set("dname",name);
-            addTransportType.set("dvalue",value);
+            addTransportType.set("id", UUIDTool.getUUID());
+            addTransportType.set("parent_id","700");
+            addTransportType.set("name",name);
+            addTransportType.set("value",value);
             addTransportType.set("sort",sort);
-            addTransportType.set("ddesc",desc);
-            boolean flag = Db.save("w_dictionary","did",addTransportType);
+            addTransportType.set("desc",desc);
+            boolean flag = Db.save("w_dictionary","id",addTransportType);
             if(flag){
                 jhm.putMessage("添加成功！");
             }else{
@@ -185,14 +185,14 @@ public class TransportCtrl extends BaseCtrl {
         }
 
         Record modifyTransportType = new Record();
-        modifyTransportType.set("did",id);
-        modifyTransportType.set("dname",name);
-        modifyTransportType.set("ddesc",desc);
+        modifyTransportType.set("id",id);
+        modifyTransportType.set("name",name);
+        modifyTransportType.set("desc",desc);
         try{
             /**
              * 修改物流类型
              */
-            boolean flag = Db.update("w_dictionary","did",modifyTransportType);
+            boolean flag = Db.update("w_dictionary","id",modifyTransportType);
             if(flag){
                 jhm.putMessage("修改成功！");
             }else{
@@ -255,7 +255,7 @@ public class TransportCtrl extends BaseCtrl {
         /**
          * 删除物流分类
          */
-            String sql = "DELETE from w_dictionary where did=? ";
+            String sql = "DELETE from w_dictionary where id=? ";
             int num = Db.update(sql,id);
             if(num > 0){
                 jhm.putCode(1).putMessage("删除成功！");
@@ -317,7 +317,7 @@ public class TransportCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        String sql = "select dname ,ddesc from w_dictionary where did = ?";
+        String sql = "select name ,'desc' from w_dictionary where id = ?";
         try{
             /**
              * 根据id查询物流分类
@@ -325,8 +325,8 @@ public class TransportCtrl extends BaseCtrl {
             Record transportType = Db.findFirst(sql,id);
             if(transportType != null){
                 jhm.putMessage("查询成功");
-                jhm.put("name",transportType.get("dname"));
-                jhm.put("desc",transportType.get("ddesc"));
+                jhm.put("name",transportType.get("name"));
+                jhm.put("desc",transportType.get("desc"));
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }
@@ -404,11 +404,11 @@ public class TransportCtrl extends BaseCtrl {
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select did id,dname name,ddesc 'desc'  ";
-        String sql = " from w_dictionary  where dparent_id = '700'  ";
+        String select = "select id ,name ,desc  ";
+        String sql = " from w_dictionary  where parent_id = '700'  ";
         if(type != null && type.length() > 0){
             type = "%" + type + "%";
-            sql += "  and dname like ? ";
+            sql += "  and name like ? ";
             params.add(type);
         }
         try{

@@ -91,7 +91,7 @@ public class PayCtrl extends BaseCtrl{
         int sort = Integer.valueOf(sortStr);
         Record addPayType = new Record();
         //查找字典值中英文字段和分类字段是否有重复的
-        String sql = "SELECT count(1) count from w_dictionary where dvalue = ？ or sort = ？  ";
+        String sql = "SELECT count(1) count from w_dictionary where value = ？ or sort = ？  ";
         try{
            int idRecord = Db.queryInt(sql,value,sort);
             if(idRecord > 0){
@@ -99,13 +99,13 @@ public class PayCtrl extends BaseCtrl{
                 renderJson(jhm);
                 return;
             }
-            addPayType.set("did", UUIDTool.getUUID());
-            addPayType.set("dparent_id","800");
-            addPayType.set("dname",name);
-            addPayType.set("dvalue",value);
+            addPayType.set("id", UUIDTool.getUUID());
+            addPayType.set("parent_id","800");
+            addPayType.set("name",name);
+            addPayType.set("value",value);
             addPayType.set("sort",sort);
-            addPayType.set("ddesc",desc);
-            boolean flag = Db.save("w_dictionary","did",addPayType);
+            addPayType.set("desc",desc);
+            boolean flag = Db.save("w_dictionary","id",addPayType);
             if(flag){
                 jhm.putMessage("添加成功！");
             }else{
@@ -182,14 +182,14 @@ public class PayCtrl extends BaseCtrl{
             return;
         }
         Record modifyPayType = new Record();
-        modifyPayType.set("did",id);
-        modifyPayType.set("dname",name);
-        modifyPayType.set("ddesc",desc);
+        modifyPayType.set("id",id);
+        modifyPayType.set("name",name);
+        modifyPayType.set("desc",desc);
         try{
             /**
              * 修改支付类型
              */
-            boolean flag = Db.update("w_dictionary","did",modifyPayType);
+            boolean flag = Db.update("w_dictionary","id",modifyPayType);
             if(flag){
                 jhm.putMessage("修改成功！");
             }else{
@@ -255,7 +255,7 @@ public class PayCtrl extends BaseCtrl{
             /**
              * 删除支付方式
              */
-            String sql = "DELETE from w_dictionary where did=? ";
+            String sql = "DELETE from w_dictionary where id=? ";
             int num = Db.update(sql,id);
             if(num > 0){
                 jhm.putCode(1).putMessage("删除成功！");
@@ -318,7 +318,7 @@ public class PayCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        String sql = "select dname ,ddesc from w_dictionary where did = ?";
+        String sql = "select name ,'desc' from w_dictionary where id = ?";
         try{
             /**
              * 根据id查询支付方式
@@ -326,8 +326,8 @@ public class PayCtrl extends BaseCtrl{
             Record showPayType = Db.findFirst(sql,id);
             if(showPayType != null){
                 jhm.putMessage("查询成功");
-                jhm.put("name",showPayType.get("dname"));
-                jhm.put("desc",showPayType.get("ddesc"));
+                jhm.put("name",showPayType.get("name"));
+                jhm.put("desc",showPayType.get("desc"));
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }
@@ -407,10 +407,10 @@ public class PayCtrl extends BaseCtrl{
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select did id,dname name,ddesc 'desc'  ";
-        String sql = " from w_dictionary  where dparent_id = '800'  ";
+        String select = "select id ,name ,desc  ";
+        String sql = " from w_dictionary  where parent_id = '800'  ";
         if(name != null && name.length() > 0){
-            sql += "  and dname = ? ";
+            sql += "  and name = ? ";
             params.add(name);
         }
         try{
