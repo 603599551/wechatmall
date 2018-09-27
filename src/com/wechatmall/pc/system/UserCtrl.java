@@ -138,7 +138,6 @@ public class UserCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-       // renderJson("{\"code\":1,\"data\":{\"firstPage\":false,\"lastPage\":false,\"pageNumber\":\"2\",\"pageSize\":\"10\",\"totalPage\":\"20\",\"totalRow\":\"200\",\"list\":[{\"username\":\"登录名\",\"password\":\"登录密码\",\"nickname\":\"姓名\",\"job\":\"职位\",\"status\":\"在职状态\",\"creatorId\":\"创建人id\"},{\"username\":\"登录名\",\"password\":\"登录密码\",\"nickname\":\"姓名\",\"job\":\"职位\",\"status\":\"在职状态\",\"creatorId\":\"创建人id\"}]}}");
     }
 
     /**
@@ -216,6 +215,9 @@ public class UserCtrl extends BaseCtrl{
             return;
         }
         Record addUser = new Record();
+        /*
+        * 查询该用户是否存在
+        * */
         String sql = "select count(1) from w_admin where username=? ";
         try{
            int num = Db.queryInt(sql,username);
@@ -224,19 +226,12 @@ public class UserCtrl extends BaseCtrl{
                 renderJson(jhm);
                 return;
             }
-            String sql_job = "select hj.id job_id,wd.dvalue status from h_job hj,w_dictionary wd where hj.name=? and wd.dname=? ";
-            Record  r = Db.findFirst(sql_job,job,status);
-            if(r==null){
-                jhm.putCode(0).putMessage("查询失败");
-                renderJson(jhm);
-                return;
-            }
             addUser.set("id", UUIDTool.getUUID());
             addUser.set("username",username);
             addUser.set("password",password);
             addUser.set("name",name);
-            addUser.set("job_id",r.getStr("job_id"));
-            addUser.set("status",r.getStr("status"));
+            addUser.set("job_id",job);
+            addUser.set("status",status);
             String time = DateTool.GetDateTime();
             addUser.set("creater_id", usu.getUserId());
             addUser.set("modifier_id", usu.getUserId());
@@ -254,7 +249,6 @@ public class UserCtrl extends BaseCtrl{
             jhm.putCode(0).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
-       // renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
     }
 
     /**
@@ -339,19 +333,20 @@ public class UserCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        String sql = "select hj.id job_id,wd.dvalue status from h_job hj,w_dictionary wd where hj.name=? and wd.dname=? ";
-        Record  r = Db.findFirst(sql,job,status);
+
+        /*
+        * 添加用户
+        * */
+
         Record modifyUserById = new Record();
-        if(r != null) {
-            modifyUserById.set("id", id);
-            modifyUserById.set("username", username);
-            modifyUserById.set("password", password);
-            modifyUserById.set("name", name);
-            modifyUserById.set("job_id", r.getStr("job_id"));
-            modifyUserById.set("status", r.getStr("status"));
-        }
+        modifyUserById.set("id", id);
+        modifyUserById.set("username", username);
+        modifyUserById.set("password", password);
+        modifyUserById.set("name", name);
+        modifyUserById.set("job_id", job);
+        modifyUserById.set("status", status);
+
         try{
-            System.out.println("ssjsj");
             /**
              * 修改用户信息
              */
@@ -366,7 +361,6 @@ public class UserCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-        //renderJson("{\"code\":1,\"message\":\"修改成功\"}");
     }
 
     /**
@@ -416,7 +410,7 @@ public class UserCtrl extends BaseCtrl{
         }
         try{
             /**
-             * 删除该用户
+             * 根据id删除该用户
              */
             String sql = "DELETE from w_admin where id=? ";
             int num = Db.update(sql,id);
@@ -435,7 +429,6 @@ public class UserCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-        //renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
     }
 
     /**
