@@ -71,7 +71,7 @@ public class MyCtrl extends BaseCtrl {
             /**
              * 查询客户信息
              */
-            String sql = "select cname name, cphone phone, ( select dname from w_dictionary where dparent_id = 900 and dvalue = cgender ) sex, ctype type from w_customer where cid = ? ";
+            String sql = "select cname name, cphone phone, ( select name from w_dictionary where parent_id = 900 and value = cgender ) sex, ctype type from w_customer where cid = ? ";
             Record queryInfoList = Db.findFirst(sql,userId);
             if(queryInfoList != null ){
                 String type = queryInfoList.get("type");

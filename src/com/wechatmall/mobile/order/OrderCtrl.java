@@ -104,15 +104,24 @@ public class OrderCtrl extends BaseCtrl {
         //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
         String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
         //根据value值查询dictionary表得到 物流类型和支付类型
-        String sql3="SELECT dname AS name FROM w_dictionary WHERE dparent_id = (SELECT did FROM w_dictionary WHERE dvalue =?)";
+        String sql3="SELECT name FROM w_dictionary d WHERE parent_id = (SELECT id FROM w_dictionary WHERE value =?) AND d.`desc` LIKE CONCAT('%',?,'%')";
+
+        String sql4="SELECT name FROM w_dictionary WHERE value=(SELECT ctype FROM w_customer WHERE cid=?)";
 
         try{
             //自提点列表
             List<Record> storeList=Db.find(sql1);
             //收货地址列表
             List<Record> contactList=Db.find(sql2,userId);
+            Record r=Db.findFirst(sql4,userId);
+            if (r==null){
+                jhm.putCode(0).putMessage("没有该客户信息");
+                renderJson(jhm);
+                return;
+            }
+            String customerType=r.getStr("name");
             //物流类型列表
-            List<Record> transportList=Db.find(sql3,transportType);
+            List<Record> transportList=Db.find(sql3,transportType,customerType);
             List<String> receivingMethod=new ArrayList<>(10);
             if (transportList!=null){
                 for (Record tl:transportList){
@@ -120,7 +129,7 @@ public class OrderCtrl extends BaseCtrl {
                 }
             }
             //支付类型列表
-            List<Record> payList=Db.find(sql3,payType);
+            List<Record> payList=Db.find(sql3,payType,customerType);
             List<String> payMethod =new ArrayList<>(10);
             if (payList!=null){
                 for (Record pl:payList){
