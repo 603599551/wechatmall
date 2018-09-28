@@ -150,8 +150,11 @@ public class Config extends JFinalConfig {
 		        if("0".equals(key)){
 		            continue;
                 }
+                //根据key（parent_id），找到对应的list
 		        List<Record> list = dictMap.get(key);
+		        //根据parent_id找到一级的value
 		        String dict_key = dictIdValueMap.get(key);
+		        //一个key对应一个map，一个map可以存多个键值对
 		        Map<String, String> stringMap = DictionaryConstants.DICT_STRING_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
 		        Map<String, Record> recordMap = DictionaryConstants.DICT_RECORD_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
 		        if(list != null && list.size() > 0){
@@ -162,6 +165,7 @@ public class Config extends JFinalConfig {
                 }
             }
         }
+        //把record_Map中的所有value（record），放到recordList中。
         if(DictionaryConstants.DICT_RECORD_MAP != null && DictionaryConstants.DICT_RECORD_MAP.size() > 0){
 			for(String key : DictionaryConstants.DICT_RECORD_MAP.keySet()){
 				Map<String, Record> recordMap = DictionaryConstants.DICT_RECORD_MAP.get(key);

@@ -94,9 +94,9 @@ public class CustomerInfoCtrl extends BaseCtrl{
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
         //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
-        String select="SELECT DISTINCT c.cid AS id,c.cname AS name,c.cgender AS gender,d.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group' ";
+        String select="SELECT DISTINCT c.cid AS id,c.cname AS name,c.cgender AS gender,c.ctype AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group' ";
 
-        StringBuilder sql=new StringBuilder("FROM w_customer c,w_customer_group cg,w_dictionary d WHERE c.cgid=cg.cgid AND FIND_IN_SET(c.ctype,d.value)");
+        StringBuilder sql=new StringBuilder("FROM w_customer c,w_customer_group cg WHERE c.cgid=cg.cgid ");
 
         List<Object> params = new ArrayList<>();
 
@@ -192,7 +192,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
         }
 
         //根据客户id关联查询customer,customer_group,dictionary表得到 客户id，姓名，性别，类型，联系电话，创建时间，所在组，微信号，备注
-        String sql1="SELECT c.cid AS id,c.cname AS customerName,c.cgender AS gender,d.name AS 'type',c.cphone AS customerPhone,c.ccreate_time AS createTime,cg.cgname AS 'group',cwechat AS wechatNumber ,cremark AS 'desc' FROM w_customer c,w_customer_group cg,w_dictionary d WHERE c.cgid=cg.cgid AND FIND_IN_SET(c.ctype,d.dvalue) AND cid=?";
+        String sql1="SELECT c.cid AS id,c.cname AS customerName,c.cgender AS gender,c.ctype AS 'type',c.cphone AS customerPhone,c.ccreate_time AS createTime,cg.cgname AS 'group',cwechat AS wechatNumber ,cremark AS 'desc' FROM w_customer c,w_customer_group cg WHERE c.cgid=cg.cgid  AND cid=?";
         //根据客户id查customer_address表得到多个 收货地址信息
         String sql2="SELECT CONCAT(caprovince,cacity,cadistrict,castreet,caaddress) AS receiverAddress,caphone AS receiverPhone,caname AS receiverName FROM w_customer_address WHERE cid =?";
 

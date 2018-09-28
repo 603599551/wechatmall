@@ -98,7 +98,7 @@ public class StoreCtrl extends BaseCtrl {
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
         //查询自提点id，自提点名字，自提点城市，自提点联系人姓名，自提点地址，自提点联系电话，状态，运营时间
-        String select = "select sid id,sname storeName,scity cityName,sadmin managerName,saddress address,sphone managerPhone,(select name from w_dictionary where sstatus = dvalue and dparent_id = 300) 'status',stime workTime   ";
+        String select = "select sid id,sname storeName,scity cityName,sadmin managerName,saddress address,sphone managerPhone,(select name from w_dictionary where sstatus = value and parent_id = 300) 'status',stime workTime   ";
         String sql = " from w_store where 1=1  ";
         if(storeName != null && storeName.length() > 0){
             storeName = "%" + storeName + "%";
