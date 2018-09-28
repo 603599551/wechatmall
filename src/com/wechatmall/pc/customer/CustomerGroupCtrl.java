@@ -85,7 +85,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
         int pageNum = NumberUtils.parseInt(pageNumStr, 1);
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
-        //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
+        //查询customer_group表 得到分组id，名称，排序
         String select="SELECT cgid AS id,cgname AS groupName,cgsort AS sort  ";
 
         StringBuilder sql=new StringBuilder("FROM w_customer_group ");

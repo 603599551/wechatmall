@@ -33,9 +33,9 @@ public class ProductManageCtrl extends BaseCtrl {
      *
      * 请求参数：
      * 参数名	类型	       最大长度	允许空	 描述
-     * 	type	string		            不允许	 查询添加，按照分组名称模糊查询
-     *  name    string                  不允许   查询添加，按照商品名称模糊查询
-     *  status  string                  不允许   查询添加，按照上架状态完全匹配查询
+     * 	type	string		            允许	 查询添加，按照分组名称模糊查询
+     *  name    string                  允许   查询添加，按照商品名称模糊查询
+     *  status  string                  允许   查询添加，按照上架状态完全匹配查询
      * 返回数据：
      * 返回格式：JSON
      * 成功：
@@ -93,26 +93,28 @@ public class ProductManageCtrl extends BaseCtrl {
          * 通过商品信息表w_product，商品分类表w_product_category和客户信息表w_customer三表关联查询 : "id":"商品id" , "type":"所属分类名称",
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间"
          */
-        String select = "SELECT pid as id, wpc.pcname as type, wp.pname as name, wp.picture as pictureUrl, wp.price as price, wd.name as status, wc.cname as creator, wp.pcreate_time as createTime ";
+        String select = "SELECT p.pid AS id,pc.pcname AS 'type',p.pname AS name,p.picture AS pictureUrl,p.price AS price,d.name AS 'status',p.pstatus AS value,a.name AS creator,p.pcreate_time AS createTime ";
 
-        StringBuilder sql = new StringBuilder("  FROM w_product wp, w_product_category wpc, w_customer wc, w_dictionary wd where wp.pcid = wpc.pcid and wp.pcreator_id = wc.cid and wd.value = wp.pstatus ");
+        StringBuilder sql = new StringBuilder("  FROM w_product p,w_product_category pc,w_dictionary d,w_admin a WHERE p.pcid=pc.pcid AND a.id=p.pcreator_id AND FIND_IN_SET(p.pstatus,d.value)");
 
         //根据要求添加检索条件
         if(!StringUtils.isEmpty(type)){
-            sql.append(" and wp.pcid = ? ");
+            sql.append(" and p.pcid = ? ");
             params.add(type);
         }
 
         if (!StringUtils.isEmpty(name)) {
             name = "%" + name + "%";
-            sql.append(" and wp.pname like ?  ");
+            sql.append(" and p.pname like ?  ");
             params.add(name);
         }
 
         if(!StringUtils.isEmpty(status)){
-            sql.append(" and wp.pstatus = ? ");
+            sql.append(" and p.pstatus = ? ");
             params.add(status);
         }
+
+        sql.append(" ORDER BY p.pcreate_time DESC");
 
         try {
             Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
