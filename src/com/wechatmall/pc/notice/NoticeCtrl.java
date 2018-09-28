@@ -352,7 +352,6 @@ public class NoticeCtrl extends BaseCtrl {
               */
             Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
             if(page != null && page.getList().size() > 0){
-                jhm.putMessage("查询成功！");
                 jhm.put("data",page);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");

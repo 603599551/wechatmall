@@ -95,7 +95,7 @@ public class ProductManageCtrl extends BaseCtrl {
          */
         String select = "SELECT pid as id, wpc.pcname as type, wp.pname as name, wp.picture as pictureUrl, wp.price as price, wd.name as status, wc.cname as creator, wp.pcreate_time as createTime ";
 
-        StringBuilder sql = new StringBuilder("  FROM w_product wp, w_product_category wpc, w_customer wc, w_dictionary wd where wp.pcid = wpc.pcid and wp.pcreator_id = wc.cid and wd.dvalue = wp.pstatus ");
+        StringBuilder sql = new StringBuilder("  FROM w_product wp, w_product_category wpc, w_customer wc, w_dictionary wd where wp.pcid = wpc.pcid and wp.pcreator_id = wc.cid and wd.value = wp.pstatus ");
 
         //根据要求添加检索条件
         if(!StringUtils.isEmpty(type)){
