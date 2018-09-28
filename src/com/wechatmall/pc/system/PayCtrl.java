@@ -407,7 +407,7 @@ public class PayCtrl extends BaseCtrl{
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select id ,name ,desc  ";
+        String select = "select id ,name ,'desc'  ";
         String sql = " from w_dictionary  where parent_id = '800'  ";
         if(name != null && name.length() > 0){
             sql += "  and name = ? ";

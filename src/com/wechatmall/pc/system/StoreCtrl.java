@@ -110,12 +110,9 @@ public class StoreCtrl extends BaseCtrl {
              * 查询自提点列表
              */
             Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
-            if(page != null && page.getList().size() > 0){
-                jhm.putMessage("查询成功！");
-                jhm.put("list",page);
-            }else{
-                jhm.putCode(0).putMessage("查询失败！");
-            }
+            jhm.put("list",page);
+            jhm.putCode(1);
+
         }catch (ActiveRecordException e){
             e.printStackTrace();
             jhm.putCode(0).putMessage("Record发生异常!");
@@ -185,9 +182,9 @@ public class StoreCtrl extends BaseCtrl {
         //联系电话
         String  phone = getPara("phone");
         //经度
-        String  longitude = getPara("longitude");
+        String  longitudeStr = getPara("longitude");
         //纬度
-        String  latitude = getPara("latitude");
+        String  latitudeStr = getPara("latitude");
         //自提点所在省
         String  province = getPara("province");
         //自提点所在区
@@ -226,12 +223,12 @@ public class StoreCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if(StringUtils.isEmpty(longitude)){
+        if(StringUtils.isEmpty(longitudeStr)){
             jhm.putCode(0).putMessage("经度为空!");
             renderJson(jhm);
             return;
         }
-        if(StringUtils.isEmpty(latitude)){
+        if(StringUtils.isEmpty(latitudeStr)){
             jhm.putCode(0).putMessage("纬度为空!");
             renderJson(jhm);
             return;
@@ -251,6 +248,9 @@ public class StoreCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
+
+        float longitude=Float.valueOf(longitudeStr);
+        float latitude=Float.valueOf(latitudeStr);
 
         try{
             /**
@@ -277,7 +277,7 @@ public class StoreCtrl extends BaseCtrl {
             addStoreRecord.set("sdesc","");
             boolean flag = Db.save("w_store",addStoreRecord);
             if(flag){
-                jhm.putMessage("添加成功!");
+                jhm.putCode(1).putMessage("添加成功!");
             }else{
                 jhm.putCode(0).putMessage("添加失败!");
             }
@@ -594,4 +594,37 @@ public class StoreCtrl extends BaseCtrl {
        // renderJson("{\"code\":\"1\",\"message\":\"查询成功！\",\"data\":{\"id\":\"自提点id\",\"storeName\":\"自提点名称\",\"cityName\":\"城市名称\",\"managerName\":\"管理者姓名\",\"address\":\"地址\",\"phone\":\"联系电话\",\"longitude\":\"经度\",\"latitude\":\"纬度\"}}");
     }
 
+    public void setStoreTypeById(){
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //自提点id
+        String id=getPara("id");
+        //自提点状态
+        String status=getPara("status");
+
+        //非空验证
+        if (StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("自提点id为空");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(status)){
+            jhm.putCode(0).putMessage("自提点状态为空");
+            renderJson(jhm);
+            return;
+        }
+
+
+        try{
+            Db.update("UPDATE w_store SET sstatus=? WHERE sid=?",status,id);
+            jhm.putCode(1).putMessage("设置成功");
+        }catch (ActiveRecordException e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("Record异常");
+        }
+        renderJson(jhm);
+
+    }
 }

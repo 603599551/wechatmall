@@ -34,9 +34,9 @@ public class OrderService extends BaseService {
 
         JSONArray goodsList = JSONArray.fromObject(goodsString);
         //订单原总价
-        float orderOriginalSum = Float.valueOf("orderOriginalSum");
+        float orderOriginalSum = Float.valueOf(orderOriginalSumStr);
         //订单现总价
-        float orderCurrentSum = Float.valueOf("orderCurrentSum");
+        float orderCurrentSum = Float.valueOf(orderCurrentSumStr);
 
         /**
          * 新增订单

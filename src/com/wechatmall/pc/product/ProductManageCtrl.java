@@ -93,7 +93,7 @@ public class ProductManageCtrl extends BaseCtrl {
          * 通过商品信息表w_product，商品分类表w_product_category和客户信息表w_customer三表关联查询 : "id":"商品id" , "type":"所属分类名称",
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间"
          */
-        String select = "SELECT p.pid AS id,pc.pcname AS 'type',p.pname AS name,p.picture AS pictureUrl,p.price AS price,d.name AS 'status',p.pstatus AS value,a.name AS creator,p.pcreate_time AS createTime ";
+        String select = "SELECT p.pid AS id,pc.pcname AS 'type',p.pname AS name,p.picture AS pictureUrl,p.price AS price,d.name AS 'status',p.pstatus AS value,a.name AS creator,p.pcreate_time AS createTime,p.pkeyword AS keyword,p.pintroduction AS introduction,p.pdetail AS detail ";
 
         StringBuilder sql = new StringBuilder("  FROM w_product p,w_product_category pc,w_dictionary d,w_admin a WHERE p.pcid=pc.pcid AND a.id=p.pcreator_id AND FIND_IN_SET(p.pstatus,d.value)");
 

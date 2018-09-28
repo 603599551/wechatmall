@@ -76,7 +76,7 @@ public class PriceCtrl extends BaseCtrl{
          * 根据商品表w_product和商品现价表w_product_currentPrice关联查询 : 商品名称 : productName
          * 商品原价 : originalPrice , 商品现价 : presentPrice
          * */
-        String sql = "SELECT wp.pname as productName, wp.price as originalPrice, wpc.pcpcurrent_price as presentPrice FROM w_product_currentprice wpc, w_product wp WHERE wpc.pid = wp.pid and wpc.cgid = ?";
+        String sql = "SELECT wp.pname as productName, wp.price as originalPrice, wpc.pcpcurrent_price as presentPrice,wpc.pcpid AS goodsId FROM w_product_currentprice wpc, w_product wp WHERE wpc.pid = wp.pid and wpc.cgid = ?";
 
         try {
             List<Record> recordList = Db.find(sql, groupId);
@@ -130,7 +130,9 @@ public class PriceCtrl extends BaseCtrl{
     public void submitPrices(){
         JsonHashMap jhm = new JsonHashMap();
 
+        //分组id
         String groupId = getPara("groupId");
+        //定价信息
         String price = getPara("pricesList");
 
         //进行非空判断
@@ -144,6 +146,7 @@ public class PriceCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
+        //把string转为Json数组
         JSONArray pricesList = JSONArray.fromObject(price);
 
         //将传回来的json数组里的商品id处理然后添加到sql语句里

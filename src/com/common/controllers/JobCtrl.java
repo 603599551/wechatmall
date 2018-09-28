@@ -82,7 +82,7 @@ public class JobCtrl extends BaseCtrl {
         UserSessionUtil usu = new UserSessionUtil(getRequest());
         JsonHashMap jhm = new JsonHashMap();
         try {
-            List<Record> list = Db.find("select id,name as label,ifnull(url,'') as link,parent_id,sort,icon as iconName,type from h_menu order by sort");
+            List<Record> list = Db.find("select id,name as label,ifnull(url,'') as link,parent_id,sort,icon as iconName,type from w_menu order by sort");
 //            List<Record> list = Db.find("select id,name as label,ifnull(url,'') as link,parent_id,sort,icon as iconName,type from h_menu order by sort");
             List reList = JobService.getMe().sort(list);
             jhm.putCode(1);
