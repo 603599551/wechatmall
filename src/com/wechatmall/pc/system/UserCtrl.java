@@ -110,16 +110,16 @@ public class UserCtrl extends BaseCtrl{
         }
         List<Object> params = new ArrayList<>();
         String select = "select *";
-        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa) a where 1=1";
+        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1";
         if(name != null && name.length() > 0){
             name = "%" + name + "%";
-            sql += "  and wa.name like ? ";
+            sql += "  and a.nickname like ? ";
             params.add(name);
 
         }
         if(job != null && job.length() > 0){
             job = "%" + job + "%";
-            sql += "  and hj.name like ? ";
+            sql += "  and a.job like ? ";
             params.add(job);
         }
         try{
