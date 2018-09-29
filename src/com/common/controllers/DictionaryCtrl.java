@@ -25,14 +25,15 @@ public class DictionaryCtrl extends BaseCtrl {
         JsonHashMap jhm = new JsonHashMap();
         try {
             List<Record> list = DictionaryConstants.DICT_RECORD_LIST.get(dict);
+            List<Record> reList=new ArrayList<>(list);
             Record all = new Record();
             all.set("value", "-1");
             all.set("name", "全部");
-            list.add(0, all);
-            jhm.putCode(1).put("data", list);
+            reList.add(0, all);
+            jhm.putCode(1).put("data", reList);
         } catch (Exception e) {
             e.printStackTrace();
-            jhm.putCode(0).putMessage(e.toString());
+            jhm.putCode(-1).putMessage(e.toString());
         }
         renderJson(jhm);
     }
@@ -45,14 +46,15 @@ public class DictionaryCtrl extends BaseCtrl {
         JsonHashMap jhm = new JsonHashMap();
         try {
             List<Record> list = DictionaryConstants.DICT_RECORD_LIST.get(dict);
+            List<Record> reList=new ArrayList<>(list);
             Record all = new Record();
             all.set("value", "-1");
             all.set("name", "请选择");
-            list.add(0, all);
-            jhm.putCode(1).put("data", list);
+            reList.add(0, all);
+            jhm.putCode(1).put("data", reList);
         } catch (Exception e) {
             e.printStackTrace();
-            jhm.putCode(0).putMessage(e.toString());
+            jhm.putCode(-1).putMessage(e.toString());
         }
         renderJson(jhm);
     }
@@ -68,7 +70,7 @@ public class DictionaryCtrl extends BaseCtrl {
             jhm.putCode(1).put("data", list);
         } catch (Exception e) {
             e.printStackTrace();
-            jhm.putCode(0).putMessage(e.toString());
+            jhm.putCode(-1).putMessage(e.toString());
         }
         renderJson(jhm);
     }
