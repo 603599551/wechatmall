@@ -1,6 +1,7 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.common.service.DictionaryService;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -91,7 +92,7 @@ public class PayCtrl extends BaseCtrl{
         int sort = Integer.valueOf(sortStr);
         Record addPayType = new Record();
         //查找字典值中英文字段和分类字段是否有重复的
-        String sql = "SELECT count(1) count from w_dictionary where value = ？ or sort = ？  ";
+        String sql = "SELECT count(1) count from w_dictionary where value = ? or sort = ?  ";
         try{
            int idRecord = Db.queryInt(sql,value,sort);
             if(idRecord > 0){
@@ -104,6 +105,7 @@ public class PayCtrl extends BaseCtrl{
             addPayType.set("name",name);
             addPayType.set("value",value);
             addPayType.set("sort",sort);
+            addPayType.set("status_color","");
             addPayType.set("desc",desc);
             boolean flag = Db.save("w_dictionary","id",addPayType);
             if(flag){
@@ -191,6 +193,7 @@ public class PayCtrl extends BaseCtrl{
              */
             boolean flag = Db.update("w_dictionary","id",modifyPayType);
             if(flag){
+                DictionaryService.loadDictionary();
                 jhm.putMessage("修改成功！");
             }else{
                 jhm.putCode(0).putMessage("修改失败！");
@@ -407,10 +410,10 @@ public class PayCtrl extends BaseCtrl{
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select id ,name ,'desc'  ";
-        String sql = " from w_dictionary  where parent_id = '800'  ";
+        String select = "select d.id id ,d.name name, d.desc  'desc'  ";
+        String sql = " from w_dictionary d where d.parent_id = '800'  ";
         if(name != null && name.length() > 0){
-            sql += "  and name = ? ";
+            sql += "  and d.name = ? ";
             params.add(name);
         }
         try{

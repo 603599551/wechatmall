@@ -1,6 +1,7 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.common.service.DictionaryService;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -194,6 +195,7 @@ public class TransportCtrl extends BaseCtrl {
              */
             boolean flag = Db.update("w_dictionary","id",modifyTransportType);
             if(flag){
+                DictionaryService.loadDictionary();
                 jhm.putMessage("修改成功！");
             }else{
                 jhm.putCode(0).putMessage("修改失败！");
@@ -404,11 +406,11 @@ public class TransportCtrl extends BaseCtrl {
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select id ,name ,desc  ";
-        String sql = " from w_dictionary  where parent_id = '700'  ";
+        String select = "select d.id id ,d.name name, d.desc  'desc'  ";
+        String sql = " from w_dictionary d  where d.parent_id = '700'  ";
         if(type != null && type.length() > 0){
             type = "%" + type + "%";
-            sql += "  and name like ? ";
+            sql += "  and d.name like ? ";
             params.add(type);
         }
         try{
