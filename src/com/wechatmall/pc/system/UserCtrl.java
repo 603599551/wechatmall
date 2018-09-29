@@ -228,13 +228,11 @@ public class UserCtrl extends BaseCtrl{
                 renderJson(jhm);
                 return;
             }
-            String sql_job ="select id from h_job where h_job.name=?";
-            Record r = Db.findFirst(sql_job,job);
             addUser.set("id", UUIDTool.getUUID());
             addUser.set("username",username);
             addUser.set("password",password);
             addUser.set("name",name);
-            addUser.set("job_id",r.getStr("id"));
+            addUser.set("job_id",job);
             addUser.set("status",status);
             String time = DateTool.GetDateTime();
             addUser.set("creater_id", usu.getUserId());
