@@ -110,7 +110,7 @@ public class UserCtrl extends BaseCtrl{
         }
         List<Object> params = new ArrayList<>();
         String select = "select *";
-        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status from w_admin wa) a where 1=1";
+        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa) a where 1=1";
         if(name != null && name.length() > 0){
             name = "%" + name + "%";
             sql += "  and wa.name like ? ";
@@ -124,7 +124,7 @@ public class UserCtrl extends BaseCtrl{
         }
         try{
             /**
-             * 查询物流类型列表
+             * 查询用户列表
              */
             Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
             if(page != null && page.getList().size() > 0){
@@ -218,6 +218,8 @@ public class UserCtrl extends BaseCtrl{
         /*
         * 查询该用户是否存在
         * */
+
+        /*select name from h_job where wa.job_id = h_job.id*/
         String sql = "select count(1) from w_admin where username=? ";
         try{
            int num = Db.queryInt(sql,username);
@@ -226,11 +228,13 @@ public class UserCtrl extends BaseCtrl{
                 renderJson(jhm);
                 return;
             }
+            String sql_job ="select id from h_job where h_job.name=?";
+            Record r = Db.findFirst(sql_job,job);
             addUser.set("id", UUIDTool.getUUID());
             addUser.set("username",username);
             addUser.set("password",password);
             addUser.set("name",name);
-            addUser.set("job_id",job);
+            addUser.set("job_id",r.getStr("id"));
             addUser.set("status",status);
             String time = DateTool.GetDateTime();
             addUser.set("creater_id", usu.getUserId());
