@@ -27,7 +27,7 @@ public class DictionaryCtrl extends BaseCtrl {
             List<Record> list = DictionaryConstants.DICT_RECORD_LIST.get(dict);
             List<Record> reList=new ArrayList<>(list);
             Record all = new Record();
-            all.set("value", "-1");
+            all.set("value", null);
             all.set("name", "全部");
             reList.add(0, all);
             jhm.putCode(1).put("data", reList);
@@ -48,7 +48,7 @@ public class DictionaryCtrl extends BaseCtrl {
             List<Record> list = DictionaryConstants.DICT_RECORD_LIST.get(dict);
             List<Record> reList=new ArrayList<>(list);
             Record all = new Record();
-            all.set("value", "-1");
+            all.set("value", null);
             all.set("name", "请选择");
             reList.add(0, all);
             jhm.putCode(1).put("data", reList);

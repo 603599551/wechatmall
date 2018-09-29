@@ -91,33 +91,38 @@ public class ProductManageCtrl extends BaseCtrl {
 
         /**
          * 通过商品信息表w_product，商品分类表w_product_category和客户信息表w_customer三表关联查询 : "id":"商品id" , "type":"所属分类名称",
-         *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间"
+         *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间" "modifyTime" : "修改时间"
+         * "value":"上架状态对应的value值" , "introduction":"简要描述" , "keyword":["keyword1","keyword2","keyword3"] , "detail":"详细内容",
          */
-        String select = "SELECT p.pid AS id,pc.pcname AS 'type',p.pname AS name,p.picture AS pictureUrl,p.price AS price,d.name AS 'status',p.pstatus AS value,a.name AS creator,p.pcreate_time AS createTime,p.pkeyword AS keyword,p.pintroduction AS introduction,p.pdetail AS detail ";
+        String select = "SELECT pid as id, wpc.pcname as type, wp.pname as name, wp.picture as pictureUrl, wp.price as price, wp.pkeyword as keyword, wp.pintroduction as introduction, wp.pdetail as detail, wd.name as status, wp.pstatus as value, wc.cname as creator, wp.pmodify_time as modifyTime, wp.pcreate_time as createTime ";
 
-        StringBuilder sql = new StringBuilder("  FROM w_product p,w_product_category pc,w_dictionary d,w_admin a WHERE p.pcid=pc.pcid AND a.id=p.pcreator_id AND FIND_IN_SET(p.pstatus,d.value)");
+        StringBuilder sql = new StringBuilder(" FROM w_product wp, w_product_category wpc, w_customer wc, w_dictionary wd where wp.pcid = wpc.pcid and wp.pcreator_id = wc.cid and wd.value = wp.pstatus ");
 
         //根据要求添加检索条件
         if(!StringUtils.isEmpty(type)){
-            sql.append(" and p.pcid = ? ");
+            sql.append(" and wp.pcid = ? ");
             params.add(type);
         }
 
         if (!StringUtils.isEmpty(name)) {
             name = "%" + name + "%";
-            sql.append(" and p.pname like ?  ");
+            sql.append(" and wp.pname like ?  ");
             params.add(name);
         }
 
         if(!StringUtils.isEmpty(status)){
-            sql.append(" and p.pstatus = ? ");
+            sql.append(" and wp.pstatus = ? ");
             params.add(status);
         }
 
-        sql.append(" ORDER BY p.pcreate_time DESC");
+        //添加排序,按照上下架，创建时间排序
+        sql.append("ORDER BY wd.`value` desc, wp.pcreate_time desc ");
 
         try {
             Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
+            for(int i = 0; i < page.getList().size(); i++){
+                page.getList().get(i).set("keyword", page.getList().get(i).getStr("keyword").split(","));
+            }
             jhm.putCode(1).put("data", page);
         } catch (Exception e){
             e.printStackTrace();
@@ -532,5 +537,25 @@ public class ProductManageCtrl extends BaseCtrl {
         //renderJson("{\"code\":\"1\",\"data\":{\"id\":\"商品id\",\"name\":\"商品名称\",\"price\":\"商品价格\",\"keyword\":\"关键字1，关键字2，关键字3\",\"pictureUrl\":\"商品图片\",\"type\":\"商品分类\"}}");
     }
 
+
+    //商品所属分类下拉列表
+    public void showProductCategory(){
+        JsonHashMap jhm = new JsonHashMap();
+
+        String sql="SELECT pcid AS value,pcname AS name FROM w_product_category";
+
+        try {
+            List<Record> list=Db.find(sql);
+            Record r=new Record();
+            r.set("value",null);
+            r.set("name","全部");
+            list.add(0,r);
+            jhm.putCode(1).put("data", list);
+        } catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+    }
 
 }

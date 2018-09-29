@@ -94,27 +94,29 @@ public class CustomerInfoCtrl extends BaseCtrl{
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
         //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
-        String select="SELECT c.cid AS id,c.cname AS name,c.cgender AS gender,c.ctype AS value,d.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group' ";
+        String select="SELECT c.cid AS id,c.cname AS name,d.name AS gender,c.ctype AS value,dd.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group'  ";
 
-        StringBuilder sql=new StringBuilder("FROM w_customer c,w_customer_group cg,w_dictionary d WHERE c.cgid=cg.cgid AND FIND_IN_SET(c.ctype,d.value)");
+        StringBuilder sql=new StringBuilder("FROM w_customer c LEFT JOIN w_dictionary d ON c.cgender=d.value LEFT JOIN w_dictionary dd ON c.ctype=dd.value,w_customer_group cg WHERE c.cgid=cg.cgid ");
 
         List<Object> params = new ArrayList<>();
 
         //查询添加，按照客户姓名模糊查询
         if (StringUtils.isNotEmpty(name)){
-            sql=sql.append("AND cname LIKE CONCAT('%',?,'%')");
+            sql=sql.append(" AND cname LIKE CONCAT('%',?,'%')");
             params.add(name);
         }
         //查询添加，按照客户类型完全匹配查询
         if (StringUtils.isNotEmpty(type)){
-            sql=sql.append("AND ctype=?");
+            sql=sql.append(" AND ctype=?");
             params.add(type);
         }
         //查询添加，按照客户所在组完全匹配查询
         if (StringUtils.isNotEmpty(groupId)){
-            sql=sql.append("AND cgid=?");
+            sql=sql.append(" AND cgid=?");
             params.add(groupId);
         }
+
+        sql=sql.append(" ORDER BY c.ccreate_time ASC");
 
         try{
             //分页查询
@@ -358,5 +360,25 @@ public class CustomerInfoCtrl extends BaseCtrl{
 
 
         //renderJson("{\"code\":\"1\",\"message\":\"设置成功！\"}");
+    }
+
+    //商品所属分类下拉列表
+    public void showCustomerGroup(){
+        JsonHashMap jhm = new JsonHashMap();
+
+        String sql="SELECT cgid AS value,cgname AS name FROM w_customer_group";
+
+        try {
+            List<Record> list=Db.find(sql);
+            Record r=new Record();
+            r.set("value",null);
+            r.set("name","全部");
+            list.add(0,r);
+            jhm.putCode(1).put("data", list);
+        } catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
     }
 }

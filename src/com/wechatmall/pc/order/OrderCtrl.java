@@ -88,44 +88,45 @@ public class OrderCtrl extends BaseCtrl{
         int pageNum = NumberUtils.parseInt(pageNumStr, 1);
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
-        /**
-         * 根据订单表w_orderform和客户表w_customer关联查询：客户id：orderId, 客户姓名:customerName, 创建时间：time, 客户类型:type
-         * 收货人姓名:receiverName, 收货人电话:phone, 收货地址:address, 应付价格:originalPrice, 实付价格:presentPrice, 订单状态:status
-         */
-        String select = "SELECT oid as orderId, ocreate_time as time, oname as receiverName, ophone as phone, wc.cname as customerName, wc.ctype as type, wo.oaddress as address, wo.ooriginal_sum as originalPrice, wo.ocurrent_sum as presentPrice, wo.ostatus as status";
-
-        StringBuilder sql = new StringBuilder(" from w_orderform wo, w_customer wc WHERE wo.cid = wc.cid");
-
-        List<Object> params = new ArrayList<>();
-
-        //对检索条件进行判断
-        if(!StringUtils.isEmpty(number)){
-            sql.append(" and wo.oid = ? ");
-            params.add(number);
-        }
-
-        if(!StringUtils.isEmpty(type)){
-            sql.append(" and wc.type = ? ");
-            params.add(type);
-        }
-
-        if(!StringUtils.isEmpty(status)){
-            sql.append(" and wo.status = ? ");
-            params.add(status);
-        }
-
-        if(!StringUtils.isEmpty(customerName)){
-            sql.append(" and wc.oanme = ? ");
-            params.add(customerName);
-        }
-
         try {
+            /**
+             * 根据订单表w_orderform和客户表w_customer关联查询：客户id：orderId, 客户姓名:customerName, 创建时间：time, 客户类型:type
+             * 收货人姓名:receiverName, 收货人电话:phone, 收货地址:address, 应付价格:originalPrice, 实付价格:presentPrice, 订单状态:status
+             */
+            String select = "SELECT oid as orderId, ocreate_time as time, oname as receiverName, ophone as phone, wc.cname as customerName, wc.ctype as type, wo.oaddress as address, wo.ooriginal_sum as originalPrice, wo.ocurrent_sum as presentPrice, wo.ostatus as status";
+
+            StringBuilder sql = new StringBuilder(" from w_orderform wo, w_customer wc WHERE wo.cid = wc.cid");
+
+
+            List<Object> params = new ArrayList<>();
+
+            //对检索条件进行判断
+            if(!StringUtils.isEmpty(number)){
+                sql.append(" and wo.oid = ? ");
+                params.add(number);
+            }
+
+            if(!StringUtils.isEmpty(type)){
+                sql.append(" and wc.type = ? ");
+                params.add(type);
+            }
+
+            if(!StringUtils.isEmpty(status)){
+                sql.append(" and wo.status = ? ");
+                params.add(status);
+            }
+
+            if(!StringUtils.isEmpty(customerName)){
+                sql.append(" and wc.oanme = ? ");
+                params.add(customerName);
+            }
+
             Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
             jhm.put("data", page);
             jhm.putCode(1);
         } catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常");
+            jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
     }
@@ -200,10 +201,10 @@ public class OrderCtrl extends BaseCtrl{
             if(!StringUtils.equals("0", r.getStr("c"))){
                 /**
                  * 根据订单表w_orderform和客户信息表w_customer双表关联查询: 订单id : orderId , 客户类型 : customerType , 物流类型 : transportType
-                 * 支付类型 : payType , 订单原总价 : orderOriginalSum , 订单应付金额 : orderPresentSum
+                 * 支付类型 : payType , 订单原总价 : orderOriginalSum , 订单应付金额 : orderPresentSum , 支付类型名称 : payTypeName 还有个类型相应的中文
                  */
-                String orderSearch  = "select wo.oid as orderId, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum from w_orderform wo, w_customer wc where wo.cid = wc.cid and wo.oid = ? ";
-                Record record = Db.findFirst(orderSearch, orderId);
+                String orderSearch  = "SELECT wo.oid as orderId, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
+                Record record = Db.findFirst(orderSearch, orderId, orderId);
 
                 /**
                  * 根据订单表w_orderform和订单详情表w_orderform_detail双表关联查询: 订单商品名称 : name , 订单商品原价 : originalPrice
@@ -219,6 +220,7 @@ public class OrderCtrl extends BaseCtrl{
             }
         } catch (Exception e){
             e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
         //renderJson("{\"code\":1,\"customerType\":0,\"orderId\":\"A5454845648\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"products\":[{\"name\":\"大米\",\"originalPrice\":20,\"presentPrice\":18,\"number\":1,\"singleSum\":20},{\"name\":\"大米\",\"originalPrice\":20,\"presentPrice\":18,\"number\":1,\"singleSum\":20}],\"orderOriginalSum\":400,\"orderPresentSum\":380}");
