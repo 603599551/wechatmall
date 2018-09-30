@@ -109,7 +109,12 @@ public class FinanceCtrl extends BaseCtrl{
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
         //查询订单id，订单创建时间，客户姓名，客户类型，收货人姓名，联系电话，联系地址，实付金额，支付方式，支付状态，应付金额，实付金额
-        String select = "select wor.oid id, wor.ocreate_time createTime, wcu.cname customerName, wcu.ctype customerType, wca.caname receiverName, wca.caphone phone, wca.caaddress address, wor.opay_type payType, wor.otransport_type payStatus, SUM(wor.ocurrent_sum) shouldPay, SUM(wod.odcurrent_price) havePaid ";
+        String select = "select wor.oid id, wor.ocreate_time createTime, wcu.cname customerName, wcu.ctype customerType, " +
+                "wca.caname receiverName, wca.caphone phone, wca.caaddress address, wor.opay_type payType, wor.otransport_type payStatus, " +
+                "( select name from w_dictionary wd where wcu.ctype = wd.`value` and wd.parent_id = 500 ) customerType_text," +
+                " ( select name from w_dictionary wd where wor.opay_type = wd.`value` and wd.parent_id = 800 ) payType_text," +
+                " ( select name from w_dictionary wd where wor.otransport_type = wd.`value` and wd.parent_id = 700 ) payStatus_text,"+
+                "SUM(wor.ocurrent_sum) shouldPay, SUM(wod.odcurrent_price) havePaid ";
         String sql = " from w_customer wcu, w_orderform wor, w_customer_address wca, w_orderform_detail wod where wor.caid = wca.caid and wor.cid = wcu.cid and wor.oid = wod.oid   ";
         try{
             if(customerName != null && customerName.length() > 0){
@@ -133,6 +138,7 @@ public class FinanceCtrl extends BaseCtrl{
                 sql += "  and wor.opay_type = '' ";
                 params.add(payType);
             }
+            sql += " ORDER BY wor.omodify_time  desc ";
             /**
              * 查询自提点列表
              */
@@ -145,14 +151,10 @@ public class FinanceCtrl extends BaseCtrl{
                      shouldPay = r.getFloat("shouldPay");
                      havePaid = r.getFloat("havePaid");
                      notPay = shouldPay - havePaid;
-                     r.remove("shouldPay");
-                     r.remove("havePaid");
+                     r.set("notPay",notPay);
                 }
                     jhm.putMessage("查询成功！");
                     jhm.put("list",page);
-                    jhm.put("shouldPay",shouldPay);
-                    jhm.put("havePaid",havePaid);
-                    jhm.put("notPay",notPay);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }

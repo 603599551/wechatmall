@@ -129,11 +129,9 @@ public class PriceCtrl extends BaseCtrl{
      */
     public void submitPrices(){
         JsonHashMap jhm = new JsonHashMap();
-
-        //分组id
         String groupId = getPara("groupId");
-        //定价信息
         String price = getPara("pricesList");
+
 
         //进行非空判断
         if(StringUtils.isEmpty(groupId)){
@@ -146,7 +144,6 @@ public class PriceCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        //把string转为Json数组
         JSONArray pricesList = JSONArray.fromObject(price);
 
         //将传回来的json数组里的商品id处理然后添加到sql语句里
@@ -182,7 +179,6 @@ public class PriceCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-
         //renderJson("{\"code\":1,\"message\":\"更新定价成功\"}");
     }
 
