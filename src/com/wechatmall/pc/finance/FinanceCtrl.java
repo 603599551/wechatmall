@@ -11,6 +11,7 @@ import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FinanceCtrl class
@@ -76,6 +77,7 @@ public class FinanceCtrl extends BaseCtrl{
 
     public void listBill(){
         JsonHashMap jhm = new JsonHashMap();
+        Map map = getParaMap();
         /**
          * 接收前台参数
          **/
@@ -122,16 +124,16 @@ public class FinanceCtrl extends BaseCtrl{
                 sql += "  and wcu.cname like ? ";
                 params.add(customerName);
             }
-            if(customerType != null && customerType.length() > 0){
+            if(customerType != null && customerType.length() > 0 || customerType !=""){
                 sql += "  and wcu.ctype = ? ";
                 params.add(customerType);
             }
-            if(startDate != null && startDate.length() > 0){
-                sql += "   and wor.ocreate_time > ?  ";
+            if(startDate != null && startDate.length() > 0 ){
+                sql += "   and wor.ocreate_time >= ? ";
                 params.add(startDate);
             }
-            if(endDate != null && endDate.length() > 0){
-                sql += "  and wor.ocreate_time <  ";
+            if(endDate != null && endDate.length() > 0 ){
+                sql += "  and wor.ocreate_time <=  ? ";
                 params.add(endDate);
             }
             if(payType != null && payType.length() > 0){

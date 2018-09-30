@@ -392,7 +392,7 @@ public class PayCtrl extends BaseCtrl{
         //支付方式名称
         String name = getPara("name");
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
 
@@ -413,12 +413,12 @@ public class PayCtrl extends BaseCtrl{
         String select = "select d.id id ,d.name name, d.desc  'desc'  ";
         String sql = " from w_dictionary d where d.parent_id = '800'  ";
         if(name != null && name.length() > 0){
-            sql += "  and d.name = ? ";
+            sql += "  and d.value = ? ";
             params.add(name);
         }
         try{
             /**
-             * 查询物流类型列表
+             * 查询型列表
              */
             Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
             if(page != null && page.getList().size() > 0){
