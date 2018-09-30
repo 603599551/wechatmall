@@ -334,7 +334,7 @@ public class NoticeCtrl extends BaseCtrl {
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
         //查询通知id，通知内容，通知类型，通知创建时间，通知修改时间。通知内容模糊查询，通知类型完全匹配查询
-        String select = "select nid id,ncontent content,ntype type,ncreate_time createTime,nmodify_time modifyTime  ";
+        String select = "select nid id,ncontent content,(select name from w_dictionary w where w.`value` = w_notice.ntype and w.parent_id = 600) type,ntype typeValue,ncreate_time createTime,nmodify_time modifyTime  ";
         String sql = " from w_notice where 1=1 ";
         if(content != null && content.length() > 0){
             content = "%" + content + "%";
