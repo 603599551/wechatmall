@@ -111,6 +111,11 @@ public class OrderCtrl extends BaseCtrl {
         try{
             //自提点列表
             List<Record> storeList=Db.find(sql1);
+            if (storeList !=null){
+                for (Record store:storeList){
+                    store.set("miles","75");
+                }
+            }
             //收货地址列表
             List<Record> contactList=Db.find(sql2,userId);
             Record r=Db.findFirst(sql4,userId);
