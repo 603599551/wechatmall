@@ -82,7 +82,7 @@ public class ProductManageCtrl extends BaseCtrl {
         String type = getPara("type");
         String name = getPara("name");
         String status = getPara("status");
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         String pageSizeStr = getPara("pageSize");
 
         //为空时赋予默认值
