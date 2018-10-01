@@ -388,7 +388,7 @@ public class TransportCtrl extends BaseCtrl {
         //物流类型名称
         String type = getPara("type");
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
 
@@ -410,7 +410,7 @@ public class TransportCtrl extends BaseCtrl {
         String sql = " from w_dictionary d  where d.parent_id = '700'  ";
         if(type != null && type.length() > 0){
             type = "%" + type + "%";
-            sql += "  and d.name like ? ";
+            sql += "  and d.value like ? ";
             params.add(type);
         }
         try{

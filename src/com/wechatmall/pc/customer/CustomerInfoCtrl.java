@@ -83,7 +83,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
         //客户类型
         String type=getPara("type");
         //客户所在组
-        String groupId=getPara("groupId");
+        String groupId=getPara("group");
         //页码
         String pageNumStr=getPara("pageNumber");
         //每页限制的记录数
@@ -102,17 +102,17 @@ public class CustomerInfoCtrl extends BaseCtrl{
 
         //查询添加，按照客户姓名模糊查询
         if (StringUtils.isNotEmpty(name)){
-            sql=sql.append(" AND cname LIKE CONCAT('%',?,'%')");
+            sql=sql.append(" AND c.cname LIKE CONCAT('%',?,'%')");
             params.add(name);
         }
         //查询添加，按照客户类型完全匹配查询
         if (StringUtils.isNotEmpty(type)){
-            sql=sql.append(" AND ctype=?");
+            sql=sql.append(" AND c.ctype=?");
             params.add(type);
         }
         //查询添加，按照客户所在组完全匹配查询
         if (StringUtils.isNotEmpty(groupId)){
-            sql=sql.append(" AND cgid=?");
+            sql=sql.append(" AND c.cgid=?");
             params.add(groupId);
         }
 

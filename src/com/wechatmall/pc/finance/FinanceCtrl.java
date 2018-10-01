@@ -11,6 +11,7 @@ import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FinanceCtrl class
@@ -76,6 +77,7 @@ public class FinanceCtrl extends BaseCtrl{
 
     public void listBill(){
         JsonHashMap jhm = new JsonHashMap();
+        Map map = getParaMap();
         /**
          * 接收前台参数
          **/
@@ -109,33 +111,33 @@ public class FinanceCtrl extends BaseCtrl{
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
         //查询订单id，订单创建时间，客户姓名，客户类型，收货人姓名，联系电话，联系地址，实付金额，支付方式，支付状态，应付金额，实付金额
-        String select = "select wor.oid id, wor.ocreate_time createTime, wcu.cname customerName, wcu.ctype customerType, " +
-                "wca.caname receiverName, wca.caphone phone, wca.caaddress address, wor.opay_type payType, wor.otransport_type payStatus, " +
-                "( select name from w_dictionary wd where wcu.ctype = wd.`value` and wd.parent_id = 500 ) customerType_text," +
-                " ( select name from w_dictionary wd where wor.opay_type = wd.`value` and wd.parent_id = 800 ) payType_text," +
-                " ( select name from w_dictionary wd where wor.otransport_type = wd.`value` and wd.parent_id = 700 ) payStatus_text,"+
-                "SUM(wor.ocurrent_sum) shouldPay, SUM(wod.odcurrent_price) havePaid ";
-        String sql = " from w_customer wcu, w_orderform wor, w_customer_address wca, w_orderform_detail wod where wor.caid = wca.caid and wor.cid = wcu.cid and wor.oid = wod.oid   ";
+        String select = "select wor.oid as id, wor.ocreate_time as createTime, wcu.cname  as customerName, wcu.ctype as customerType, " +
+                " wca.caname as receiverName, wca.caphone as phone, wca.caaddress as address, wor.opay_type as payType, wor.otransport_type as payStatus, " +
+                " ( select name from w_dictionary wd where wcu.ctype = wd.`value` and wd.parent_id = 500 ) as customerType_text, " +
+                "  ( select name from w_dictionary wd where wor.opay_type = wd.`value` and wd.parent_id = 800 ) as payType_text, " +
+                "  ( select name from w_dictionary wd where wor.otransport_type = wd.`value` and wd.parent_id = 700 ) as payStatus_text, "+
+                " SUM(wor.ocurrent_sum) as shouldPay, SUM(wod.odcurrent_price) as havePaid  ";
+        String sql = "  from w_customer wcu, w_orderform wor, w_customer_address wca, w_orderform_detail wod where wor.caid = wca.caid and wor.cid = wcu.cid and wor.oid = wod.oid   ";
         try{
             if(customerName != null && customerName.length() > 0){
                 customerName = "%" + customerName + "%";
                 sql += "  and wcu.cname like ? ";
                 params.add(customerName);
             }
-            if(customerType != null && customerType.length() > 0){
+            if(customerType != null && customerType.length() > 0 || customerType !=""){
                 sql += "  and wcu.ctype = ? ";
                 params.add(customerType);
             }
-            if(startDate != null && startDate.length() > 0){
-                sql += "   and wor.ocreate_time > ? ";
+            if(startDate != null && startDate.length() > 0 ){
+                sql += "   and wor.ocreate_time >= ? ";
                 params.add(startDate);
             }
-            if(endDate != null && endDate.length() > 0){
-                sql += "  and wor.ocreate_time < '' ";
+            if(endDate != null && endDate.length() > 0 ){
+                sql += "  and wor.ocreate_time <=  ? ";
                 params.add(endDate);
             }
             if(payType != null && payType.length() > 0){
-                sql += "  and wor.opay_type = '' ";
+                sql += "  and wor.opay_type = ?  ";
                 params.add(payType);
             }
             sql += " ORDER BY wor.omodify_time  desc ";
@@ -146,22 +148,18 @@ public class FinanceCtrl extends BaseCtrl{
             double notPay = 0.0;
             float shouldPay = 0.0f;
             float havePaid = 0.0f;
-            if(page != null && page.getList().size() > 0){
                 for(Record r : page.getList()){
                      shouldPay = r.getFloat("shouldPay");
                      havePaid = r.getFloat("havePaid");
                      notPay = shouldPay - havePaid;
                      r.set("notPay",notPay);
                 }
-                    jhm.putMessage("查询成功！");
                     jhm.put("list",page);
-            }else{
-                jhm.putCode(0).putMessage("查询失败！");
-            }
+                    jhm.putMessage("查询成功！");
 
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":\"1\",\"pageNumber\":\"1\",\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":\"1\",\"shouldPay\":\"2000\",\"havePaid\":\"800\",\"notPay\":\"1200\",\"list\":[{\"id\":\"订单编号\",\"createTime\":\"创建时间\",\"customerName\":\"客户姓名\",\"customerType\":\"客户类型\",\"receiverName\":\"收货人姓名\",\"phone\":\"联系电话\",\"address\":\"收货地址\",\"realPay\":\"实付金额\",\"payType\":\"支付方式\",\"payStatus\":\"支付状态\"},{\"id\":\"订单编号\",\"createTime\":\"创建时间\",\"customerName\":\"客户姓名\",\"customerType\":\"客户类型\",\"receiverName\":\"收货人姓名\",\"phone\":\"联系电话\",\"address\":\"收货地址\",\"realPay\":\"实付金额\",\"payType\":\"支付方式\",\"payStatus\":\"支付状态\"}]}}");

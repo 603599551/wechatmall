@@ -531,4 +531,20 @@ public class JobCtrl extends BaseCtrl{
         renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"list\":[{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"},{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"}]}");
     }
+
+    public void showJobs(){
+        JsonHashMap jhm = new JsonHashMap();
+
+        String sql = " SELECT id AS value,name FROM h_job ";
+        try{
+            List<Record> list=Db.find(sql);
+            jhm.putCode(1).putMessage("查询成功");
+            jhm.put("list",list);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(0).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
+    }
 }
