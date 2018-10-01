@@ -111,7 +111,7 @@ public class UserCtrl extends BaseCtrl{
         List<Object> params = new ArrayList<>();
         List<Object> list = new ArrayList<>();
         String select = "select *";
-        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select id from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1";
+        String sql = " from (select wa.username, wa.`password`, wa. name nickname,(select id from h_job where wa.job_id = h_job.id) job_id,( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1";
         if(name != null && name.length() > 0){
             name = "%" + name + "%";
             sql += "  and a.nickname like ? ";
@@ -120,7 +120,7 @@ public class UserCtrl extends BaseCtrl{
         }
         if(job != null && job.length() > 0){
             job = "%" + job + "%";
-            sql += "  and a.job like ? ";
+            sql += "  and a.job_id like ? ";
             params.add(job);
         }
         try{
