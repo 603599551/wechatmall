@@ -109,6 +109,7 @@ public class PayCtrl extends BaseCtrl{
             addPayType.set("desc",desc);
             boolean flag = Db.save("w_dictionary","id",addPayType);
             if(flag){
+                DictionaryService.loadDictionary();
                 jhm.putMessage("添加成功！");
             }else{
                 jhm.putCode(0).putMessage("添加失败！");
@@ -261,6 +262,7 @@ public class PayCtrl extends BaseCtrl{
             String sql = "DELETE from w_dictionary where id=? ";
             int num = Db.update(sql,id);
             if(num > 0){
+                DictionaryService.loadDictionary();
                 jhm.putCode(1).putMessage("删除成功！");
             }else{
                 jhm.putCode(0).putMessage("删除失败！");
