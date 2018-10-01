@@ -109,17 +109,18 @@ public class UserCtrl extends BaseCtrl{
             pageSize = Integer.parseInt(pageSizeStr);
         }
         List<Object> params = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
         String select = "select *";
-        String sql = " from (select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa) a where 1=1";
+        String sql = " from (select wa.username, wa.`password`, wa. name nickname,(select id from h_job where wa.job_id = h_job.id) job_id,( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1";
         if(name != null && name.length() > 0){
             name = "%" + name + "%";
-            sql += "  and wa.name like ? ";
+            sql += "  and a.nickname like ? ";
             params.add(name);
 
         }
         if(job != null && job.length() > 0){
             job = "%" + job + "%";
-            sql += "  and hj.name like ? ";
+            sql += "  and a.job_id like ? ";
             params.add(job);
         }
         try{
@@ -131,7 +132,9 @@ public class UserCtrl extends BaseCtrl{
                 jhm.putMessage("查询成功！");
                 jhm.put("list",page);
             }else{
-                jhm.putCode(0).putMessage("查询失败！");
+                jhm.put("list",list);
+                renderJson(jhm);
+                return;
             }
         }catch (Exception e){
             e.printStackTrace();
