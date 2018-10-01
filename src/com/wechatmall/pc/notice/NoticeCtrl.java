@@ -314,7 +314,7 @@ public class NoticeCtrl extends BaseCtrl {
         //通知类型
         String type = getPara("type");
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
 
