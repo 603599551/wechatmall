@@ -9,9 +9,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static utils.DictionaryConstants.DICT_RECORD_LIST;
+import static utils.DictionaryConstants.DICT_RECORD_MAP;
+import static utils.DictionaryConstants.DICT_STRING_MAP;
+
 public class DictionaryService {
 
     public static void loadDictionary(){
+		DICT_STRING_MAP.clear();
+		DICT_RECORD_MAP.clear();
+		DICT_RECORD_LIST.clear();
 		List<Record> dictList = Db.find("select * from w_dictionary order by sort");
 		Map<String, List<Record>> dictMap = new HashMap<>();
 		Map<String, String> dictIdValueMap = new HashMap<>();
@@ -32,8 +39,8 @@ public class DictionaryService {
 		        //根据parent_id找到一级的value
 		        String dict_key = dictIdValueMap.get(key);
 		        //一个key对应一个map，一个map可以存多个键值对
-		        Map<String, String> stringMap = DictionaryConstants.DICT_STRING_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
-		        Map<String, Record> recordMap = DictionaryConstants.DICT_RECORD_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
+		        Map<String, String> stringMap = DICT_STRING_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
+		        Map<String, Record> recordMap = DICT_RECORD_MAP.computeIfAbsent(dict_key, k -> new HashMap<>());
 		        if(list != null && list.size() > 0){
 		            for(Record r : list){
 		                stringMap.put(r.getStr("value"), r.getStr("name"));
@@ -43,14 +50,14 @@ public class DictionaryService {
             }
         }
         //把record_Map中的所有value（record），放到recordList中。
-        if(DictionaryConstants.DICT_RECORD_MAP != null && DictionaryConstants.DICT_RECORD_MAP.size() > 0){
-			for(String key : DictionaryConstants.DICT_RECORD_MAP.keySet()){
-				Map<String, Record> recordMap = DictionaryConstants.DICT_RECORD_MAP.get(key);
+        if(DICT_RECORD_MAP != null && DICT_RECORD_MAP.size() > 0){
+			for(String key : DICT_RECORD_MAP.keySet()){
+				Map<String, Record> recordMap = DICT_RECORD_MAP.get(key);
 				List<Record> recordList = new ArrayList<>();
 				for(String rKey : recordMap.keySet()){
 					recordList.add(recordMap.get(rKey));
 				}
-				DictionaryConstants.DICT_RECORD_LIST.put(key, recordList);
+				DICT_RECORD_LIST.put(key, recordList);
 			}
 		}
 
