@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -137,7 +138,8 @@ public class MyCtrl extends BaseCtrl {
      */
     public void addHarvestAddress(){
         JsonHashMap jhm=new JsonHashMap();
-
+        Map<String, String[]> paramsMaps = getParaMap();
+        //Map<String, String> paramsMap = MethodCommon.converMapArrayToMapStr(paramsMaps);
         /**
          * 接收前端参数
          */
@@ -158,7 +160,7 @@ public class MyCtrl extends BaseCtrl {
         //详细地址
         String address=getPara("address");
         //默认状态 0：不是 1：是
-        String isDefault=getPara("isDefult");
+        String isDefault=getPara("isDefault");
 
         //非空验证
         if (StringUtils.isEmpty(userId)){
@@ -176,43 +178,45 @@ public class MyCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(province)){
-            jhm.putCode(0).putMessage("所在省为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(city)){
-            jhm.putCode(0).putMessage("所在市为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(district)){
-            jhm.putCode(0).putMessage("所在区为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(street)){
-            jhm.putCode(0).putMessage("所在街道为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(address)){
-            jhm.putCode(0).putMessage("详细地址为空！");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(province)){
+//            jhm.putCode(0).putMessage("所在省为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(city)){
+//            jhm.putCode(0).putMessage("所在市为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(district)){
+//            jhm.putCode(0).putMessage("所在区为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(street)){
+//            jhm.putCode(0).putMessage("所在街道为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(address)){
+//            jhm.putCode(0).putMessage("详细地址为空！");
+//            renderJson(jhm);
+//            return;
+//        }
         if (StringUtils.isEmpty(isDefault)){
             jhm.putCode(0).putMessage("默认状态为空！");
             renderJson(jhm);
             return;
         }
 
+        String caid=UUIDTool.getUUID();
+
         try{
             /**
              * 增加的收货地址记录
              */
             Record record=new Record();
-            record.set("caid", UUIDTool.getUUID());
+            record.set("caid", caid);
             record.set("cid", userId);
             record.set("sid", "");
             record.set("caname", name);
@@ -230,7 +234,11 @@ public class MyCtrl extends BaseCtrl {
             record.set("cadesc", "");
 
             boolean flag=Db.save("w_customer_address",record);
+
             if (flag) {
+                if (StringUtils.equals("1",isDefault)){
+                    Db.update("UPDATE w_customer_address SET castatus='0' WHERE caid!=?",caid);
+                }
                 jhm.putCode(1).putMessage("新增成功！");
             } else {
                 jhm.putCode(0).putMessage("新增失败！");
@@ -303,7 +311,7 @@ public class MyCtrl extends BaseCtrl {
              * 删除收货地址记录
              */
             String sql = "DELETE from w_customer_address where (caid = ? and cid = ?)";
-            int num = Db.delete(sql,userId,listId);
+            int num = Db.delete(sql,listId,userId);
             if(num > 0){
                 jhm.putCode(1).putMessage("删除成功！");
             }else{
@@ -374,7 +382,7 @@ public class MyCtrl extends BaseCtrl {
             /**
              * 查看收货地址
              */
-            String sql="select caname name,caphone phone,caprovince province,cacity city,cadistrict district,castreet street,caaddress address,castatus isDefault from w_customer_address  where cid = ?";
+            String sql="select caid id,caname name,caphone phone,caprovince province,cacity city,cadistrict district,castreet street,caaddress address,castatus isDefault from w_customer_address  where cid = ?";
             List<Record>  showHarvestAddressList = Db.find(sql,userId);
             if(showHarvestAddressList != null && showHarvestAddressList.size() > 0){
                 jhm.put("list",showHarvestAddressList);
@@ -668,6 +676,8 @@ public class MyCtrl extends BaseCtrl {
         String street=getPara("street");
         //详细地址
         String address=getPara("address");
+        //默认状态
+        String isDefault=getPara("isDefault");
 
         //非空验证
         if (StringUtils.isEmpty(userId)){
@@ -731,8 +741,12 @@ public class MyCtrl extends BaseCtrl {
             modifyHarvestAddress.set("caaddress",address);
             modifyHarvestAddress.set("camodify_time",DateTool.GetDateTime());
             modifyHarvestAddress.set("camodifier_id",UUIDTool.getUUID());
+            modifyHarvestAddress.set("castatus",isDefault);
             boolean flag = Db.update("w_customer_address","caid" ,modifyHarvestAddress);
             if(flag){
+                if (StringUtils.equals("1",isDefault)){
+                    Db.update("UPDATE w_customer_address SET castatus='0' WHERE caid!=?",listId);
+                }
                 jhm.putMessage("修改成功！");
             }else {
                 jhm.putCode(0).putMessage("修改失败！");
