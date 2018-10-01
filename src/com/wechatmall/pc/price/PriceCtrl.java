@@ -257,12 +257,12 @@ public class PriceCtrl extends BaseCtrl{
         /**
          * 根据客户信息表查询 : 客户id : groupId , 客户姓名 : groupName
          */
-        StringBuilder groupSql = new StringBuilder("SELECT cgid as groupId, cgname as groupName FROM  w_customer_group where 1 = 1 ");
+        StringBuilder groupSql = new StringBuilder("SELECT cgid as id, cgname as label FROM  w_customer_group where 1 = 1 ");
 
         /**
          * 根据客户信息表和客户分组表双表关联查询 : "merchantNumber":"商户id" , "merchantName":"商户姓名"
          */
-        StringBuilder customerSql = new StringBuilder("SELECT wc.cgid, wc.cid as merchantNumber, wc.cname as merchantName FROM w_customer wc, w_customer_group wcg WHERE wc.cgid = wcg.cgid ");
+        StringBuilder customerSql = new StringBuilder("SELECT wc.cgid, wc.cid as id, wc.cname as label FROM w_customer wc, w_customer_group wcg WHERE wc.cgid = wcg.cgid ");
 
         if(!StringUtils.isEmpty(groupName)){
             groupName = "%"+ groupName +"%";
@@ -283,12 +283,13 @@ public class PriceCtrl extends BaseCtrl{
 
             for(int i = 0; i < recordList.size(); i++){
                 for(int j = 0; j < records.size(); j++){
-                    if(StringUtils.equals(records.get(j).getStr("cgid"), recordList.get(i).getStr("groupId"))){
+                    if(StringUtils.equals(records.get(j).getStr("cgid"), recordList.get(i).getStr("id"))){
+                        records.get(j).set("parent_id", recordList.get(i).getStr("id"));
                         records.get(j).remove("cgid");
                         result.add(records.get(j));
                     }
                 }
-                recordList.get(i).set("list", result);
+                recordList.get(i).set("children", result);
                 result = new ArrayList<>();
             }
             jhm.putCode(1).put("groupList", recordList);
@@ -297,6 +298,7 @@ public class PriceCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
+
         //renderJson("{\"code\":1,\"groupList\":[{\"groupId\":\"gx00001\",\"groupName\":\"分组1\",\"list\":[{\"merchantNumber\":\"mc00001\",\"merchantName\":\"商户1\"},{\"merchantNumber\":\"mc00002\",\"merchantName\":\"商户2\"}]},{\"groupId\":\"gx00001\",\"groupName\":\"分组1\",\"list\":[{\"merchantNumber\":\"mc00001\",\"merchantName\":\"商户1\"},{\"merchantNumber\":\"mc00002\",\"merchantName\":\"商户2\"}]}]}");
     }
 }

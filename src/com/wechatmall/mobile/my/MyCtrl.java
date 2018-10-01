@@ -700,31 +700,36 @@ public class MyCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(province)){
-            jhm.putCode(0).putMessage("所在省为空！");
+        if (StringUtils.isEmpty(isDefault)){
+            jhm.putCode(0).putMessage("默认状态为空！");
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(city)){
-            jhm.putCode(0).putMessage("所在市为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(district)){
-            jhm.putCode(0).putMessage("所在区为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(street)){
-            jhm.putCode(0).putMessage("所在街道为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(address)){
-            jhm.putCode(0).putMessage("详细地址为空！");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(province)){
+//            jhm.putCode(0).putMessage("所在省为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(city)){
+//            jhm.putCode(0).putMessage("所在市为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(district)){
+//            jhm.putCode(0).putMessage("所在区为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(street)){
+//            jhm.putCode(0).putMessage("所在街道为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        if (StringUtils.isEmpty(address)){
+//            jhm.putCode(0).putMessage("详细地址为空！");
+//            renderJson(jhm);
+//            return;
+//        }
         try{
             /**
              * 修改的收货地址记录
