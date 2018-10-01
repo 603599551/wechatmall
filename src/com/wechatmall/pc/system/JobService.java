@@ -33,6 +33,8 @@ public class JobService extends BaseService{
         //职务权限
         JSONArray jobPermission = (JSONArray) paraMap.get("jobPermissionList");
         String usu = (String) paraMap.get("userId");
+        usu = "1";
+
         //根据系统用户id，查找对应的姓名
         String sql = "select username from w_admin where username = ?";
         Record adminNameRecord = Db.findFirst(sql,usu);
@@ -92,6 +94,7 @@ public class JobService extends BaseService{
         //职务权限
         JSONArray jobPermission = (JSONArray) paraMap.get("jobPermissionList");
         String usu = (String) paraMap.get("userId");
+        usu = "1";
         //根据系统用户id，查找对应的姓名
         String sql = "select username from w_admin where username = ?";
         Record adminNameRecord = Db.findFirst(sql,usu);
