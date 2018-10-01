@@ -104,7 +104,7 @@ public class OrderCtrl extends BaseCtrl {
         //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
         String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
         //根据value值查询dictionary表得到 物流类型和支付类型
-        String sql3="SELECT name FROM w_dictionary d WHERE parent_id = (SELECT id FROM w_dictionary WHERE value =?) AND d.`desc` LIKE CONCAT('%',?,'%')";
+        String sql3="SELECT value,name FROM w_dictionary d WHERE parent_id = (SELECT id FROM w_dictionary WHERE value =?) AND d.`desc` LIKE CONCAT('%',?,'%')";
 
         String sql4="SELECT name FROM w_dictionary WHERE value=(SELECT ctype FROM w_customer WHERE cid=?)";
 
@@ -127,25 +127,15 @@ public class OrderCtrl extends BaseCtrl {
             String customerType=r.getStr("name");
             //物流类型列表
             List<Record> transportList=Db.find(sql3,transportType,customerType);
-            List<String> receivingMethod=new ArrayList<>(10);
-            if (transportList!=null){
-                for (Record tl:transportList){
-                    receivingMethod.add(tl.getStr("name"));
-                }
-            }
+
             //支付类型列表
             List<Record> payList=Db.find(sql3,payType,customerType);
-            List<String> payMethod =new ArrayList<>(10);
-            if (payList!=null){
-                for (Record pl:payList){
-                    payMethod.add(pl.getStr("name"));
-                }
-            }
-            jhm.putCode(1).putMessage("查询成功");
+
+            jhm.putCode(1);
             jhm.put("selfAddressedAddress",storeList);
             jhm.put("contacts",contactList);
-            jhm.put("receivingMethod",receivingMethod);
-            jhm.put("payMethod",payMethod);
+            jhm.put("receivingMethod",transportList);
+            jhm.put("payMethod",payList);
 
         }catch (Exception e){
             e.printStackTrace();
