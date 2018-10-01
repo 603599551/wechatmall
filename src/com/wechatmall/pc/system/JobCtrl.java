@@ -1,10 +1,12 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.aop.Before;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.tx.Tx;
 import com.utils.UserSessionUtil;
 import easy.util.DateTool;
 import easy.util.NumberUtils;
@@ -13,8 +15,9 @@ import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -60,7 +63,6 @@ public class JobCtrl extends BaseCtrl{
      */
     public void addJob(){
         JsonHashMap jhm = new JsonHashMap();
-        UserSessionUtil usu=new UserSessionUtil(getRequest());
         /**
          * 接收前台参数
          */
@@ -83,73 +85,46 @@ public class JobCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        if(jobPermissionList != null && jobPermissionList.size() > 0){
+        if(jobPermissionList == null && jobPermissionList.size() <= 0){
             jhm.putCode(0).putMessage("职务权限为空!");
             renderJson(jhm);
             return;
         }
-        List lists = new ArrayList<>();
-        for (int i = 0; i < jobPermissionList.size(); i++) {
-            lists.add(i,jobPermissionList.getJSONObject(i).get("jobPermission"));
-        }
-        //通过循环，将json数组中key为words的数据添加到list集合中
-        String jobPermissionStr = lists.toString();
+
         try{
-            //根据系统用户id，查找对应的姓名
-            String sql = "select adname from w_admin where adid = ?";
-            Record adminName = Db.findFirst(sql,usu.getUserId());
-            //判断新增的职务是否重复
-            String sql1 = "select count(1) from h_job where name=?";
-            int count = Db.queryInt(sql1,jobName);
-            if(count > 0){
-                jhm.putCode(0).putMessage("职务名称重复!");
-                renderJson(jhm);
-                return;
-            }
-
-            Record jobRecord = new Record();
-            jobRecord.set("id", UUIDTool.getUUID());
-            jobRecord.set("name",jobName);
-            jobRecord.set("desc",jobDesc);
-            jobRecord.set("create_time", DateTool.GetDateTime());
-            jobRecord.set("creator",usu.getUserId());
-            jobRecord.set("creator_name",adminName);
-            jobRecord.set("modify_time",DateTool.GetDateTime());
-            jobRecord.set("modifier",usu.getUserId());
-            jobRecord.set("modifier_name",adminName);
-            //在职务表里添加数据
-            boolean jobFlag = Db.save("h_job",jobRecord);
-            if(jobFlag == false){
-                jhm.putCode(0).putMessage("操作失败!");
-                renderJson(jhm);
-                return;
-            }
-
-            Record jobMenuRecord = new Record();
-            jobMenuRecord.set("id",UUIDTool.getUUID());
-            jobMenuRecord.set("menu_id",jobPermissionStr);
-            jobMenuRecord.set("job_id",jobRecord.get("id"));
-            jobMenuRecord.set("access","1");
-            jobMenuRecord.set("creator",usu.getUserId());
-            jobMenuRecord.set("creator_name",adminName);
-            jobMenuRecord.set("create_time",DateTool.GetDateTime());
-            //在职务权限表里添加数据
-            boolean jobMenuFlag = Db.save("h_author_job_menu",jobMenuRecord);
-            if(jobMenuFlag == false){
-                jhm.putCode(0).putMessage("操作失败!");
-                renderJson(jhm);
-                return;
-            }else{
-                jhm.putMessage("操作成功!");
-            }
+            Map paraMap =new HashMap();
+            paraMap.put("jobName", jobName);
+            paraMap.put("jobDesc", jobDesc);
+            paraMap.put("jobPermissionList", jobPermissionList);
+            JobService srv = enhance(JobService.class);
+            jhm = srv.addJobSer(paraMap);
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
 
         renderJson(jhm);
        // renderJson("{\"code\":1,\"message\":\"操作成功\"}");
     }
+
+    private void saveJobMenu(JSONArray jobPermissionList,String jobId,String time,UserSessionUtil usu,String adminName){
+        if(jobPermissionList!=null && jobPermissionList.size()>0){
+            for (int i = 0; i < jobPermissionList.size(); i++) {
+                Record jobMenuRecord = new Record();
+                jobMenuRecord.set("id",UUIDTool.getUUID());
+                jobMenuRecord.set("menu_id",jobPermissionList.get(i));
+                jobMenuRecord.set("job_id",jobId);
+                jobMenuRecord.set("access","1");
+                jobMenuRecord.set("creator",usu.getUserId());
+                jobMenuRecord.set("creator","");
+                jobMenuRecord.set("creator_name",adminName);
+                jobMenuRecord.set("create_time",time);
+                //在职务权限表里添加数据
+                 Db.save("h_author_job_menu",jobMenuRecord);
+            }
+        }
+    }
+
     /**
      * @author liushiwen
      * @date 2018-9-22
@@ -184,9 +159,12 @@ public class JobCtrl extends BaseCtrl{
     "message": "服务器发生异常！"
      * }
      */
+
     public void modifyJobById(){
         JsonHashMap jhm = new JsonHashMap();
-        UserSessionUtil usu=new UserSessionUtil(getRequest());
+      //  UserSessionUtil usu=new UserSessionUtil(getRequest());
+        String time = DateTool.GetDateTime();
+        String uuid = UUIDTool.getUUID();
         /**
          * 接收前台参数
          */
@@ -216,62 +194,38 @@ public class JobCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        if(StringUtils.isEmpty(jobPermission)){
-            jhm.putCode(0).putMessage("职务权限为空!");
-            renderJson(jhm);
-            return;
-        }
         if(StringUtils.isEmpty(jobId)){
             jhm.putCode(0).putMessage("系统用户id为空!");
             renderJson(jhm);
             return;
         }
-        if(jobPermissionList != null && jobPermissionList.size() > 0){
+        if(jobPermissionList == null && jobPermissionList.size() <= 0){
             jhm.putCode(0).putMessage("职务权限为空!");
             renderJson(jhm);
             return;
         }
-        List lists = new ArrayList<>();
-        for (int i = 0; i < jobPermissionList.size(); i++) {
-            lists.add(i,jobPermissionList.getJSONObject(i).get("jobPermission"));
-        }
-        //通过循环，将json数组中key为words的数据添加到list集合中
-        String jobPermissionStr = lists.toString();
         try{
-            //根据系统用户id，查找对应的姓名
-            String sql = "select adname from w_admin where adid = ?";
-            Record adminName = Db.findFirst(sql,usu.getUserId());
-
-            Record modifyJob = new Record();
-            modifyJob.set("id",jobId);
-            modifyJob.set("name",jobName);
-            modifyJob.set("desc",jobDesc);
-            modifyJob.set("modify_time",DateTool.GetDateTime());
-            modifyJob.set("modifier",usu.getUserId());
-            modifyJob.set("modifier_name",adminName);
-
-            boolean jobFlag = Db.update("h_job","id",modifyJob);
-            if(jobFlag == false){
-                jhm.putCode(0).putMessage("修改失败!");
-                renderJson(jhm);
-                return;
-            }
-
-            Record modifyJobMenu = new Record();
-            modifyJobMenu.set("menu_id",jobPermissionStr);
-            modifyJobMenu.set("job_id",jobId);
-            boolean jobMenuFlag = Db.update("h_author_job_menu","id",modifyJobMenu);
-            if(jobMenuFlag == false){
-                jhm.putCode(0).putMessage("修改失败!");
-                renderJson(jhm);
-                return;
-            }else {
-                jhm.putCode(0).putMessage("修改成功!");
-            }
-
+            Map paraMap =new HashMap();
+            paraMap.put("jobId",jobId);
+            paraMap.put("jobName", jobName);
+            paraMap.put("jobDesc", jobDesc);
+            paraMap.put("jobPermissionList", jobPermissionList);
+            JobService srv = enhance(JobService.class);
+            jhm = srv.modifyJobSer(paraMap);
+//            for (int i = 0; i < jobPermissionList.size(); i++) {
+//                Record modifyJobMenu = new Record();
+//                modifyJobMenu.set("menu_id", jobPermissionList.get(i));
+//                modifyJobMenu.set("job_id", jobId);
+//                boolean jobMenuFlag = Db.update("h_author_job_menu", "job_id", modifyJobMenu);
+//                if (jobMenuFlag == false) {
+//                    jhm.putCode(0).putMessage("修改失败!");
+//                    renderJson(jhm);
+//                    return;
+//                }
+//            }
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
         //srenderJson("{\"code\":1,\"message\":\"修改成功\"}");
@@ -322,22 +276,24 @@ public class JobCtrl extends BaseCtrl{
             return;
         }
         try{
-            String sql = "DELETE from h_job where id=?";
+            String sql = "delete hj ,hjm  from h_job hj left join h_author_job_menu hjm on hj.id = hjm.job_id where hj.id = ? ";
             int num = Db.delete(sql,jobId);
             if(num <= 0){
                 jhm.putCode(0).putMessage("删除失败!");
                 renderJson(jhm);
                 return;
-            }
-            String sql1 = "DELETE from h_author_job_menu where job_id=?";
-            int num1 = Db.delete(sql,jobId);
-            if(num1 <= 0){
-                jhm.putCode(0).putMessage("删除失败!");
-                renderJson(jhm);
-                return;
-            }else {
+            }else{
                 jhm.putMessage("删除成功!");
             }
+//            String sql1 = "DELETE from h_author_job_menu where job_id=?";
+//            int num1 = Db.delete(sql,jobId);
+//            if(num1 <= 0){
+//                jhm.putCode(0).putMessage("删除失败!");
+//                renderJson(jhm);
+//                return;
+//            }else {
+//                jhm.putMessage("删除成功!");
+//            }
 
         }catch (Exception e){
             e.printStackTrace();
@@ -424,10 +380,15 @@ public class JobCtrl extends BaseCtrl{
             }
             //根据职务id查询权限
             String sql1 = "select menu_id menuList from h_author_job_menu where job_id = ?";
-            Record showJobMenu = Db.findFirst(sql1,jobId);
+            List<Record> showJobMenu = Db.find(sql1,jobId);
+            String[] menuArray = new String[showJobMenu.size()];
+            for(int i = 0; i < showJobMenu.size(); i++){
+                menuArray[i] = showJobMenu.get(i).get("menuList");
+            }
+            showJob.set("menuList",menuArray);
+
             if(showJob != null){
                 jhm.put("job",showJob);
-                jhm.put("menuList",showJobMenu);
             }else{
                 jhm.putCode(0).putMessage("查询失败!");
                 renderJson(jhm);
@@ -436,7 +397,7 @@ public class JobCtrl extends BaseCtrl{
 
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
        // renderJson("{\"code\":1,\"job\":{\"name\":\"职务名称\",\"desc\":\"职务描述\",\"id\":\"职务id\"},\"menuList\":[\"5\",\"30\",\"6\",\"40\",\"8\",\"7\",\"43\",\"24\",\"11\",\"31\",\"21\",\"42\",\"29\",\"39\",\"38\"]}");
@@ -493,7 +454,7 @@ public class JobCtrl extends BaseCtrl{
          * 接收前台参数
          */
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
 
@@ -547,4 +508,5 @@ public class JobCtrl extends BaseCtrl{
         }
         renderJson(jhm);
     }
+
 }
