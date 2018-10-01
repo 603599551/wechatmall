@@ -76,6 +76,7 @@ public class MallCtrl extends BaseCtrl {
         //用户id
         String userId = getPara("userId");
 
+
         //非空验证
         if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
@@ -202,6 +203,7 @@ public class MallCtrl extends BaseCtrl {
         //商品id
         String goodsId = getPara("goodsId");
 
+
         //用户id非空验证
         if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
@@ -221,8 +223,8 @@ public class MallCtrl extends BaseCtrl {
              *查询商品详细信息
              *查询w_product表中pname,pcost,price,picture,pintroduction,pdetail,pkeyword字段。
              */
-            String sql = "select pname name,pcost originalPrice,price presentPrice,picture url,pintroduction desTit,pdetail detail,pkeyword types from w_product where pid = ?";
-            Record viewGoods = Db.findFirst(sql,goodsId);
+            String sql = "select wp.pname name, wp.price originalPrice,wpc.pcpcurrent_price presentPrice, wp.picture url, wp.pintroduction desTit, wp.pdetail detail, wp.pkeyword types from w_product wp, w_product_currentprice wpc where wp.pid = wpc.pid and wpc.cgid = ( select cgid from w_customer where cid = ? ) and wp.pid = ?";
+            Record viewGoods = Db.findFirst(sql,userId,goodsId);
             if (viewGoods != null){
                 String []types=viewGoods.getStr("types").split(",");
                 viewGoods.set("types",types);
