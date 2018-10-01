@@ -79,7 +79,7 @@ public class StoreCtrl extends BaseCtrl {
         //支付方式名称
         String storeName = getPara("storeName");
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
 
