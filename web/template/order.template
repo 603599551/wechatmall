@@ -7,19 +7,19 @@
                         <th colspan="2" align="center">客户订单</th>
                     </tr>
                     <tr>
-                        <td width="75%">订单编号：${order_num}</td>
+                        <td width="70%">订单编号：${order_num}</td>
                         <td>订购时间：${buy_time}</td>
                     </tr>
                     <tr>
-                        <td width="75%">收货人名：${receiver_name}</td>
+                        <td width="70%">收货人名：${receiver_name}</td>
                         <td>物流类型：${transport_type}</td>
                     </tr>
                     <tr>
-                        <td width="75%">联系方式：${phone}</td>
+                        <td width="70%">联系方式：${phone}</td>
                         <td>支付方式：${pay_type}</td>
                     </tr>
                     <tr>
-                        <td width="75%">收货地址：${address}</td>
+                        <td width="70%">收货地址：${address}</td>
                         <td>订单状态：${pay_status}</td>
                     </tr>
                 </table>

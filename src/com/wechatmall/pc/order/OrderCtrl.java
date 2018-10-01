@@ -4,10 +4,19 @@ import com.common.controllers.BaseCtrl;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.upload.UploadFile;
+import com.utils.UnitConversion;
 import easy.util.NumberUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import utils.bean.JsonHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -407,6 +416,154 @@ public class OrderCtrl extends BaseCtrl{
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
+    }
+
+    /**
+     * 上传PDF
+     * URL	http://localhost:8080/weChatMallMgr/wm/pc/order/uploadJPG
+     */
+    static class Preference {
+        public static String _PATH = "upload\\";
+    }
+
+    public void uploadJPG(){
+        JsonHashMap jhm=new JsonHashMap();
+        HttpServletRequest request = getRequest();
+        String basePath = request.getContextPath();
+        //存储路径
+        String path = getSession().getServletContext().getRealPath(Preference._PATH);
+        UploadFile file = getFile("file");
+        System.out.println(path);
+        String fileName = "";
+        if(file.getFile().length() > 200*1024*1024) {
+            System.err.println("文件长度超过限制，必须小于200M");
+        }else{
+            //上传文件
+            String type = file.getFileName().substring(file.getFileName().lastIndexOf(".")); // 获取文件的后缀
+            fileName = System.currentTimeMillis() + type; // 对文件重命名取得的文件名+后缀
+            String dest = path + "\\" + fileName;
+            file.getFile().renameTo(new File(dest));
+            String realFile = basePath + "/" + Preference._PATH +  fileName;
+            String fName="\\"+fileName;
+            setAttr("fName", fName);
+            setAttr("url", realFile);
+            jhm.putCode(1);
+            jhm.put("filePath", realFile);
+        }
+        renderJson(jhm);
+        //renderJson("{\"code\":1,\n" + "\"message\":\"上传成功\",\n" + "\"data\":\n" + "    {\"id\":\"cjlkh8gye000aj8g7cgvvwliv\",\"filePath\":\"pdf路径\"}\n" + "}\n");
+    }
+
+    public void exportXls(){
+        //订单编号
+        String orderNumber = getPara("id");
+        JsonHashMap jhm = new JsonHashMap();
+
+        try{
+            List<Record> list=Db.find("SELECT * FROM w_orderform_detail WHERE oid=? ORDER BY odcreate_time ASC ",orderNumber);
+            if(list != null && list.size() > 0){
+                List<List<String>> content = new ArrayList<>();
+
+                Record order=Db.findFirst("SELECT o.*,d.name AS 'status',dd.name AS 'transport_type',ddd.name AS 'pay_type' FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE  oid=?",orderNumber);
+                List<String> sumList = new ArrayList<>();
+                sumList.add("订单编号");
+                sumList.add(order.getStr("oid"));
+                sumList.add("  ");
+                sumList.add("订单状态");
+                sumList.add(order.getStr("status"));
+                sumList.add("  ");
+                sumList.add("客户姓名");
+                sumList.add(order.getStr("oname"));
+                content.add(sumList);
+                List<String> sumList2 = new ArrayList<>();
+                sumList2.add("创建时间");
+                sumList2.add(order.getStr("ocreate_time"));
+                sumList2.add("  ");
+                sumList2.add("物流类型");
+                sumList2.add(order.getStr("transport_type"));
+                sumList2.add("  ");
+                sumList2.add("联系电话");
+                sumList2.add(order.getStr("ophone"));
+                content.add(sumList2);
+                List<String> sumList3 = new ArrayList<>();
+                sumList3.add("订单应付");
+                sumList3.add(order.getStr("ooriginal_sum"));
+                sumList3.add("  ");
+                sumList3.add("支付方式");
+                sumList3.add(order.getStr("pay_type"));
+                sumList3.add("  ");
+                sumList3.add("收货地址");
+                sumList3.add(order.getStr("oaddress"));
+                content.add(sumList3);
+                List<String> sumList4 = new ArrayList<>();
+                sumList4.add("实付款");
+                sumList4.add(order.getStr("ocurrent_sum"));
+                content.add(sumList4);
+                List<String> sumList5 = new ArrayList<>();
+                sumList5.add(" ");
+                sumList5.add(" ");
+                sumList5.add(" ");
+                content.add(sumList5);
+
+                List<String> titleList = new ArrayList<>();
+                titleList.add("商品序号");
+                titleList.add("商品名称");
+                titleList.add("商品原价");
+                titleList.add("商品现价");
+                titleList.add("商品数量");
+                titleList.add("单品总价");
+                content.add(titleList);
+                int len=list.size();
+                for(int i = 0; i <len ; i++){
+                    Record record = list.get(i);
+                    List<String> contentList = new ArrayList<>();
+                    contentList.add(i + 1 + "");
+                    contentList.add(record.getStr("odname"));
+                    contentList.add(record.getStr("odoriginal_price"));
+                    contentList.add(record.getStr("odcurrent_price"));
+                    contentList.add(record.getStr("odquantity"));
+                    contentList.add(record.getStr("odsingle_sum"));
+                    content.add(contentList);
+                }
+
+
+                String fileName = exportXlsFile(content, getSession().getServletContext().getRealPath("") + "/exportOrderXls/" + orderNumber + ".xls");
+                jhm.put("pageUrl", getRequest().getScheme()+"://"+getRequest().getServerName()+":"+getRequest() .getServerPort()  + "/exportOrderXls/" + orderNumber + ".xls");
+            }else{
+                jhm.putCode(0);
+                jhm.putMessage("订单无数据，不能导出！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage(e.toString());
+        }
+        renderJson(jhm);
+    }
+
+    private String exportXlsFile(List<List<String>> content, String name) throws Exception{
+        if(content != null && content.size() > 0){
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet("1");
+
+            sheet.setColumnWidth(1, 8000);
+            sheet.setColumnWidth(7, 8000);
+            for(int i = 0; i < content.size(); i++){
+                List<String> list = content.get(i);
+                HSSFRow row = sheet.createRow(i);
+                if(list != null && list.size() > 0){
+                    for(int j = 0; j < list.size(); j++){
+                        HSSFCell cell = row.createCell(j);
+                        cell.setCellValue(list.get(j));
+                    }
+                }
+            }
+            FileOutputStream fos = new FileOutputStream(new File(name));
+            workbook.write(fos);
+            fos.close();
+            return name;
+        }else{
+            throw new Exception("订单编号有误！");
+        }
     }
 
 }
