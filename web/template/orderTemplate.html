@@ -100,12 +100,16 @@
     <h5 class="order-title"></h5>
     <table class="order-top">
         <tr>
-            <td width="70%">制单时间：${order_num}</td>
-            <td>商品总额：${buy_time}</td>
-            <td width="70%">制单人：${order_num}</td>
-            <td>运费：${buy_time}</td>
-            <td width="70%">领货人：：________________</td>
-            <td>应付总额：${buy_time}</td>
+            <td width="75%">制单时间：${print_time}</td>
+            <td>商品总额：${product_sum}</td>
+        </tr>
+        <tr>
+            <td width="75%">制单人：${creater_name}</td>
+            <td>运费：${freight}</td>
+        </tr>
+        <tr>
+            <td width="75%">领货人：________________</td>
+            <td>应付总额：${should_pay}</td>
         </tr>
     </table>
 </div>
