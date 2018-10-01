@@ -81,7 +81,7 @@ public class OrderCtrl extends BaseCtrl{
         String type = getPara("type");
         String status = getPara("status");
         String customerName = getPara("customerName");
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         String pageSizeStr = getPara("pageSize");
 
         //为空时赋予默认值
@@ -92,34 +92,39 @@ public class OrderCtrl extends BaseCtrl{
             /**
              * 根据订单表w_orderform和客户表w_customer关联查询：客户id：orderId, 客户姓名:customerName, 创建时间：time, 客户类型:type
              * 收货人姓名:receiverName, 收货人电话:phone, 收货地址:address, 应付价格:originalPrice, 实付价格:presentPrice, 订单状态:status
+             * 订单状态对应中文 : statusName ,客户类型对应中文 : typeName
              */
-            String select = "SELECT oid as orderId, ocreate_time as time, oname as receiverName, ophone as phone, wc.cname as customerName, wc.ctype as type, wo.oaddress as address, wo.ooriginal_sum as originalPrice, wo.ocurrent_sum as presentPrice, wo.ostatus as status";
+            String select = "SELECT wo.oid AS orderId, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, wo.ooriginal_sum AS originalPrice, wo.ocurrent_sum AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
 
-            StringBuilder sql = new StringBuilder(" from w_orderform wo, w_customer wc WHERE wo.cid = wc.cid");
+            StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid , o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid ");
 
 
             List<Object> params = new ArrayList<>();
 
             //对检索条件进行判断
             if(!StringUtils.isEmpty(number)){
-                sql.append(" and wo.oid = ? ");
+                sql.append(" and o.oid = ? ");
                 params.add(number);
             }
 
             if(!StringUtils.isEmpty(type)){
-                sql.append(" and wc.type = ? ");
+                sql.append(" and wc.ctype = ? ");
                 params.add(type);
             }
 
             if(!StringUtils.isEmpty(status)){
-                sql.append(" and wo.status = ? ");
+                sql.append(" and o.ostatus = ? ");
                 params.add(status);
             }
 
             if(!StringUtils.isEmpty(customerName)){
-                sql.append(" and wc.oanme = ? ");
+                customerName = "%" + customerName + "%";
+                sql.append(" and o.oname like ? ");
                 params.add(customerName);
             }
+
+            sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ");
+
 
             Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
             jhm.put("data", page);
@@ -355,6 +360,53 @@ public class OrderCtrl extends BaseCtrl{
         }
         renderJson(jhm);
         //renderJson("{\"code\":1,\"list\":[{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"51564157854\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]},{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"15615648748794\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]}]}");
+    }
+
+    public void setOrderStatusById(){
+        JsonHashMap jhm = new JsonHashMap();
+
+        //获取参数
+        String id = getPara("id");
+        String status = getPara("status");
+
+        //进行非空判断
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        if(StringUtils.isEmpty(status)){
+            jhm.putCode(0).putMessage("未选择修改内容！");
+            renderJson(jhm);
+            return;
+        }
+
+        try {
+            Record record = Db.findFirst("SELECT * FROM w_orderform WHERE oid = ?", id);
+            if(record == null){
+                jhm.putCode(-1).putMessage("数据库无此数据！");
+                renderJson(jhm);
+                return;
+            }
+            switch (status){
+                case "finished" : record.set("ostatus", "finished"); break;
+                case "canceled" : record.set("ostatus", "canceled"); break;
+                case "shipped" : record.set("ostatus", "shipped"); break;
+            }
+
+            boolean flag = Db.update("w_orderform","oid", record);
+
+            if(flag){
+                jhm.putCode(1).putMessage("修改成功！");
+            } else {
+                jhm.putCode(0).putMessage("修改数据库失败！");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
     }
 
 }

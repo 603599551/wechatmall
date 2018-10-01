@@ -88,7 +88,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
         //查询customer_group表 得到分组id，名称，排序
         String select="SELECT cgid AS id,cgname AS groupName,cgsort AS sort  ";
 
-        StringBuilder sql=new StringBuilder("FROM w_customer_group ");
+        StringBuilder sql=new StringBuilder("FROM w_customer_group");
 
         List<Object> params = new ArrayList<>();
 
@@ -97,6 +97,8 @@ public class CustomerGroupCtrl extends BaseCtrl{
             sql=sql.append("WHERE cgname LIKE CONCAT('%',?,'%')");
             params.add(keyword);
         }
+
+        sql=sql.append(" ORDER BY cgsort ASC");
 
         try{
             //分页查询

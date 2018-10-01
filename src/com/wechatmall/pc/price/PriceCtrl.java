@@ -260,7 +260,7 @@ public class PriceCtrl extends BaseCtrl{
         StringBuilder groupSql = new StringBuilder("SELECT cgid as id, cgname as label FROM  w_customer_group where 1 = 1 ");
 
         /**
-         * 根据客户信息表和客户分组表双表关联查询 : "merchantNumber":"商户id" , "merchantName":"商户姓名"
+         * 根据客户信息表和客户分组表双表关联查询 : "merchantNumber":"商户id" , "merchantName":"商户姓名" , "praent_id" : 父类id
          */
         StringBuilder customerSql = new StringBuilder("SELECT wc.cgid, wc.cid as id, wc.cname as label FROM w_customer wc, w_customer_group wcg WHERE wc.cgid = wcg.cgid ");
 

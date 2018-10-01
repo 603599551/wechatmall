@@ -61,7 +61,7 @@ public class AccessFilter implements Filter{
 			}
 		}
 
-		if(servletPath.startsWith("/mgr/mobile/") ){
+		if(servletPath.startsWith("/wm/mobile/") ){
 			if(usu.getUserBean()==null){
 				JsonHashMap jhm = new JsonHashMap();
 				jhm.putCode(0).putMessage("登录超时，请重新登录！");

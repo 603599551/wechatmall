@@ -116,7 +116,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
             params.add(groupId);
         }
 
-        sql=sql.append(" ORDER BY c.ccreate_time ASC");
+        sql=sql.append(" ORDER BY c.ccreate_time ASC ,c.ctype DESC");
 
         try{
             //分页查询
