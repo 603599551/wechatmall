@@ -5,6 +5,7 @@ import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import easy.util.DateTool;
 import easy.util.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
@@ -283,7 +284,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
         }
 
         try{
-            Db.update("UPDATE w_customer SET cgid=?,cremark=? WHERE cid=?",group,desc,id);
+            Db.update("UPDATE w_customer SET cgid=?,cremark=?,cmodify_time=? WHERE cid=?",group,desc, DateTool.GetDateTime(),id);
             jhm.putCode(1).putMessage("修改成功");
         }catch (ActiveRecordException e){
             e.printStackTrace();

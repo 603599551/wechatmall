@@ -103,7 +103,7 @@ public class OrderCtrl extends BaseCtrl{
              * 收货人姓名:receiverName, 收货人电话:phone, 收货地址:address, 应付价格:originalPrice, 实付价格:presentPrice, 订单状态:status
              * 订单状态对应中文 : statusName ,客户类型对应中文 : typeName
              */
-            String select = "SELECT wo.oid AS orderId, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, wo.ooriginal_sum AS originalPrice, wo.ocurrent_sum AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
+            String select = "SELECT wo.oid AS orderId, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, FORMAT(wo.ooriginal_sum, 2)AS originalPrice, FORMAT(wo.ocurrent_sum, 2)AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
 
             StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid , o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid ");
 
@@ -126,24 +126,23 @@ public class OrderCtrl extends BaseCtrl{
                 params.add(status);
             }
 
-            if(!StringUtils.isEmpty(customerName)){
+            if(!StringUtils.isEmpty(customerName)) {
                 customerName = "%" + customerName + "%";
                 sql.append(" and o.oname like ? ");
                 params.add(customerName);
             }
+                sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ");
 
-            sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ");
 
-
-            Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
-            jhm.put("data", page);
-            jhm.putCode(1);
-        } catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常！");
+                Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
+                jhm.put("data", page);
+                jhm.putCode(1);
+            } catch (Exception e){
+                e.printStackTrace();
+                jhm.putCode(-1).putMessage("服务器发生异常！");
+            }
+            renderJson(jhm);
         }
-        renderJson(jhm);
-    }
 
     /**
      * @author liushiwen
@@ -217,14 +216,14 @@ public class OrderCtrl extends BaseCtrl{
                  * 根据订单表w_orderform和客户信息表w_customer双表关联查询: 订单id : orderId , 客户类型 : customerType , 物流类型 : transportType
                  * 支付类型 : payType , 订单原总价 : orderOriginalSum , 订单应付金额 : orderPresentSum , 支付类型名称 : payTypeName 还有个类型相应的中文
                  */
-                String orderSearch  = "SELECT wo.oid as orderId, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
+                String orderSearch  = "SELECT wo.oid as orderId, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType,FORMAT(wo.ooriginal_sum,2)as orderOriginalSum,FORMAT(wo.ocurrent_sum,2)as orderPresentSum,wo.ocreate_time AS createTime, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
                 Record record = Db.findFirst(orderSearch, orderId, orderId);
 
                 /**
                  * 根据订单表w_orderform和订单详情表w_orderform_detail双表关联查询: 订单商品名称 : name , 订单商品原价 : originalPrice
                  * 订单商品现价 : presentPrice , 订单商品数量 : number , 订单商品小结 : singleSum
                  */
-                String orderDetailSearch = "select wod.odname as name, wod.odoriginal_price as originalPrice, wod.odcurrent_price as presentPrice, wod.odquantity as number, (wod.odoriginal_price * wod.odquantity)as singleSum from w_orderform wo, w_orderform_detail wod, w_customer wc where wo.oid = ? and wod.oid = wo.oid ";
+                String orderDetailSearch = "select wod.odname as name,FORMAT(wod.odoriginal_price,2)AS originalPrice,FORMAT(wod.odcurrent_price,2)as presentPrice, wod.odquantity as number,FORMAT((wod.odoriginal_price * wod.odquantity),2)as singleSum from w_orderform wo, w_orderform_detail wod, w_customer wc where wo.oid = ? and wod.oid = wo.oid ";
                 List<Record> recordList = Db.find(orderDetailSearch, orderId);
                 jhm.put("data", record);
                 jhm.put("products", recordList);
@@ -304,72 +303,72 @@ public class OrderCtrl extends BaseCtrl{
     "message": "服务器发生异常！"
      * }
      */
-    public void printOrders(){
-        JsonHashMap jhm = new JsonHashMap();
-
-        String [] orderIdList = getParaValues("orderIdList");
-
-        //进行非空验证
-        if(orderIdList.length == 0 && orderIdList == null){
-            jhm.putCode(0).putMessage("尚未选择订单！");
-            renderJson(jhm);
-            return;
-        }
-
-        StringBuilder order = new StringBuilder(orderIdList[0]);
-        for(int t = 1; t < orderIdList.length; t++){
-            order.append(","+ orderIdList[t]);
-        }
-
-        //检测数据库中是否存在的sql语句
-        String sql = "SELECT count(*) as c from w_orderform where oid IN("+ order.toString() +") ";
-
-        //订单id
-        String orderId = "";
-
-        List<Record> result = new ArrayList<>();
-
-        /**
-         *根据订单表w_orderform和客户信息表w_customer查询 : 订单id : orderId , 客户姓名 : customerName , 客户电话 : customerPhone
-         * 收货地址 : address , 订单创建时间 : crateTime , 物流类型 : transportType , 支付方式 : payType
-         * 订单原总价 : orderOriginalSum , 订单总现价 : orderPresentSum , 订单支付状态 : orderPayType
-         */
-        String orderSearch = "SELECT wo.oid as orderId, wc.cname as customerName, wo.ostatus as orderPayStatus, wc.cphone as customerPhone, wo.oaddress as address, wo.ocreate_time as crateTime, wo.otransport_type as transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum FROM w_orderform wo, w_customer wc where wo.oid IN("+ order.toString() +") and wc.cid = wo.cid";
-
-        /**
-         *根据订单表w_orderform和订单详情表w_orderfrom_detail查询 : 商品名称 : name , 商品所属订单号 ： oid
-         * 订单商品原价 : originalPrice , 订单商品现价 : presentPrice , 订单商品数量 : number
-         */
-        String goodsSearch = "select wod.odname as name,wo.oid as orderId, wod.pid as productId, wod.odcurrent_price as presentPrice, wod.odquantity as number from w_orderform wo, w_orderform_detail wod, w_customer wc where wo.oid IN ("+ order.toString() +") and wod.oid = wo.oid ";
-
-        try {
-            Record r = Db.findFirst(sql);
-            if(StringUtils.equals(r.getStr("c"),String.valueOf(orderIdList.length))){
-                List<Record> recordList = Db.find(orderSearch);
-                List<Record> records = Db.find(goodsSearch);
-
-                //查出来之后对数据进行分类
-                for(int i = 0; i < orderIdList.length; i++){
-                    orderId = orderIdList[i];
-                    for(int j = 0; j < records.size() ; j++){
-                        if(StringUtils.equals(records.get(j).getStr("orderId"), orderId)){
-                            result.add(records.get(j));
-                        }
-                    }
-                    recordList.get(i).set("productsList", result);
-                    result = new ArrayList<>();
-                }
-                jhm.putCode(1).put("list", recordList);
-            } else {
-                jhm.putCode(0).putMessage("订单记录缺失！");
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器出错！");
-        }
-        renderJson(jhm);
-        //renderJson("{\"code\":1,\"list\":[{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"51564157854\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]},{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"15615648748794\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]}]}");
-    }
+//    public void printOrders(){
+//        JsonHashMap jhm = new JsonHashMap();
+//
+//        String [] orderIdList = getParaValues("orderIdList");
+//
+//        //进行非空验证
+//        if(orderIdList.length == 0 && orderIdList == null){
+//            jhm.putCode(0).putMessage("尚未选择订单！");
+//            renderJson(jhm);
+//            return;
+//        }
+//
+//        StringBuilder order = new StringBuilder(orderIdList[0]);
+//        for(int t = 1; t < orderIdList.length; t++){
+//            order.append(","+ orderIdList[t]);
+//        }
+//
+//        //检测数据库中是否存在的sql语句
+//        String sql = "SELECT count(*) as c from w_orderform where oid IN("+ order.toString() +") ";
+//
+//        //订单id
+//        String orderId = "";
+//
+//        List<Record> result = new ArrayList<>();
+//
+//        /**
+//         *根据订单表w_orderform和客户信息表w_customer查询 : 订单id : orderId , 客户姓名 : customerName , 客户电话 : customerPhone
+//         * 收货地址 : address , 订单创建时间 : crateTime , 物流类型 : transportType , 支付方式 : payType
+//         * 订单原总价 : orderOriginalSum , 订单总现价 : orderPresentSum , 订单支付状态 : orderPayType
+//         */
+//        String orderSearch = "SELECT wo.oid as orderId, wc.cname as customerName, wo.ostatus as orderPayStatus, wc.cphone as customerPhone, wo.oaddress as address, wo.ocreate_time as crateTime, wo.otransport_type as transportType, wo.opay_type as payType, wo.ooriginal_sum as orderOriginalSum, wo.ocurrent_sum as orderPresentSum FROM w_orderform wo, w_customer wc where wo.oid IN("+ order.toString() +") and wc.cid = wo.cid";
+//
+//        /**
+//         *根据订单表w_orderform和订单详情表w_orderfrom_detail查询 : 商品名称 : name , 商品所属订单号 ： oid
+//         * 订单商品原价 : originalPrice , 订单商品现价 : presentPrice , 订单商品数量 : number
+//         */
+//        String goodsSearch = "select wod.odname as name,wo.oid as orderId, wod.pid as productId, wod.odcurrent_price as presentPrice, wod.odquantity as number from w_orderform wo, w_orderform_detail wod, w_customer wc where wo.oid IN ("+ order.toString() +") and wod.oid = wo.oid ";
+//
+//        try {
+//            Record r = Db.findFirst(sql);
+//            if(StringUtils.equals(r.getStr("c"),String.valueOf(orderIdList.length))){
+//                List<Record> recordList = Db.find(orderSearch);
+//                List<Record> records = Db.find(goodsSearch);
+//
+//                //查出来之后对数据进行分类
+//                for(int i = 0; i < orderIdList.length; i++){
+//                    orderId = orderIdList[i];
+//                    for(int j = 0; j < records.size() ; j++){
+//                        if(StringUtils.equals(records.get(j).getStr("orderId"), orderId)){
+//                            result.add(records.get(j));
+//                        }
+//                    }
+//                    recordList.get(i).set("productsList", result);
+//                    result = new ArrayList<>();
+//                }
+//                jhm.putCode(1).put("list", recordList);
+//            } else {
+//                jhm.putCode(0).putMessage("订单记录缺失！");
+//            }
+//        } catch (Exception e){
+//            e.printStackTrace();
+//            jhm.putCode(-1).putMessage("服务器出错！");
+//        }
+//        renderJson(jhm);
+//        //renderJson("{\"code\":1,\"list\":[{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"51564157854\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]},{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"15615648748794\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]}]}");
+//    }
 
     public void setOrderStatusById(){
         JsonHashMap jhm = new JsonHashMap();

@@ -76,7 +76,7 @@ public class PriceCtrl extends BaseCtrl{
          * 根据商品表w_product和商品现价表w_product_currentPrice关联查询 : 商品名称 : productName
          * 商品原价 : originalPrice , 商品现价 : presentPrice
          * */
-        String sql = "SELECT wp.pname as productName, wp.price as originalPrice, wpc.pcpcurrent_price as presentPrice,wpc.pcpid AS goodsId FROM w_product_currentprice wpc, w_product wp WHERE wpc.pid = wp.pid and wpc.cgid = ?";
+        String sql = "SELECT wp.pname as productName,FORMAT(wp.price,2)as originalPrice,FORMAT(wpc.pcpcurrent_price,2)as presentPrice,wpc.pcpid AS goodsId FROM w_product_currentprice wpc, w_product wp WHERE wpc.pid = wp.pid and wpc.cgid = ?";
 
         try {
             List<Record> recordList = Db.find(sql, groupId);

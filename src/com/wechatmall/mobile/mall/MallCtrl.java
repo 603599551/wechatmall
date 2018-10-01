@@ -91,9 +91,9 @@ public class MallCtrl extends BaseCtrl {
              * 根据w_product_currentprice, w_customer 和 w_customer_group三表关联查询：商品id：goodsId, 商品名称name,
              * 商品原价:originalPrice, 商品现价:presentPrice, 商品标签:label, 客户类型:customerType
              */
-            String sql = "SELECT wp.pid as goodsId, wp.pname as name, pc.pcname , wp.price as originalPrice, w.pcpcurrent_price as presentPrice, wp.picture as pic, wp.pkeyword, w.ctype from w_product_category pc, w_product wp, (SELECT pid, wpc.cgid, ctype, wpc.pcpcurrent_price from (SELECT pid, cgid, pcpcurrent_price FROM w_product_currentprice)wpc ,(SELECT cgid, ctype FROM w_customer WHERE cid = ?)wc WHERE wpc.cgid = wc.cgid)w where w.pid = wp.pid and pc.pcid = wp.pcid ORDER BY pcname";
+            String sql = "SELECT wp.pid as goodsId, wp.pname as name, pc.pcname ,FORMAT(wp.price,2)AS originalPrice,FORMAT(w.pcpcurrent_price,2)as presentPrice, wp.picture as pic, wp.pkeyword, w.ctype from w_product_category pc, w_product wp, (SELECT pid, wpc.cgid, ctype, wpc.pcpcurrent_price from (SELECT pid, cgid, pcpcurrent_price FROM w_product_currentprice)wpc ,(SELECT cgid, ctype FROM w_customer WHERE cid = ?)wc WHERE wpc.cgid = wc.cgid)w where w.pid = wp.pid and pc.pcid = wp.pcid ORDER BY pcname";
             List<Record> recordList = Db.find(sql, userId);
-            if(recordList == null){
+            if(recordList.size() == 0){
                 jhm.putCode(0).putMessage("商品为空！");
                 renderJson(jhm);
                 return;
@@ -223,7 +223,7 @@ public class MallCtrl extends BaseCtrl {
              *查询商品详细信息
              *查询w_product表中pname,pcost,price,picture,pintroduction,pdetail,pkeyword字段。
              */
-            String sql = "select wp.pname name, wp.price originalPrice,wpc.pcpcurrent_price presentPrice, wp.picture url, wp.pintroduction desTit, wp.pdetail detail, wp.pkeyword types from w_product wp, w_product_currentprice wpc where wp.pid = wpc.pid and wpc.cgid = ( select cgid from w_customer where cid = ? ) and wp.pid = ?";
+            String sql = "select wp.pname name,FORMAT(wp.price,2)AS originalPrice,FORMAT(wpc.pcpcurrent_price,2)AS presentPrice, wp.picture url, wp.pintroduction desTit, wp.pdetail detail, wp.pkeyword types from w_product wp, w_product_currentprice wpc where wp.pid = wpc.pid and wpc.cgid = ( select cgid from w_customer where cid = ? ) and wp.pid = ?";
             Record viewGoods = Db.findFirst(sql,userId,goodsId);
             if (viewGoods != null){
                 String []types=viewGoods.getStr("types").split(",");

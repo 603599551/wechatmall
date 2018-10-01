@@ -350,6 +350,7 @@ public class UserCtrl extends BaseCtrl{
         modifyUserById.set("name", name);
         modifyUserById.set("job_id", job);
         modifyUserById.set("status", status);
+        modifyUserById.set("modify_time", DateTool.GetDateTime());
 
         try{
             /**

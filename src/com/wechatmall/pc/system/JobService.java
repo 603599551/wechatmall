@@ -82,7 +82,6 @@ public class JobService extends BaseService{
     public JsonHashMap modifyJobSer(Map paraMap){
         JsonHashMap jhm=new JsonHashMap();
         String time = DateTool.GetDateTime();
-        String uuid = UUIDTool.getUUID();
 
         //职务id
         String jobId = (String) paraMap.get("jobId");
