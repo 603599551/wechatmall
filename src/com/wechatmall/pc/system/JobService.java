@@ -1,6 +1,7 @@
 package com.wechatmall.pc.system;
 
 import com.common.controllers.BaseCtrl;
+import com.common.service.BaseService;
 import com.jfinal.aop.Before;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -15,14 +16,14 @@ import utils.bean.JsonHashMap;
 import java.util.Map;
 
 
-public class JobService extends BaseCtrl{
+public class JobService extends BaseService{
      /*
     增加事务
      */
     @Before(Tx.class)
     public JsonHashMap addJobSer(Map paraMap){
         JsonHashMap jhm=new JsonHashMap();
-        //UserSessionUtil usu=new UserSessionUtil(getRequest());
+
         String time = DateTool.GetDateTime();
         String uuid = UUIDTool.getUUID();
         //职务名称
@@ -31,12 +32,10 @@ public class JobService extends BaseCtrl{
         String jobDesc = (String) paraMap.get("jobDesc");
         //职务权限
         JSONArray jobPermission = (JSONArray) paraMap.get("jobPermissionList");
+        String usu = (String) paraMap.get("userId");
         //根据系统用户id，查找对应的姓名
         String sql = "select username from w_admin where username = ?";
-
-
-        Record adminNameRecord = Db.findFirst(sql,"1");
-
+        Record adminNameRecord = Db.findFirst(sql,usu);
 
         String adminName = adminNameRecord.get("username");
         //判断新增的职务是否重复
@@ -51,16 +50,10 @@ public class JobService extends BaseCtrl{
         jobRecord.set("name",jobName);
         jobRecord.set("desc",jobDesc);
         jobRecord.set("create_time", time);
-
-        jobRecord.set("creator","1");
-
-        jobRecord.set("creator","1");
+        jobRecord.set("creator",usu);
         jobRecord.set("creator_name",adminName);
         jobRecord.set("modify_time",time);
-
-        jobRecord.set("modifier","1");
-
-        jobRecord.set("modifier","1");
+        jobRecord.set("modifier",usu);
         jobRecord.set("modifier_name",adminName);
         //在职务表里添加数据
         boolean jobFlag = Db.save("h_job",jobRecord);
@@ -74,9 +67,7 @@ public class JobService extends BaseCtrl{
             jobMenuRecord.set("menu_id",jobPermission.get(i));
             jobMenuRecord.set("job_id",jobRecord.get("id"));
             jobMenuRecord.set("access","1");
-
-           // jobMenuRecord.set("creator",usu.getUserId());
-            jobMenuRecord.set("creator","1");
+            jobMenuRecord.set("creator",usu);
             jobMenuRecord.set("creator_name",adminName);
             jobMenuRecord.set("create_time",time);
             //在职务权限表里添加数据
@@ -89,9 +80,9 @@ public class JobService extends BaseCtrl{
     @Before(Tx.class)
     public JsonHashMap modifyJobSer(Map paraMap){
         JsonHashMap jhm=new JsonHashMap();
-     //   UserSessionUtil usu=new UserSessionUtil(getRequest());
         String time = DateTool.GetDateTime();
         String uuid = UUIDTool.getUUID();
+
         //职务id
         String jobId = (String) paraMap.get("jobId");
         //职务名称
@@ -100,13 +91,10 @@ public class JobService extends BaseCtrl{
         String jobDesc = (String) paraMap.get("jobDesc");
         //职务权限
         JSONArray jobPermission = (JSONArray) paraMap.get("jobPermissionList");
-
+        String usu = (String) paraMap.get("userId");
         //根据系统用户id，查找对应的姓名
         String sql = "select username from w_admin where username = ?";
-
-
-        Record adminNameRecord = Db.findFirst(sql,"1");
-
+        Record adminNameRecord = Db.findFirst(sql,usu);
 
         String adminName = adminNameRecord.get("username");
 
@@ -123,9 +111,7 @@ public class JobService extends BaseCtrl{
         modifyJob.set("name",jobName);
         modifyJob.set("desc",jobDesc);
         modifyJob.set("modify_time",time);
-
-        modifyJob.set("modifier","1");
-
+        modifyJob.set("modifier",usu);
         modifyJob.set("modifier_name",adminName);
 
         boolean jobFlag = Db.update("h_job","id",modifyJob);
@@ -146,10 +132,7 @@ public class JobService extends BaseCtrl{
             jobMenuRecord.set("menu_id",jobPermission.get(i));
             jobMenuRecord.set("job_id",jobId);
             jobMenuRecord.set("access","1");
-
-            //jobMenuRecord.set("creator",usu.getUserId());
-
-            jobMenuRecord.set("creator","1");
+            jobMenuRecord.set("creator",usu);
             jobMenuRecord.set("creator_name",adminName);
             jobMenuRecord.set("create_time",time);
             //在职务权限表里添加数据

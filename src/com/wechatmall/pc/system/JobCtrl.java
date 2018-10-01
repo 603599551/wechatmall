@@ -74,6 +74,8 @@ public class JobCtrl extends BaseCtrl{
         String jobPermission = getPara("jobPermission");
         JSONArray jobPermissionList = JSONArray.fromObject(jobPermission);
 
+        UserSessionUtil usu=new UserSessionUtil(getRequest());
+
         //非空验证
         if(StringUtils.isEmpty(jobName)){
             jhm.putCode(0).putMessage("职务名称为空!");
@@ -92,7 +94,9 @@ public class JobCtrl extends BaseCtrl{
         }
 
         try{
+            String userId=usu.getUserId();
             Map paraMap =new HashMap();
+            paraMap.put("userId", userId);
             paraMap.put("jobName", jobName);
             paraMap.put("jobDesc", jobDesc);
             paraMap.put("jobPermissionList", jobPermissionList);
@@ -162,7 +166,7 @@ public class JobCtrl extends BaseCtrl{
 
     public void modifyJobById(){
         JsonHashMap jhm = new JsonHashMap();
-      //  UserSessionUtil usu=new UserSessionUtil(getRequest());
+        UserSessionUtil usu=new UserSessionUtil(getRequest());
         String time = DateTool.GetDateTime();
         String uuid = UUIDTool.getUUID();
         /**
@@ -205,7 +209,9 @@ public class JobCtrl extends BaseCtrl{
             return;
         }
         try{
+            String userId=usu.getUserId();
             Map paraMap =new HashMap();
+            paraMap.put("userId", userId);
             paraMap.put("jobId",jobId);
             paraMap.put("jobName", jobName);
             paraMap.put("jobDesc", jobDesc);
