@@ -56,18 +56,22 @@ public class ProductManageService {
             }
 
             /**
-             * 根据w_prodcut表查出来商品id，商品原价，商品备注
+             * 根据w_customer_group查询分组数量
              */
-            String sql = "SELECT pid,price AS pcpcurrent_price,pdesc AS pcpdesc,cgid,pcreate_time AS pcpcreate_time,pmodify_time AS pcpmodify_time,pcreator_id AS pcpcreator_id,pmodifier_id AS pcpmodifier_id from w_product,w_customer";
-            List<Record> recordList = Db.find(sql);
-
-            for(Record r : recordList){
+            List<Record> records = Db.find("SELECT cgid FROM w_customer_group");
+            for (Record r :  records){
                 r.set("pcpid", UUIDTool.getUUID());
+                r.set("pid", pid);
+                r.set("pcpcurrent_price", price);
+                r.set("pcpcreate_time", DateTool.GetDateTime());
+                r.set("pcpmodify_time", DateTool.GetDateTime());
+                r.set("pcpcreator_id", usu.getUserId());
+                r.set("pcpmodifier_id", usu.getUserId());
             }
 
-            int[] i = Db.batchSave("w_product_currentprice",recordList,recordList.size());
+            int[] i = Db.batchSave("w_product_currentprice",records,records.size());
 
-            if(i.length != recordList.size()){
+            if(i.length != records.size()){
                 jhm.putCode(0).putMessage("插入w_product_currentprice失败!");
                 return jhm;
             }
