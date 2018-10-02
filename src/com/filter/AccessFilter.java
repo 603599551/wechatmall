@@ -45,7 +45,7 @@ public class AccessFilter implements Filter{
 //		chain.doFilter(request, response);
 	}
 
-	private static final String[] STATIC_SUCCESS_RESOURCES = {"/static","/login","/index","/mobile"};
+	private static final String[] STATIC_SUCCESS_RESOURCES = {"/static","/login","/index","/mobile","/wx"};
 
 	private boolean isLong4Hrms(HttpServletRequest req,HttpServletResponse resp){
 		String servletPath = req.getServletPath().toLowerCase();
