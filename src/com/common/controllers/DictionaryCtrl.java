@@ -16,6 +16,7 @@ import java.util.List;
 public class DictionaryCtrl extends BaseCtrl {
 
     /**
+     * url   http://localhost:8080/weChatMallMgr/mgr/dict/getDictIncludeAll
      * 第一项为“全部”
      * 传输参数返回list
      * 参数是字典值
@@ -39,6 +40,7 @@ public class DictionaryCtrl extends BaseCtrl {
     }
 
     /**
+     * url   http://localhost:8080/weChatMallMgr/mgr/dict/getDictIncludeChoos
      * 第一项为“请选择”
      */
     public void getDictIncludeChoose() {
@@ -60,6 +62,7 @@ public class DictionaryCtrl extends BaseCtrl {
     }
 
     /**
+     * url   http://localhost:8080/weChatMallMgr/mgr/dict/getDict
      * 只返回数据库中的字典值
      */
     public void getDict() {

@@ -32,7 +32,7 @@ public class FinanceCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/finance/listBill
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/finance/listBill
      * 请求方式     post
      *
      * 请求参数：

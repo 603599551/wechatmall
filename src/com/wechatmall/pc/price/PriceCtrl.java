@@ -23,7 +23,7 @@ public class PriceCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listPricesByGroupId
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/price/listPricesByGroupId
      * 请求方式     post
      *
      * 请求参数：
@@ -101,7 +101,7 @@ public class PriceCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/submitPrices
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/price/submitPrices
      * 请求方式     post
      *
      * 请求参数：
@@ -189,7 +189,7 @@ public class PriceCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listGroupsAndCustomers
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/price/listGroupsAndCustomers
      * 请求方式     post
      *
      * 请求参数：

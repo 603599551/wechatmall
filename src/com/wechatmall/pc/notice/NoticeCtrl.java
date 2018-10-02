@@ -28,7 +28,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addNotice
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/notice/addNotice
      * 请求方式     post
      *
      * 请求参数：
@@ -110,7 +110,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/updateNoticeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/notice/updateNoticeById
      * 请求方式     post
      *
      * 请求参数：
@@ -197,7 +197,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteNoticeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/notice/deleteNoticeById
      * 请求方式     post
      *
      * 请求参数：
@@ -262,7 +262,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listNotice
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/notice/listNotice
      * 请求方式     post
      *
      * 请求参数：
@@ -371,7 +371,7 @@ public class NoticeCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showNoticeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/notice/showNoticeById
      * 请求方式     post
      *
      * 请求参数：
