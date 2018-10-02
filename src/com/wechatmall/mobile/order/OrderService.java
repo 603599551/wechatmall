@@ -1,5 +1,6 @@
 package com.wechatmall.mobile.order;
 
+import com.alibaba.fastjson.JSONObject;
 import com.common.service.BaseService;
 import com.jfinal.aop.Before;
 import com.jfinal.plugin.activerecord.Db;
@@ -8,10 +9,8 @@ import com.jfinal.plugin.activerecord.tx.Tx;
 import easy.util.DateTool;
 import easy.util.UUIDTool;
 import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import utils.bean.JsonHashMap;
 
-import java.util.List;
 import java.util.Map;
 
 public class OrderService extends BaseService {
@@ -26,13 +25,13 @@ public class OrderService extends BaseService {
         String address = (String) paraMap.get("address");
         String name = (String) paraMap.get("name");
         String phone = (String) paraMap.get("phone");
-        String goodsString = (String) paraMap.get("goodsString");
+        String goodsString = (String)paraMap.get("goodsString");
         String receivingMethod = (String) paraMap.get("receivingMethod");
         String payMethod = (String) paraMap.get("payMethod");
         String orderOriginalSumStr = (String) paraMap.get("orderOriginalSumStr");
         String orderCurrentSumStr = (String) paraMap.get("orderCurrentSumStr");
 
-        JSONArray goodsList = JSONArray.fromObject(goodsString);
+        JSONArray goodsStringList = JSONArray.fromObject(goodsString);
         //订单原总价
         float orderOriginalSum = Float.valueOf(orderOriginalSumStr);
         //订单现总价
@@ -73,20 +72,22 @@ public class OrderService extends BaseService {
         boolean orderFormDetailFlag = false;
 
         String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
-        //获取商品
-        for(int i = 0; i < goodsList.size(); i++){
+        //获取商品  goodsStringList 里面是{{id,name..}{id,name..}{id,name..}}
+        for(int i = 0; i < goodsStringList.size(); i++){
             //遍历json数组，转换成json对象
-            JSONObject goodsListJSON = goodsList.getJSONObject(i);
-            Record product = Db.findFirst(sql,goodsListJSON.get("id"));
+          //  String goodsListString  = (String) goodsStringList.get(i);
+            //JSONObject jsonObject = JSONObject.parseObject(goodsListString);
+            //goodsListJSON  {id,name} 遍历集合
+            Record product = Db.findFirst(sql,goodsStringList.getJSONObject(i).getString("id"));
             w_orderform_detail.set("odid", UUIDTool.getUUID());
             w_orderform_detail.set("oid",w_orderform.get("oid"));
-            w_orderform_detail.set("pid",goodsListJSON.get("id"));
-            w_orderform_detail.set("odname",goodsListJSON.get("name"));
+            w_orderform_detail.set("pid",goodsStringList.getJSONObject(i).getString("id"));
+            w_orderform_detail.set("odname",goodsStringList.getJSONObject(i).getString("goodsName"));
             w_orderform_detail.set("odoriginal_price",product.get("odoriginal_price"));
-            w_orderform_detail.set("odcurrent_price", goodsListJSON.get("price"));
-            w_orderform_detail.set("odquantity",goodsListJSON.get("number"));
+            w_orderform_detail.set("odcurrent_price",goodsStringList.getJSONObject(i).getString("goodsPresentPrice"));
+            w_orderform_detail.set("odquantity",goodsStringList.getJSONObject(i).getString("goodsNum"));
             w_orderform_detail.set("odkeyword",product.get("odkeyword"));
-            Double sum =  (Double) goodsListJSON.get("price") * (Integer) goodsListJSON.get("number");
+            Double sum =   Double.valueOf(String.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice")))  * Integer.valueOf(String.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice")));
             w_orderform_detail.set("odsingle_sum",sum);
             w_orderform_detail.set("odcreate_time",DateTool.GetDateTime());
             w_orderform_detail.set("odmodify_time",DateTool.GetDateTime());
