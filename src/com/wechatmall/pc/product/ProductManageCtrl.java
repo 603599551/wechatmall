@@ -237,6 +237,7 @@ public class ProductManageCtrl extends BaseCtrl {
             record.set("pmodify_time", DateTool.GetDateTime());
             record.set("pcreator_id", usu.getUserId());
             record.set("pmodifier_id", usu.getUserId());
+            record.set("pstatus", "on_sale");
 
             try {
                 boolean flag = Db.save("w_product", record);
@@ -365,6 +366,7 @@ public class ProductManageCtrl extends BaseCtrl {
             record.set("pdetail", content);
             record.set("pmodify_time", DateTool.GetDateTime());
             record.set("pmodifier_id", usu.getUserId());
+            record.set("pstatus","on_sale");
 
             boolean flag = Db.update("w_product","pid", record);
             if(flag){
