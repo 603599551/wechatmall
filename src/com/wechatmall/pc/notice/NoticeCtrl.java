@@ -345,7 +345,7 @@ public class NoticeCtrl extends BaseCtrl {
             sql += " and ntype = ? ";
             params.add(type);
         }
-        sql += "order by nmodify_time desc";
+        sql += "order by ncreate_time desc";
         try{
             /**
               * 查询通知列表
