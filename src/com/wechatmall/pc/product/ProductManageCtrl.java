@@ -90,11 +90,11 @@ public class ProductManageCtrl extends BaseCtrl {
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
         /**
-         * 通过商品信息表w_product，商品分类表w_product_category和客户信息表w_customer三表关联查询 : "id":"商品id" , "type":"所属分类名称",
+         * 通过商品信息表w_product，商品分类表w_product_category和客户信息表w_customer三表关联查询 : "id":"商品id" , "type":"所属分类名称", "classId":"所属分类id"
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间" "modifyTime" : "修改时间"
          * "value":"上架状态对应的value值" , "introduction":"简要描述" , "keyword":["keyword1","keyword2","keyword3"] , "detail":"详细内容",
          */
-        String select = "SELECT pid as id, wpc.pcname as type, wp.pname as name, wp.picture as pictureUrl,FORMAT(wp.price,2)AS price, wp.pkeyword as keyword, wp.pintroduction as introduction, wp.pdetail as detail, wd.name as status, wp.pstatus as value, wc.cname as creator, wp.pmodify_time as modifyTime, wp.pcreate_time as createTime ";
+        String select = "SELECT pid as id, wpc.pcname as type, wpc.pcid AS classId, wp.pname as name, wp.picture as pictureUrl,FORMAT(wp.price,2)AS price, wp.pkeyword as keyword, wp.pintroduction as introduction, wp.pdetail as detail, wd.name as status, wp.pstatus as value, wc.cname as creator, wp.pmodify_time as modifyTime, wp.pcreate_time as createTime ";
 
         StringBuilder sql = new StringBuilder(" FROM w_product wp, w_product_category wpc, w_customer wc, w_dictionary wd where wp.pcid = wpc.pcid and wp.pcreator_id = wc.cid and wd.value = wp.pstatus ");
 
@@ -176,7 +176,7 @@ public class ProductManageCtrl extends BaseCtrl {
             String name = getPara("name");
             String price = getPara("price");
             String keyword = getPara("keyword");
-            String pictureUrl = getPara("pictureUrl");
+            String pictureUrl = getPara("picture");
             String content = getPara("content");
             String sketch = getPara("sketch");
 
@@ -303,7 +303,7 @@ public class ProductManageCtrl extends BaseCtrl {
         String name = getPara("name");
         String price = getPara("price");
         String keyword = getPara("keyword");
-        String picture = getPara("pictureUrl");
+        String picture = getPara("picture");
         String content = getPara("content");
         String sketch = getPara("sketch");
 

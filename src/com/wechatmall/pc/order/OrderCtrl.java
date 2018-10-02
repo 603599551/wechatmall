@@ -128,7 +128,7 @@ public class OrderCtrl extends BaseCtrl{
 
             if(!StringUtils.isEmpty(customerName)) {
                 customerName = "%" + customerName + "%";
-                sql.append(" and o.oname like ? ");
+                sql.append(" and wc.cname like ? ");
                 params.add(customerName);
             }
                 sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ");
