@@ -188,6 +188,7 @@ public class OrderCtrl extends BaseCtrl {
      */
     public void placeOrder(){
         JsonHashMap jhm = new JsonHashMap();
+        Map map=getParaMap();
         /**
          * 接收前端参数
          */
@@ -201,10 +202,11 @@ public class OrderCtrl extends BaseCtrl {
         String phone = getPara("phone");
         //订单商品列表
         String goodsString = getPara("goodsList");
+        //JSONArray goodsStringList = JSONArray.fromObject(goodsString);
         //收货方式
         String receivingMethod = getPara("receivingMethod");
         //支付方式
-        String payMethod = getPara("payMethod");
+        String payMethod = getPara("payMothod");
         //订单原总价
         String orderOriginalSumStr = getPara("orderOriginalSum");
         //订单现总价
@@ -231,8 +233,8 @@ public class OrderCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(goodsString)){
-            jhm.putCode(0).putMessage("订单商品列表为空！");
+        if(StringUtils.isEmpty(goodsString)){
+            jhm.putCode(0).putMessage("订单商品列表为空!");
             renderJson(jhm);
             return;
         }
