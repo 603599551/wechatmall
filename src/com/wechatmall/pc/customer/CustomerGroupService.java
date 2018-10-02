@@ -68,4 +68,18 @@ public class CustomerGroupService extends BaseService {
 
         return jhm;
     }
+
+    @Before(Tx.class)
+    public JsonHashMap deleteCustomerGroupById(Map paraMap){
+        JsonHashMap jhm=new JsonHashMap();
+
+        String id = (String) paraMap.get("id");
+
+        Db.update("UPDATE w_customer SET cgid=(SELECT cgid FROM w_customer_group WHERE cgname='默认组') WHERE cgid=?",id);
+        Db.delete("DELETE FROM w_customer_group WHERE cgid=?",id);
+        Db.delete("DELETE FROM w_product_currentprice WHERE cgid=?",id);
+
+        jhm.putCode(1).putMessage("删除成功");
+        return jhm;
+    }
 }

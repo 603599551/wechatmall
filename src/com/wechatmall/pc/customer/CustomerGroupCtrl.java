@@ -169,11 +169,11 @@ public class CustomerGroupCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(sort)){
-            jhm.putCode(0).putMessage("分组排序为空");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(sort)){
+//            jhm.putCode(0).putMessage("分组排序为空");
+//            renderJson(jhm);
+//            return;
+//        }
 
         try{
             String userId=usu.getUserId();
@@ -251,11 +251,11 @@ public class CustomerGroupCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(sort)){
-            jhm.putCode(0).putMessage("分组排序为空");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(sort)){
+//            jhm.putCode(0).putMessage("分组排序为空");
+//            renderJson(jhm);
+//            return;
+//        }
 
         try{
             Db.update("UPDATE w_customer_group SET cgname=?,cgsort=? WHERE cgid=?",groupName,sort,id);
@@ -317,8 +317,11 @@ public class CustomerGroupCtrl extends BaseCtrl{
         }
 
         try{
-            Db.delete("DELETE FROM w_customer_group WHERE cgid=?",id);
-            jhm.putCode(1).putMessage("删除成功");
+            Map paraMap =new HashMap();
+            paraMap.put("id", id);
+            CustomerGroupService srv = enhance(CustomerGroupService.class);
+            jhm = srv.deleteCustomerGroupById(paraMap);
+           ;
         }catch (ActiveRecordException e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("Record异常");
