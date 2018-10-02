@@ -12,7 +12,9 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ProductManageCtrl class
@@ -223,29 +225,19 @@ public class ProductManageCtrl extends BaseCtrl {
                 return;
             }
 
-            //装商品信息
-            Record record = new Record();
-            record.set("pid", UUIDTool.getUUID());
-            record.set("pcid", type);
-            record.set("pname", name);
-            record.set("price", price);
-            record.set("pkeyword", keyword);
-            record.set("picture", pictureUrl);
-            record.set("pintroduction", sketch);
-            record.set("pdetail", content);
-            record.set("pcreate_time", DateTool.GetDateTime());
-            record.set("pmodify_time", DateTool.GetDateTime());
-            record.set("pcreator_id", usu.getUserId());
-            record.set("pmodifier_id", usu.getUserId());
-            record.set("pstatus", "on_sale");
+            Map paraMap=new HashMap();
+            paraMap.put("type",type);
+            paraMap.put("name",name);
+            paraMap.put("price",price);
+            paraMap.put("keyword",keyword);
+            paraMap.put("pictureUrl",pictureUrl);
+            paraMap.put("content",content);
+            paraMap.put("sketch",sketch);
+            paraMap.put("usu",usu);
 
             try {
-                boolean flag = Db.save("w_product", record);
-                if(flag){
-                    jhm.putCode(1).putMessage("添加成功！");
-                } else {
-                    jhm.putCode(0).putMessage("插入数据库失败！");
-                }
+                ProductManageService pms = enhance(ProductManageService.class);
+                jhm = pms.add(paraMap);
             } catch (Exception e) {
                 e.printStackTrace();
                 jhm.putCode(-1).putMessage("服务器发生异常！");
