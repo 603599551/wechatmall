@@ -31,7 +31,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listCustomerGroup
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/group/listCustomerGroup
      * 请求方式     post
      *
      * 请求参数：
@@ -121,7 +121,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	   http://localhost:8080/wm/pc/customer/addCustomerGroup
+     * URL	   http://localhost:8080/weChatMallMgr/wm/pc/customer/group/addCustomerGroup
      * 请求方式     post
      *
      * 请求参数：
@@ -200,7 +200,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	   http://localhost:8080/wm/pc/customer/updateCustomerGroupById
+     * URL	   http://localhost:8080/weChatMallMgr/wm/pc/customer/group/updateCustomerGroupById
      * 请求方式     post
      *
      * 请求参数：
@@ -275,7 +275,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteCustomerGroupById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/group/deleteCustomerGroupById
      * 请求方式     post
      *
      * 请求参数：
@@ -334,7 +334,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showCustomerGroupById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/group/showCustomerGroupById
      * 请求方式     post
      *
      * 请求参数：

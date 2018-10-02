@@ -75,19 +75,16 @@ public class OrderService extends BaseService {
         //获取商品  goodsStringList 里面是{{id,name..}{id,name..}{id,name..}}
         for(int i = 0; i < goodsStringList.size(); i++){
             //遍历json数组，转换成json对象
-          //  String goodsListString  = (String) goodsStringList.get(i);
-            //JSONObject jsonObject = JSONObject.parseObject(goodsListString);
-            //goodsListJSON  {id,name} 遍历集合
-            Record product = Db.findFirst(sql,goodsStringList.getJSONObject(i).getString("id"));
+            Record product = Db.findFirst(sql,goodsStringList.getJSONObject(i).getString("goodsId"));
             w_orderform_detail.set("odid", UUIDTool.getUUID());
             w_orderform_detail.set("oid",w_orderform.get("oid"));
-            w_orderform_detail.set("pid",goodsStringList.getJSONObject(i).getString("id"));
+            w_orderform_detail.set("pid",goodsStringList.getJSONObject(i).getString("goodsId"));
             w_orderform_detail.set("odname",goodsStringList.getJSONObject(i).getString("goodsName"));
             w_orderform_detail.set("odoriginal_price",product.get("odoriginal_price"));
             w_orderform_detail.set("odcurrent_price",goodsStringList.getJSONObject(i).getString("goodsPresentPrice"));
             w_orderform_detail.set("odquantity",goodsStringList.getJSONObject(i).getString("goodsNum"));
             w_orderform_detail.set("odkeyword",product.get("odkeyword"));
-            Double sum =   Double.valueOf(String.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice")))  * Integer.valueOf(String.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice")));
+            Float sum =   Float.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice"))  * Float.valueOf(goodsStringList.getJSONObject(i).getString("goodsPresentPrice"));
             w_orderform_detail.set("odsingle_sum",sum);
             w_orderform_detail.set("odcreate_time",DateTool.GetDateTime());
             w_orderform_detail.set("odmodify_time",DateTool.GetDateTime());

@@ -28,7 +28,7 @@ public class TransportCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addTransportType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/transport/addTransportType
      * 请求方式     post
      *
      * 请求参数：
@@ -117,7 +117,7 @@ public class TransportCtrl extends BaseCtrl {
 
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"message\":\"添加成功！\"}");
@@ -130,7 +130,7 @@ public class TransportCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/modifyTransportTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/transport/modifyTransportTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -216,7 +216,7 @@ public class TransportCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteTransportTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/transport/deleteTransportTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -281,7 +281,7 @@ public class TransportCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showTransportTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/transport/showTransportTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -348,7 +348,7 @@ public class TransportCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listTransportType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/transport/listTransportType
      * 请求方式     post
      *
      * 请求参数：

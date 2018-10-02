@@ -30,7 +30,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
      *          查询添加，按照客户所在组完全匹配查询
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listCustomer
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/info/listCustomer
      * 请求方式     post
      *
      * 请求参数：
@@ -141,7 +141,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showCustomerById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/info/showCustomerById
      * 请求方式     post
      *
      * 请求参数：
@@ -227,7 +227,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/modifyCustomerById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/info/modifyCustomerById
      * 请求方式     post
      *
      * 请求参数：
@@ -302,7 +302,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/setTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/info/setTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -363,7 +363,10 @@ public class CustomerInfoCtrl extends BaseCtrl{
         //renderJson("{\"code\":\"1\",\"message\":\"设置成功！\"}");
     }
 
-    //商品所属分类下拉列表
+    /**
+     * 商品所属分类下拉列表
+     *  URL	    http://localhost:8080/weChatMallMgr/wm/pc/customer/info/showCustomerGroup
+     * */
     public void showCustomerGroup(){
         JsonHashMap jhm = new JsonHashMap();
 
