@@ -34,7 +34,7 @@ public class JobCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addJob
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/job/addJob
      * 请求方式     post
      *
      * 请求参数：
@@ -111,23 +111,6 @@ public class JobCtrl extends BaseCtrl{
        // renderJson("{\"code\":1,\"message\":\"操作成功\"}");
     }
 
-    private void saveJobMenu(JSONArray jobPermissionList,String jobId,String time,UserSessionUtil usu,String adminName){
-        if(jobPermissionList!=null && jobPermissionList.size()>0){
-            for (int i = 0; i < jobPermissionList.size(); i++) {
-                Record jobMenuRecord = new Record();
-                jobMenuRecord.set("id",UUIDTool.getUUID());
-                jobMenuRecord.set("menu_id",jobPermissionList.get(i));
-                jobMenuRecord.set("job_id",jobId);
-                jobMenuRecord.set("access","1");
-                jobMenuRecord.set("creator",usu.getUserId());
-                jobMenuRecord.set("creator","");
-                jobMenuRecord.set("creator_name",adminName);
-                jobMenuRecord.set("create_time",time);
-                //在职务权限表里添加数据
-                 Db.save("h_author_job_menu",jobMenuRecord);
-            }
-        }
-    }
 
     /**
      * @author liushiwen
@@ -136,7 +119,7 @@ public class JobCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/modifyJobById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/job/modifyJobById
      * 请求方式     post
      *
      * 请求参数：
@@ -218,17 +201,6 @@ public class JobCtrl extends BaseCtrl{
             paraMap.put("jobPermissionList", jobPermissionList);
             JobService srv = enhance(JobService.class);
             jhm = srv.modifyJobSer(paraMap);
-//            for (int i = 0; i < jobPermissionList.size(); i++) {
-//                Record modifyJobMenu = new Record();
-//                modifyJobMenu.set("menu_id", jobPermissionList.get(i));
-//                modifyJobMenu.set("job_id", jobId);
-//                boolean jobMenuFlag = Db.update("h_author_job_menu", "job_id", modifyJobMenu);
-//                if (jobMenuFlag == false) {
-//                    jhm.putCode(0).putMessage("修改失败!");
-//                    renderJson(jhm);
-//                    return;
-//                }
-//            }
         }catch (Exception e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常!");
@@ -244,7 +216,7 @@ public class JobCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteJobById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/job/deleteJobById
      * 请求方式     post
      *
      * 请求参数：
@@ -291,19 +263,9 @@ public class JobCtrl extends BaseCtrl{
             }else{
                 jhm.putMessage("删除成功!");
             }
-//            String sql1 = "DELETE from h_author_job_menu where job_id=?";
-//            int num1 = Db.delete(sql,jobId);
-//            if(num1 <= 0){
-//                jhm.putCode(0).putMessage("删除失败!");
-//                renderJson(jhm);
-//                return;
-//            }else {
-//                jhm.putMessage("删除成功!");
-//            }
-
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
         //renderJson("{\"code\":1,\"message\":\"删除成功\"}");
@@ -316,7 +278,7 @@ public class JobCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showJobById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/job/showJobById
      * 请求方式     post
      *
      * 请求参数：
@@ -416,7 +378,7 @@ public class JobCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showJobList
+     * URL	   http://localhost:8080/weChatMallMgr/wm/pc/system/job/showJobList
      * 请求方式     post
      *
      * 请求参数：
@@ -493,12 +455,15 @@ public class JobCtrl extends BaseCtrl{
             }
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"list\":[{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"},{\"name\":\"职务名称\",\"id\":\"职务id\",\"staffCount\":\"人数\",\"staffsName\":\"人员名字\"}]}");
     }
 
+    /**
+     * URL   http://localhost:8080/weChatMallMgr/wm/pc/system/job/showJobs
+     * */
     public void showJobs(){
         JsonHashMap jhm = new JsonHashMap();
 
@@ -510,7 +475,7 @@ public class JobCtrl extends BaseCtrl{
 
         }catch (Exception e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("服务器发生异常!");
+            jhm.putCode(-1).putMessage("服务器发生异常!");
         }
         renderJson(jhm);
     }

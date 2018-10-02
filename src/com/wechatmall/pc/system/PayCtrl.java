@@ -28,7 +28,7 @@ public class PayCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addPayType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/pay/addPayType
      * 请求方式     post
      *
      * 请求参数：
@@ -116,7 +116,7 @@ public class PayCtrl extends BaseCtrl{
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"message\":\"添加成功！\"}");
@@ -129,7 +129,7 @@ public class PayCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/modifyPayTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/pay/modifyPayTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -201,7 +201,7 @@ public class PayCtrl extends BaseCtrl{
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
@@ -214,7 +214,7 @@ public class PayCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deletePayTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/pay/deletePayTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -269,7 +269,7 @@ public class PayCtrl extends BaseCtrl{
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
       //  renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
@@ -282,7 +282,7 @@ public class PayCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showPayTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/pay/showPayTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -338,7 +338,7 @@ public class PayCtrl extends BaseCtrl{
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
       //  renderJson("{\"code\":1,\"message\":\"查询成功\",\"name\":\"支付方式名称\",\"desc\":\"支付方式备注\"}");
@@ -351,7 +351,7 @@ public class PayCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listPayType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/pay/listPayType
      * 请求方式     post
      *
      * 请求参数：

@@ -34,7 +34,7 @@ public class OrderCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listOrder
+     * URL	  http://localhost:8080/weChatMallMgr/wm/pc/order/listOrder
      * 请求方式     post
      *
      * 请求参数：
@@ -151,7 +151,7 @@ public class OrderCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listOrderDetail
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/order/listOrderDetail
      * 请求方式     post
      *
      * 请求参数：
@@ -246,7 +246,7 @@ public class OrderCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/printOrders
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/order/print/printSingleOrder
      * 请求方式     post
      *
      * 请求参数：
@@ -369,7 +369,10 @@ public class OrderCtrl extends BaseCtrl{
 //        renderJson(jhm);
 //        //renderJson("{\"code\":1,\"list\":[{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"51564157854\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]},{\"orderId\":\"A6464546548945\",\"customerName\":\"小明\",\"customerPhone\":13130005589,\"address\":\"用户地址\",\"createTime\":\"2018-09-16 23:00:00\",\"transportType\":\"物流类型\",\"payType\":\"支付方式\",\"orderOriginalSum\":20,\"orderPresentSum\":19,\"productsList\":[{\"productId\":\"15615648748794\",\"productName\":\"大米\",\"productNum\":1,\"productPrice\":18}]}]}");
 //    }
-
+    /***
+     *
+     * URL  http://localhost:8080/weChatMallMgr/wm/pc/order/setOrderStatusById
+     */
     public void setOrderStatusById(){
         JsonHashMap jhm = new JsonHashMap();
 
@@ -453,6 +456,10 @@ public class OrderCtrl extends BaseCtrl{
         //renderJson("{\"code\":1,\n" + "\"message\":\"上传成功\",\n" + "\"data\":\n" + "    {\"id\":\"cjlkh8gye000aj8g7cgvvwliv\",\"filePath\":\"pdf路径\"}\n" + "}\n");
     }
 
+    /***
+     *
+     * URL  http://localhost:8080/weChatMallMgr/wm/pc/order/exportXls
+     */
     public void exportXls(){
         //订单编号
         String orderNumber = getPara("id");

@@ -29,7 +29,7 @@ public class UserCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/system/user/listUser
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/user/listUser
      * 请求方式     post
      *
      * 请求参数：
@@ -144,7 +144,7 @@ public class UserCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/system/user/addUser
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/user/addUser
      * 请求方式     post
      *
      * 请求参数：
@@ -257,7 +257,7 @@ public class UserCtrl extends BaseCtrl{
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/system/user/modifyUserById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/user/addUser
      * 请求方式     post
      *
      * 请求参数：

@@ -29,7 +29,7 @@ public class StoreCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listStore
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/store/listStore
      * 请求方式     post
      *
      * 请求参数：
@@ -115,7 +115,7 @@ public class StoreCtrl extends BaseCtrl {
 
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
        // renderJson("{\"code\":1,\"data\":{\"totalRow\":1,\"pageNumber\":1,\"firstPage\":true,\"lastPage\":true,\"totalPage\":1,\"pageSize\":10,\"list\":[{\"id\":\"自提点id\",\"storeName\":\"自提点名称\",\"managerName\":\"管理员姓名\",\"cityName\":\"城市名称\",\"address\":\"地址\",\"workTime\":\"工作时间\",\"managerPhone\":\"联系电话\",\"status\":\"启用状态\"}]}}");
@@ -129,7 +129,7 @@ public class StoreCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addStore
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/store/addStore
      * 请求方式     post
      *
      * 请求参数：
@@ -283,7 +283,7 @@ public class StoreCtrl extends BaseCtrl {
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"message\":\"添加成功！\"}");
@@ -296,7 +296,7 @@ public class StoreCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/updateStoreById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/store/updateStoreById
      * 请求方式     post
      *
      * 请求参数：
@@ -448,7 +448,7 @@ public class StoreCtrl extends BaseCtrl {
             }
         }catch (ActiveRecordException e){
             e.printStackTrace();
-            jhm.putCode(0).putMessage("Record发生异常!");
+            jhm.putCode(-1).putMessage("Record发生异常!");
         }
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"message\":\"修改成功！\"}");
@@ -461,7 +461,7 @@ public class StoreCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteStoreById
+     * URL	     http://localhost:8080/weChatMallMgr/wm/pc/system/store/deleteStoreById
      * 请求方式     post
      *
      * 请求参数：
@@ -525,7 +525,7 @@ public class StoreCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/showStoreById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/system/store/showStoreById
      * 请求方式     post
      *
      * 请求参数：
@@ -593,6 +593,10 @@ public class StoreCtrl extends BaseCtrl {
         renderJson(jhm);
        // renderJson("{\"code\":\"1\",\"message\":\"查询成功！\",\"data\":{\"id\":\"自提点id\",\"storeName\":\"自提点名称\",\"cityName\":\"城市名称\",\"managerName\":\"管理者姓名\",\"address\":\"地址\",\"phone\":\"联系电话\",\"longitude\":\"经度\",\"latitude\":\"纬度\"}}");
     }
+
+    /***
+     * http://localhost:8080/weChatMallMgr/wm/pc/system/store/setStoreTypeById
+     */
 
     public void setStoreTypeById(){
         JsonHashMap jhm=new JsonHashMap();

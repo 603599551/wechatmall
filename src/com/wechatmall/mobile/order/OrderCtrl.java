@@ -371,7 +371,7 @@ public class OrderCtrl extends BaseCtrl {
 
             //根据oid查询orderform_detail表的oid得到多个 商品名称odname、商品数量odquantity、商品原价odoriginal_price、商品现价odcurrent_price
             String sql2="SELECT oid AS orderId,GROUP_CONCAT(odname) AS productsN,GROUP_CONCAT(odquantity) AS productsQ,\n" +
-                    "GROUP_CONCAT(FORMAT(odoriginal_price,2)) AS productsOP,GROUP_CONCAT(FORMAT(odcurrent_price,2))AS productsCP \n" +
+                    "GROUP_CONCAT(FORMAT(odoriginal_price,2)) AS productsOP,GROUP_CONCAT(FORMAT(odcurrent_price,2))AS productsCP,GROUP_CONCAT(pid) AS goodsId \n" +
                     "FROM w_orderform_detail GROUP BY oid HAVING oid IN (SELECT oid FROM w_orderform WHERE cid=?)";
 
             //将订单地址与自提点表的地址比较，得到storePhone
@@ -393,6 +393,7 @@ public class OrderCtrl extends BaseCtrl {
                     //遍历订单详情商品列表
                     for (Record orderDetail:orderDetailList){
                         if (StringUtils.equals(order.getStr("orderId"),orderDetail.getStr("orderId"))){
+                            String []productsId=orderDetail.getStr("goodsId").split(",");
                             String []productsName=orderDetail.getStr("productsN").split(",");
                             String []productsQuantity=orderDetail.getStr("productsQ").split(",");
                             String []productsOriginalPrice=orderDetail.getStr("productsOP").split(",");
@@ -404,6 +405,7 @@ public class OrderCtrl extends BaseCtrl {
                             //将四个GROUP_CONCAT的数据分开后，对应起来，再放到goodsList中
                             for (int i=0;i<goodsListLen;i++){
                                 Record product=new Record();
+                                product.set("goodsId",productsId[i]);
                                 product.set("name",productsName[i]);
                                 product.set("number",productsQuantity[i]);
                                 product.set("originalPrice",productsOriginalPrice[i]);

@@ -28,7 +28,7 @@ public class ProductManageCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listProduct
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/manage/listProduct
      * 请求方式     post
      *
      * 请求参数：
@@ -137,7 +137,7 @@ public class ProductManageCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addProduct
+     * URL	   http://localhost:8080/weChatMallMgr/wm/pc/product/manage/addProduct
      * 请求方式     post
      *
      * 请求参数：
@@ -262,7 +262,7 @@ public class ProductManageCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/updateProductById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/manage/updateProductById
      * 请求方式     post
      *
      * 请求参数：
@@ -390,7 +390,7 @@ public class ProductManageCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteProductById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/manage/deleteProductById
      * 请求方式     post
      *
      * 请求参数：
@@ -469,7 +469,7 @@ public class ProductManageCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/previewProductById
+     * URL	   http://localhost:8080/weChatMallMgr/wm/pc/product/previewProductById
      * 请求方式     post
      *
      * 请求参数：
@@ -536,8 +536,10 @@ public class ProductManageCtrl extends BaseCtrl {
         //renderJson("{\"code\":\"1\",\"data\":{\"id\":\"商品id\",\"name\":\"商品名称\",\"price\":\"商品价格\",\"keyword\":\"关键字1，关键字2，关键字3\",\"pictureUrl\":\"商品图片\",\"type\":\"商品分类\"}}");
     }
 
-
-    //商品所属分类下拉列表
+/***
+ * 商品所属分类下拉列表
+ * URL	   http://localhost:8080/weChatMallMgr/wm/pc/product/previewProductById
+ */
     public void showProductCategory(){
         JsonHashMap jhm = new JsonHashMap();
 

@@ -29,7 +29,7 @@ public class ProductCategoryCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/listProductType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/category/listProductType
      * 请求方式     post
      *
      * 请求参数：
@@ -117,7 +117,7 @@ public class ProductCategoryCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/addProductType
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/category/addProductType
      * 请求方式     post
      *
      * 请求参数：
@@ -203,7 +203,7 @@ public class ProductCategoryCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/updateProductTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/category/updateProductTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -278,7 +278,7 @@ public class ProductCategoryCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wm/pc/customer/deleteProductTypeById
+     * URL	    http://localhost:8080/weChatMallMgr/wm/pc/product/category/deleteProductTypeById
      * 请求方式     post
      *
      * 请求参数：
@@ -328,6 +328,10 @@ public class ProductCategoryCtrl extends BaseCtrl {
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"message\":\"删除成功！\"}");
     }
+
+    /**
+     * URL  http://localhost:8080/weChatMallMgr/wm/pc/product/category/showCategoryById
+     * */
 
     public void showCategoryById(){
         JsonHashMap jhm=new JsonHashMap();
