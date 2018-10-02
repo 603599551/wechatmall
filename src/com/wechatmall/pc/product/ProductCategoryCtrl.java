@@ -13,7 +13,9 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ProductCategoryCtrl class
@@ -160,11 +162,11 @@ public class ProductCategoryCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(sort)){
-            jhm.putCode(0).putMessage("商品分类排序为空");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(sort)){
+//            jhm.putCode(0).putMessage("商品分类排序为空");
+//            renderJson(jhm);
+//            return;
+//        }
 
         //商品分类id
         String id= UUIDTool.getUUID();
@@ -254,11 +256,11 @@ public class ProductCategoryCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(sort)){
-            jhm.putCode(0).putMessage("商品分类排序为空");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(sort)){
+//            jhm.putCode(0).putMessage("商品分类排序为空");
+//            renderJson(jhm);
+//            return;
+//        }
 
         try{
             Db.update("UPDATE w_product_category SET pcname=?,pcsort=? WHERE pcid=?",name,sort,id);
@@ -319,8 +321,11 @@ public class ProductCategoryCtrl extends BaseCtrl {
         }
 
         try{
-            Db.delete("DELETE FROM w_product_category WHERE pcid=?",id);
-            jhm.putCode(1).putMessage("删除成功");
+            Map<String,String> paraMap=new HashMap<>();
+            paraMap.put("id", id);
+            ProductCategoryService srv = enhance(ProductCategoryService.class);
+            jhm = srv.deleteProductTypeById(paraMap);
+
         }catch (ActiveRecordException e){
             e.printStackTrace();
             jhm.putCode(-1).putMessage("Record异常");
