@@ -93,41 +93,35 @@ public class UserCtrl extends BaseCtrl{
         //用户职位
         String job = getPara("job");
         //当前页
-        String pageNumStr = getPara("pageNum");
+        String pageNumStr = getPara("pageNumber");
         //页面显示的条数
         String pageSizeStr = getPara("pageSize");
-        int pageNum,pageSize;
-        //非空验证
-        if(StringUtils.isEmpty(pageNumStr)){
-            pageNum = NumberUtils.parseInt(pageNumStr,1);
-        }else {
-            pageNum = Integer.parseInt(pageNumStr);
-        }
-        if(StringUtils.isEmpty(pageSizeStr)){
-            pageSize = NumberUtils.parseInt(pageSizeStr,10);
-        }else {
-            pageSize = Integer.parseInt(pageSizeStr);
-        }
+
+        //为空时赋默认值
+        int pageNum = NumberUtils.parseInt(pageNumStr,1);
+        int pageSize = NumberUtils.parseInt(pageSizeStr,10);
+
         List<Object> params = new ArrayList<>();
         List<Object> list = new ArrayList<>();
         String select = "select *";
-        String sql = " from (select wa.username, wa.`password`, wa. name nickname,(select id from h_job where wa.job_id = h_job.id) job_id,( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1";
-        if(name != null && name.length() > 0){
+        StringBuilder sql = new StringBuilder(" from (select wa.username, wa.`password`, wa. name nickname,(select id from h_job where wa.job_id = h_job.id) job_id,( select name from h_job where wa.job_id = h_job.id ) job, wa.status, wa.creater_id, wa.id from w_admin wa order by wa.creater_id desc) a where 1=1");
+
+        if(!StringUtils.isEmpty(name)){
             name = "%" + name + "%";
-            sql += "  and a.nickname like ? ";
+            sql.append("  and a.nickname like ? ");
             params.add(name);
 
         }
-        if(job != null && job.length() > 0){
-            job = "%" + job + "%";
-            sql += "  and a.job_id like ? ";
+
+        if(!StringUtils.equals("1",job) && !StringUtils.isEmpty(job)){
+            sql.append("  and a.job_id = ? ");
             params.add(job);
         }
         try{
             /**
              * 查询用户列表
              */
-            Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
+            Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
             if(page != null && page.getList().size() > 0){
                 jhm.putMessage("查询成功！");
                 jhm.put("list",page);
