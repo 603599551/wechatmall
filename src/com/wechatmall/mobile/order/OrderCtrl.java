@@ -30,7 +30,7 @@ public class OrderCtrl extends BaseCtrl {
      * 描述     显示订单的内容（自提点地址，联系人信息，订单详情）
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8081/wm/mobile/order/querySubmitOrder
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/order/querySubmitOrder
      * 请求方式     post
      *
      * 请求参数：
@@ -151,7 +151,7 @@ public class OrderCtrl extends BaseCtrl {
      * 描述     将订单的内容存入数据库
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/placeOrder
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/order/placeOrder
      * 请求方式     post
      *
      * 请求参数：
@@ -288,7 +288,7 @@ public class OrderCtrl extends BaseCtrl {
      * 描述     默认显示所有订单
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/queryOrder
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/order/queryOrder
      * 请求方式     post
      *
      * 请求参数：

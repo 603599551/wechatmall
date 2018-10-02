@@ -25,7 +25,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述	    显示客户的详细信息
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/queryInfo
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/queryInfo
      * 请求方式     post
      *
      * 请求参数：
@@ -103,7 +103,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述	    新增的信息不能重复
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/addHarvestAddress
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/addHarvestAddress
      * 请求方式     post
      *
      * 请求参数：
@@ -260,7 +260,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/deleteHarvestAddress
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/deleteHarvestAddress
      * 请求方式     post
      *
      * 请求参数：
@@ -332,7 +332,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述     显示收货地址
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/showHarvestAddress
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/showHarvestAddress
      * 请求方式     post
      *
      * 请求参数：
@@ -404,7 +404,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/addInfo
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/addInfo
      * 请求方式     post
      *
      * 请求参数：
@@ -509,7 +509,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/editInfo
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/editInfo
      * 请求方式     post
      *
      * 请求参数：
@@ -620,7 +620,7 @@ public class MyCtrl extends BaseCtrl {
      * 描述
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/modifyHarvestInformation
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/modifyHarvestInformation
      * 请求方式     post
      *
      * 请求参数：

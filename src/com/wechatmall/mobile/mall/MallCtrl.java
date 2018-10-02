@@ -25,7 +25,7 @@ public class MallCtrl extends BaseCtrl {
      * 描述	    默认显示商城商品的所有信息
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/showGoodsList
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/mall/showGoodsList
      * 请求方式     post
      *
      * 请求参数：
@@ -156,7 +156,7 @@ public class MallCtrl extends BaseCtrl {
      * 描述	    默认显示商品的所有信息
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/showCommodityDetails
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/mall/showCommodityDetails
      * 请求方式     post
      *
      * 请求参数：
@@ -247,7 +247,7 @@ public class MallCtrl extends BaseCtrl {
      * 描述     添加购物车  商品存在，更新数量。商品不存在，新建商品
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/modifyShoppingCart
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/mall/modifyShoppingCart
      * 请求方式     post
      *
      * 请求参数：
@@ -338,7 +338,7 @@ public class MallCtrl extends BaseCtrl {
      * 描述     显示公告，按时间倒序显示
      * 验证
      * 权限	    无
-     * URL	    http://localhost:8080/wcos/customer/queryMessage
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/mall/queryMessage
      * 请求方式     post
      *
      * 请求参数：
