@@ -105,7 +105,7 @@ public class OrderCtrl extends BaseCtrl{
              */
             String select = "SELECT wo.oid AS orderId, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, FORMAT(wo.ooriginal_sum, 2)AS originalPrice, FORMAT(wo.ocurrent_sum, 2)AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
 
-            StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid , o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid ");
+            StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid , o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid");
 
 
             List<Object> params = new ArrayList<>();
@@ -131,7 +131,7 @@ public class OrderCtrl extends BaseCtrl{
                 sql.append(" and wc.cname like ? ");
                 params.add(customerName);
             }
-                sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ");
+                sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ORDER BY wo.ocreate_time desc");
 
 
                 Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
