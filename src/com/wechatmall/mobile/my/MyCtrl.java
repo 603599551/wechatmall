@@ -763,4 +763,36 @@ public class MyCtrl extends BaseCtrl {
         renderJson(jhm);
 //        renderJson("{\"code\":1,\"message\":\"修改成功！\"}");
     }
+
+    /**
+     * url   http://localhost:8080/weChatMallMgr/wm/mobile/my/showCustomerTypeById
+     * 根据客户id返回客户类型
+     */
+    public void showCustomerTypeById(){
+        JsonHashMap jhm = new JsonHashMap();
+
+        //客户id
+        String userId=getPara("userId");
+        //非空验证
+        if (StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("客户id为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        try{
+            Record r=Db.findFirst("SELECT ctype AS type  FROM w_customer WHERE cid=?",userId);
+            if (r==null){
+                jhm.putCode(0).putMessage("不存在此客户信息！");
+            }else {
+                jhm.putCode(1);
+                jhm.put("type",r.getStr("type"));
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+    }
 }
