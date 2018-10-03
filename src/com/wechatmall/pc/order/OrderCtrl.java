@@ -223,7 +223,7 @@ public class OrderCtrl extends BaseCtrl{
                  * 根据订单表w_orderform和订单详情表w_orderform_detail双表关联查询: 订单商品名称 : name , 订单商品原价 : originalPrice
                  * 订单商品现价 : presentPrice , 订单商品数量 : number , 订单商品小结 : singleSum
                  */
-                String orderDetailSearch = "select wod.odname as name,FORMAT(wod.odoriginal_price,2)AS originalPrice,FORMAT(wod.odcurrent_price,2)as presentPrice, wod.odquantity as number,FORMAT((wod.odoriginal_price * wod.odquantity),2)as singleSum from w_orderform wo, w_orderform_detail wod, w_customer wc where wo.oid = ? and wod.oid = wo.oid ";
+                String orderDetailSearch = "select wod.odname as name,FORMAT(wod.odoriginal_price,2)AS originalPrice,FORMAT(wod.odcurrent_price,2)as presentPrice, wod.odquantity as number,FORMAT((wod.odoriginal_price * wod.odquantity),2)as singleSum from w_orderform wo, w_orderform_detail wod where wo.oid = ? and wod.oid = wo.oid ";
                 List<Record> recordList = Db.find(orderDetailSearch, orderId);
                 jhm.put("data", record);
                 jhm.put("products", recordList);
