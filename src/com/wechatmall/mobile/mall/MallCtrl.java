@@ -73,6 +73,8 @@ public class MallCtrl extends BaseCtrl {
 
         String userId = getPara("userId");
 
+        JsonHashMap goodsList = new JsonHashMap();
+
         //进行非空验证
         if(StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("id不能为空！");
@@ -81,17 +83,31 @@ public class MallCtrl extends BaseCtrl {
         }
 
         try {
-            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp WHERE wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid=? ";
+            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid=? ";
             List<Record> recordList = Db.find(sql, userId);
 
-
-
+            String[] classify = new String[recordList.size()];
+            int i = 0;
+            List<Record> resultList = new ArrayList<>();
             for(Record r : recordList){
                 r.set("label", r.getStr("keyword").split(","));
                 r.remove("keyword");
+                if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname"))){
+                    resultList.add(r);
+                } else if(!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname"))){
+//                    jhm.put(classify[i], resultList);
+                    goodsList.put(classify[i], resultList);
+                    resultList = new ArrayList<>();
+                    resultList.add(r);
+                    i++;
+                    classify[i] = r.getStr("pcname");
+                } else if(StringUtils.isEmpty(classify[i])){
+                    classify[i] = r.getStr("pcname");
+                    resultList.add(r);
+                }
             }
 
-            jhm.putCode(1).put("goodsList", recordList);
+            jhm.putCode(1).put("classify", classify).put("goodsList", goodsList);
 
             /**
              //             *根据w_notice查询:最新公告：ncontent
