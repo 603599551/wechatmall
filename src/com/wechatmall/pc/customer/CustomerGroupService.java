@@ -24,7 +24,7 @@ public class CustomerGroupService extends BaseService {
         JsonHashMap jhm=new JsonHashMap();
 
         String groupName = (String) paraMap.get("groupName");
-        String sort = (String) paraMap.get("sort");
+        int sort = (int) paraMap.get("sort");
         String userId = (String) paraMap.get("userId");
 
         //分组id
@@ -75,7 +75,7 @@ public class CustomerGroupService extends BaseService {
 
         String id = (String) paraMap.get("id");
 
-        Db.update("UPDATE w_customer SET cgid=(SELECT cgid FROM w_customer_group WHERE cgname='默认组') WHERE cgid=?",id);
+        Db.update("UPDATE w_customer SET cgid=(SELECT cgid FROM w_customer_group WHERE cgname='个人组') WHERE cgid=?",id);
         Db.delete("DELETE FROM w_customer_group WHERE cgid=?",id);
         Db.delete("DELETE FROM w_product_currentprice WHERE cgid=?",id);
 

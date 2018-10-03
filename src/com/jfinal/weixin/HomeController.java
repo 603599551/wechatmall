@@ -7,6 +7,9 @@ import com.jfinal.weixin.sdk.api.SnsAccessToken;
 import com.jfinal.weixin.sdk.api.SnsAccessTokenApi;
 
 public class HomeController extends Controller{
+
+    //进入首页
+
     public void index(){
         String appId= PropKit.get("appId");
         String redirect= Config.DOMAIN+"/wx/home/getCode";
@@ -26,4 +29,6 @@ public class HomeController extends Controller{
         setSessionAttr("wx_open_id",openId);
         redirect(Config.DOMAIN+PropKit.get("wx_home"));
     }
+
+
 }
