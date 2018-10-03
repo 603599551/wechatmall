@@ -476,7 +476,7 @@ public class MallCtrl extends BaseCtrl {
             *消息查询
             * 从w_notice表中查询ncontent和nmodify_time字段
              */
-            String sql = "select ncontent content,nmodify_time time from w_notice where ncreator_id = ? ORDER BY nmodify_time";
+            String sql = "select ncontent content,nmodify_time time from w_notice where ncreator_id = ? ORDER BY nmodify_time desc";
             List<Record> showHarvestMassageList = Db.find(sql,userId);
             if(showHarvestMassageList != null && showHarvestMassageList.size()>0) {
                 jhm.put("notice",showHarvestMassageList);
