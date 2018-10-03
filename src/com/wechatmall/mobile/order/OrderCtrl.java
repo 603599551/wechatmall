@@ -188,7 +188,6 @@ public class OrderCtrl extends BaseCtrl {
      */
     public void placeOrder(){
         JsonHashMap jhm = new JsonHashMap();
-        Map map=getParaMap();
         /**
          * 接收前端参数
          */

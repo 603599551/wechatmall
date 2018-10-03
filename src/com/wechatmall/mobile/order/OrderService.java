@@ -11,9 +11,25 @@ import easy.util.UUIDTool;
 import net.sf.json.JSONArray;
 import utils.bean.JsonHashMap;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 public class OrderService extends BaseService {
+
+    public static String getOrderIdByTime() {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        String newDate=sdf.format(new Date());
+        String result="";
+        Random random=new Random();
+        for(int i=0;i<3;i++){
+            result+=random.nextInt(10);
+        }
+        return newDate+result;
+    }
+
+
     /*
     增加事务
      */
@@ -36,6 +52,9 @@ public class OrderService extends BaseService {
         float orderOriginalSum = Float.valueOf(orderOriginalSumStr);
         //订单现总价
         float orderCurrentSum = Float.valueOf(orderCurrentSumStr);
+        //订单编号=时间+随机数
+        String orderNum=getOrderIdByTime();
+
 
         /**
          * 新增订单
@@ -43,6 +62,7 @@ public class OrderService extends BaseService {
         //订单信息表对象
         Record w_orderform = new Record();
         w_orderform.set("oid", UUIDTool.getUUID());
+        w_orderform.set("onum", orderNum);
         w_orderform.set("caid","");
         w_orderform.set("cid",userId);
         w_orderform.set("oname",name);
@@ -97,7 +117,7 @@ public class OrderService extends BaseService {
                 return jhm;
             }
         }
-        jhm.putMessage("提交成功！");
+        jhm.putCode(1).putMessage("提交成功！");
 
         return jhm;
     }
