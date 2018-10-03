@@ -161,7 +161,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
         //分组名称
         String groupName=getPara("groupName");
         //分组排序
-        String sort=getPara("sort");
+        String sortStr=getPara("sort");
 
         //非空验证
         if (StringUtils.isEmpty(groupName)){
@@ -174,6 +174,8 @@ public class CustomerGroupCtrl extends BaseCtrl{
 //            renderJson(jhm);
 //            return;
 //        }
+
+        int sort = NumberUtils.parseInt(sortStr, 1);
 
         try{
             String userId=usu.getUserId();

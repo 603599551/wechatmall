@@ -155,7 +155,7 @@ public class ProductCategoryCtrl extends BaseCtrl {
         //商品分类名称
         String name=getPara("name");
         //商品分类排序
-        String sort=getPara("sort");
+        String sortStr=getPara("sort");
         //非空验证
         if (StringUtils.isEmpty(name)){
             jhm.putCode(0).putMessage("商品分类名称为空");
@@ -167,6 +167,8 @@ public class ProductCategoryCtrl extends BaseCtrl {
 //            renderJson(jhm);
 //            return;
 //        }
+
+        int sort = NumberUtils.parseInt(sortStr, 1);
 
         //商品分类id
         String id= UUIDTool.getUUID();

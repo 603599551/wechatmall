@@ -11,9 +11,15 @@ import com.jfinal.weixin.sdk.kit.IpKit;
 import com.jfinal.weixin.sdk.kit.PaymentKit;
 import com.jfinal.weixin.sdk.utils.HttpUtils;
 import com.jfinal.weixin.sdk.utils.JsonUtils;
+import com.wechatmall.mobile.order.OrderService;
+import org.apache.commons.lang.StringUtils;
+import utils.bean.JsonHashMap;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 感谢 *半杯* 童鞋联调支付API
@@ -24,10 +30,115 @@ public class WeixinPayController extends Controller {
     private static String notify_url = "/pay/pay_notify";
 
 
+    public static String getOrderIdByTime() {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        String newDate=sdf.format(new Date());
+        String result="";
+        Random random=new Random();
+        for(int i=0;i<3;i++){
+            result+=random.nextInt(10);
+        }
+        return newDate+result;
+    }
+
     /**
+     * 提交订单
      * 公众号支付js-sdk
      */
     public void index() {
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //用户的id
+        String userId = getPara("userId");
+        //自提地址/收货地址
+        String address = getPara("address");
+        //用户姓名
+        String name = getPara("name");
+        //用户手机号
+        String phone = getPara("phone");
+        //订单商品列表
+        String goodsString = getPara("goodsList");
+        //收货方式
+        String receivingMethod = getPara("receivingMethod");
+        //支付方式
+        String payMethod = getPara("payMothod");
+        //订单原总价
+        String orderOriginalSumStr = getPara("orderOriginalSum");
+        //订单现总价
+        String orderCurrentSumStr = getPara("orderCurrentSum");
+
+        //非空验证
+        if (StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("用户的id为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(address)){
+            jhm.putCode(0).putMessage("自提地址/收货地址为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(name)){
+            jhm.putCode(0).putMessage("用户姓名为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(phone)){
+            jhm.putCode(0).putMessage("用户手机号为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(goodsString)){
+            jhm.putCode(0).putMessage("订单商品列表为空!");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(receivingMethod)){
+            jhm.putCode(0).putMessage("收货方式为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(payMethod)){
+            jhm.putCode(0).putMessage("支付方式为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(orderOriginalSumStr)){
+            jhm.putCode(0).putMessage("订单原总价为空！");
+            renderJson(jhm);
+            return;
+        }
+        if (StringUtils.isEmpty(orderCurrentSumStr)){
+            jhm.putCode(0).putMessage("订单现总价为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        //订单编号=时间+随机数
+        String orderNum=getOrderIdByTime();
+
+        try{
+            Map paraMap=new HashMap();
+            paraMap.put("userId", userId);
+            paraMap.put("address", address);
+            paraMap.put("name", name);
+            paraMap.put("phone", phone);
+            paraMap.put("goodsString", goodsString);
+            paraMap.put("receivingMethod", receivingMethod);
+            paraMap.put("payMethod", payMethod);
+            paraMap.put("orderOriginalSumStr", orderOriginalSumStr);
+            paraMap.put("orderCurrentSumStr", orderCurrentSumStr);
+            paraMap.put("orderNum", orderNum);
+            OrderService srv = enhance(OrderService.class);
+            srv.placeOrder(paraMap);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+
         // openId，采用 网页授权获取 access_token API：SnsAccessTokenApi获取
         String openId = getSessionAttr("wx_open_id");
 
@@ -36,9 +147,9 @@ public class WeixinPayController extends Controller {
         Map<String, String> params = new HashMap<String, String>();
         params.put("appid", Config.appid);
         params.put("mch_id", Config.partner);
-        params.put("body", "商品描述");
-        params.put("out_trade_no", "977773682113");//订单号唯一
-        params.put("total_fee", "1");//总金额
+        params.put("body", "面对面-食品");
+        params.put("out_trade_no", orderNum);//订单号唯一
+        params.put("total_fee", orderCurrentSumStr);//总金额
 
         String ip = IpKit.getRealIp(getRequest());
         if (StrKit.isBlank(ip)) {
@@ -84,7 +195,10 @@ public class WeixinPayController extends Controller {
         String jsonStr = JsonUtils.toJson(packageParams);
         setAttr("json", jsonStr);
         System.out.println(jsonStr);
-        renderJsp("/jsp/pay.jsp");
+
+        jhm.put("json", jsonStr);
+        renderJson(jhm);
+//        renderJsp("/jsp/pay.jsp");
     }
 
     /**
@@ -244,18 +358,18 @@ public class WeixinPayController extends Controller {
             renderText(xml);
         }
     }
-    
-    
+
+
     /**
 	 * 刷卡支付
 	 * 文档：https://pay.weixin.qq.com/wiki/doc/api/micropay.php?chapter=5_1
 	 */
 	public void micropay(){
 		String url="https://api.mch.weixin.qq.com/pay/micropay";
-		
+
 		String total_fee="1";
 		String auth_code = getPara("auth_code");//测试时直接手动输入刷卡页面上的18位数字
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("appid", Config.appid);
 		params.put("mch_id", Config.partner);
@@ -267,45 +381,45 @@ public class WeixinPayController extends Controller {
 		String out_trade_no=System.currentTimeMillis()+"";
 		params.put("out_trade_no", out_trade_no);
 		params.put("total_fee", total_fee);
-		
+
 		String ip = IpKit.getRealIp(getRequest());
 		if (StrKit.isBlank(ip)) {
 			ip = "127.0.0.1";
 		}
-		
+
 		params.put("spbill_create_ip", ip);
 		params.put("auth_code", auth_code);
-		
+
 		String sign = PaymentKit.createSign(params, Config.paternerKey);
 		params.put("sign", sign);
-		
+
 		String xmlResult = HttpUtils.post(url, PaymentKit.toXml(params));
 		//同步返回结果
 		System.out.println("xmlResult:"+xmlResult);
-		
+
 		Map<String, String> result = PaymentKit.xmlToMap(xmlResult);
 		String return_code = result.get("return_code");
 		if (StrKit.isBlank(return_code) || !"SUCCESS".equals(return_code)) {
-			//通讯失败 
+			//通讯失败
 			String err_code = result.get("err_code");
 			//用户支付中，需要输入密码
 			if (err_code.equals("USERPAYING")) {
 				//等待5秒后调用【查询订单API】https://pay.weixin.qq.com/wiki/doc/api/micropay.php?chapter=9_2
-				
+
 			}
 			renderText("通讯失败>>"+xmlResult);
 			return;
 		}
-		
+
 		String result_code = result.get("result_code");
 		if (StrKit.isBlank(result_code) || !"SUCCESS".equals(result_code)) {
 			//支付失败
 			renderText("支付失败>>"+xmlResult);
 			return;
 		}
-		
+
 		//支付成功 返回参会入库 业务逻辑处理
-		
+
 		renderText(xmlResult);
 	}
 
