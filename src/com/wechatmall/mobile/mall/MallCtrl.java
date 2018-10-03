@@ -83,7 +83,7 @@ public class MallCtrl extends BaseCtrl {
         }
 
         try {
-            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid=? ORDER BY ww.pcname";
+            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcname ";
             List<Record> recordList = Db.find(sql, userId);
 
             String[] classify = new String[recordList.size()];
