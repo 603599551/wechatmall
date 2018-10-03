@@ -97,10 +97,11 @@ public class MallCtrl extends BaseCtrl {
                 if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname")) && t != recordList.size()){  //上一段与本条数据分类名相同
                     resultList.add(r);
                 } else if((!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname"))) && t!=recordList.size()){  //上一条数据与本条数据分类名不同
-                    resultList.add(r);
                     goodsList.put(classify[i], resultList);
-                    resultList = new ArrayList<>();
                     i++;
+                    classify[i] = r.getStr("pcname");
+                    resultList = new ArrayList<>();
+                    resultList.add(r);
                 } else if (t==recordList.size()){                      //最后一条数据
                     if(StringUtils.equals(classify[i],r.getStr("pcname"))){   //与上一条数据分类名相同
                         resultList.add(r);
@@ -113,7 +114,7 @@ public class MallCtrl extends BaseCtrl {
                         classify[i] = r.getStr("pcname");
                         goodsList.put(classify[i], resultList);
                     }
-                } else if(StringUtils.isEmpty(classify[i])){   //className为空字符串的时候
+                } else if(StringUtils.isEmpty(classify[0])){   //className为空字符串的时候
                     classify[i] = r.getStr("pcname");
                     resultList.add(r);
                 }
