@@ -83,31 +83,50 @@ public class MallCtrl extends BaseCtrl {
         }
 
         try {
-            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid=? ";
+            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid=? ORDER BY ww.pcname";
             List<Record> recordList = Db.find(sql, userId);
 
             String[] classify = new String[recordList.size()];
-            int i = 0;
+
+            int i = 0 , t = 0;
             List<Record> resultList = new ArrayList<>();
             for(Record r : recordList){
                 r.set("label", r.getStr("keyword").split(","));
                 r.remove("keyword");
-                if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname"))){
+                t++;
+                if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname")) && t != recordList.size()){
                     resultList.add(r);
-                } else if(!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname"))){
-//                    jhm.put(classify[i], resultList);
+                } else if((!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname")))||t==recordList.size()){
+                    resultList.add(r);
                     goodsList.put(classify[i], resultList);
                     resultList = new ArrayList<>();
-                    resultList.add(r);
                     i++;
-                    classify[i] = r.getStr("pcname");
+                    if(t==recordList.size()){
+
+                    }else {
+                        classify[i] = r.getStr("pcname");
+                    }
                 } else if(StringUtils.isEmpty(classify[i])){
                     classify[i] = r.getStr("pcname");
                     resultList.add(r);
                 }
             }
 
-            jhm.putCode(1).put("classify", classify).put("goodsList", goodsList);
+            i = 0;
+            for (String s : classify){
+                if(!StringUtils.isEmpty(s)){
+                    i++;
+                }
+            }
+            String[] resultClass = new String[i];
+
+            for(int j = 0; j < resultClass.length; j++){
+                resultClass[j] = classify[j];
+            }
+
+            jhm.putCode(1);
+            jhm.put("classify", resultClass);
+            jhm.put("goodsList", goodsList);
 
             /**
              //             *根据w_notice查询:最新公告：ncontent

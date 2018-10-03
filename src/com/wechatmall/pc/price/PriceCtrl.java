@@ -147,15 +147,16 @@ public class PriceCtrl extends BaseCtrl{
         JSONArray pricesList = JSONArray.fromObject(price);
 
         //将传回来的json数组里的商品id处理然后添加到sql语句里
-        StringBuilder stringBuilder = new StringBuilder(pricesList.getJSONObject(0).getString("goodsId"));
+        StringBuilder stringBuilder = new StringBuilder("'"+pricesList.getJSONObject(0).getString("goodsId")+"'");
         for(int i = 1; i < pricesList.size(); i++){
-            stringBuilder.append("," + pricesList.getJSONObject(i).getString("goodsId"));
+            stringBuilder.append(",'" + pricesList.getJSONObject(i).getString("goodsId"));
+            stringBuilder.append("'");
         }
 
-        String priceSearch = "SELECT pcpid, pid, cgid, pcpcurrent_price, pcpcreate_time, pcpmodify_time, pcpcreator_id, pcpmodifier_id, pcpdesc from w_product_currentprice wpc where wpc.cgid = '1' and wpc.pid IN("+stringBuilder+")";
+        String priceSearch = "SELECT pcpid, pid, cgid, pcpcurrent_price, pcpcreate_time, pcpmodify_time, pcpcreator_id, pcpmodifier_id, pcpdesc from w_product_currentprice wpc where wpc.cgid = ? and wpc.pid IN("+stringBuilder+")";
 
         try {
-            List<Record> recordList = Db.find(priceSearch);
+            List<Record> recordList = Db.find(priceSearch,groupId);
 
             if(recordList.size() != pricesList.size()){
                 jhm.putCode(0).putMessage("传入商品id有误！");
