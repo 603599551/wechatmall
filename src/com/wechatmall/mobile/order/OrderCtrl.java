@@ -378,7 +378,7 @@ public class OrderCtrl extends BaseCtrl {
              */
             String sql1="SELECT o.oid AS orderId,o.onum AS orderNum,o.ostatus AS status,o.otransport_type AS receivingMethod,o.opay_type AS payMethod,\n" +
                     "FORMAT(o.ooriginal_sum,2)AS originalPriceAll,FORMAT(o.ocurrent_sum,2)AS presentPriceAll,o.oaddress AS goodsAddress,\n" +
-                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_customer c,w_orderform o WHERE c.cid=? AND o.cid=? ORDER BY o.ocreate_time DESC";
+                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_customer c,w_orderform o WHERE  c.cid=o.cid and c.cid=? AND o.cid=? ORDER BY o.ocreate_time DESC";
             //订单列表orderList
             List<Record> orderList= Db.find(sql1,userId,userId);
 
