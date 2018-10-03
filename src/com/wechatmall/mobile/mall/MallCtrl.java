@@ -86,27 +86,34 @@ public class MallCtrl extends BaseCtrl {
             String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcname ";
             List<Record> recordList = Db.find(sql, userId);
 
+            //分类名为key，插入数据到value里返回前台
             String[] classify = new String[recordList.size()];
-
             int i = 0 , t = 0;
             List<Record> resultList = new ArrayList<>();
             for(Record r : recordList){
                 r.set("label", r.getStr("keyword").split(","));
                 r.remove("keyword");
                 t++;
-                if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname")) && t != recordList.size()){
+                if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname")) && t != recordList.size()){  //上一段与本条数据分类名相同
                     resultList.add(r);
-                } else if((!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname")))||t==recordList.size()){
+                } else if((!StringUtils.isEmpty(classify[i]) && !StringUtils.equals(classify[i],r.getStr("pcname"))) && t!=recordList.size()){  //上一条数据与本条数据分类名不同
                     resultList.add(r);
                     goodsList.put(classify[i], resultList);
                     resultList = new ArrayList<>();
                     i++;
-                    if(t==recordList.size()){
-
-                    }else {
+                } else if (t==recordList.size()){                      //最后一条数据
+                    if(StringUtils.equals(classify[i],r.getStr("pcname"))){   //与上一条数据分类名相同
+                        resultList.add(r);
+                        goodsList.put(classify[i], resultList);
+                    } else {
+                        goodsList.put(classify[i], resultList);
+                        i++;
+                        resultList = new ArrayList<>();
+                        resultList.add(r);
                         classify[i] = r.getStr("pcname");
+                        goodsList.put(classify[i], resultList);
                     }
-                } else if(StringUtils.isEmpty(classify[i])){
+                } else if(StringUtils.isEmpty(classify[i])){   //className为空字符串的时候
                     classify[i] = r.getStr("pcname");
                     resultList.add(r);
                 }
