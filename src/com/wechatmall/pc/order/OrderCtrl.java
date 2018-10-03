@@ -103,9 +103,9 @@ public class OrderCtrl extends BaseCtrl{
              * 收货人姓名:receiverName, 收货人电话:phone, 收货地址:address, 应付价格:originalPrice, 实付价格:presentPrice, 订单状态:status
              * 订单状态对应中文 : statusName ,客户类型对应中文 : typeName
              */
-            String select = "SELECT wo.oid AS orderId, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, FORMAT(wo.ooriginal_sum, 2)AS originalPrice, FORMAT(wo.ocurrent_sum, 2)AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
+            String select = "SELECT wo.oid AS orderId,wo.onum AS orderNum, wo.cname as customerName, wo.oname AS receiverName, wo.ophone AS phone, wo.ocreate_time AS time, wo.oaddress AS address, FORMAT(wo.ooriginal_sum, 2)AS originalPrice, FORMAT(wo.ocurrent_sum, 2)AS presentPrice, wo.ostatus AS status, wd.`name` AS statusName, wo.ctype AS type, wdd.name AS typeName ";
 
-            StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid , o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid");
+            StringBuilder sql = new StringBuilder("  FROM (SELECT o.oid ,o.onum, o.oname, wc.cname, o.cid, o.ophone , o.ocreate_time , o.oaddress , o.ooriginal_sum , o.ocurrent_sum , o.ostatus, wc.ctype from w_orderform o, w_customer wc WHERE o.cid = wc.cid");
 
 
             List<Object> params = new ArrayList<>();
@@ -216,7 +216,7 @@ public class OrderCtrl extends BaseCtrl{
                  * 根据订单表w_orderform和客户信息表w_customer双表关联查询: 订单id : orderId , 客户类型 : customerType , 物流类型 : transportType
                  * 支付类型 : payType , 订单原总价 : orderOriginalSum , 订单应付金额 : orderPresentSum , 支付类型名称 : payTypeName 还有个类型相应的中文
                  */
-                String orderSearch  = "SELECT wo.oid as orderId, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType,FORMAT(wo.ooriginal_sum,2)as orderOriginalSum,FORMAT(wo.ocurrent_sum,2)as orderPresentSum,wo.ocreate_time AS createTime, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
+                String orderSearch  = "SELECT wo.oid as orderId,wo.onum AS orderNum, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType,FORMAT(wo.ooriginal_sum,2)as orderOriginalSum,FORMAT(wo.ocurrent_sum,2)as orderPresentSum,wo.ocreate_time AS createTime, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
                 Record record = Db.findFirst(orderSearch, orderId, orderId);
 
                 /**
@@ -461,19 +461,19 @@ public class OrderCtrl extends BaseCtrl{
      * URL  http://localhost:8080/weChatMallMgr/wm/pc/order/exportXls
      */
     public void exportXls(){
-        //订单编号
-        String orderNumber = getPara("id");
+        //订单id
+        String orderId = getPara("id");
         JsonHashMap jhm = new JsonHashMap();
 
         try{
-            List<Record> list=Db.find("SELECT * FROM w_orderform_detail WHERE oid=? ORDER BY odcreate_time ASC ",orderNumber);
+            List<Record> list=Db.find("SELECT * FROM w_orderform_detail WHERE oid=? ORDER BY odcreate_time ASC ",orderId);
             if(list != null && list.size() > 0){
                 List<List<String>> content = new ArrayList<>();
 
-                Record order=Db.findFirst("SELECT o.*,d.name AS 'status',dd.name AS 'transport_type',ddd.name AS 'pay_type' FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE  oid=?",orderNumber);
+                Record order=Db.findFirst("SELECT o.*,d.name AS 'status',dd.name AS 'transport_type',ddd.name AS 'pay_type' FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE  oid=?",orderId);
                 List<String> sumList = new ArrayList<>();
                 sumList.add("订单编号");
-                sumList.add(order.getStr("oid"));
+                sumList.add(order.getStr("onum"));
                 sumList.add("  ");
                 sumList.add("订单状态");
                 sumList.add(order.getStr("status"));
@@ -533,8 +533,8 @@ public class OrderCtrl extends BaseCtrl{
                 }
 
 
-                String fileName = exportXlsFile(content, getSession().getServletContext().getRealPath("") + "/exportOrderXls/" + orderNumber + ".xls");
-                jhm.put("pageUrl", getRequest().getScheme()+"://"+getRequest().getServerName()+":"+getRequest() .getServerPort()  + "/exportOrderXls/" + orderNumber + ".xls");
+                String fileName = exportXlsFile(content, getSession().getServletContext().getRealPath("") + "/exportOrderXls/" + order.getStr("onum") + ".xls");
+                jhm.put("pageUrl", getRequest().getScheme()+"://"+getRequest().getServerName()+":"+getRequest() .getServerPort()  + "/exportOrderXls/" + order.getStr("onum") + ".xls");
             }else{
                 jhm.putCode(0);
                 jhm.putMessage("订单无数据，不能导出！");

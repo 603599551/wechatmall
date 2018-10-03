@@ -18,16 +18,7 @@ import java.util.Random;
 
 public class OrderService extends BaseService {
 
-    public static String getOrderIdByTime() {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
-        String newDate=sdf.format(new Date());
-        String result="";
-        Random random=new Random();
-        for(int i=0;i<3;i++){
-            result+=random.nextInt(10);
-        }
-        return newDate+result;
-    }
+
 
 
     /*
@@ -46,14 +37,14 @@ public class OrderService extends BaseService {
         String payMethod = (String) paraMap.get("payMethod");
         String orderOriginalSumStr = (String) paraMap.get("orderOriginalSumStr");
         String orderCurrentSumStr = (String) paraMap.get("orderCurrentSumStr");
+        String orderNum = (String) paraMap.get("orderNum");
 
         JSONArray goodsStringList = JSONArray.fromObject(goodsString);
         //订单原总价
         float orderOriginalSum = Float.valueOf(orderOriginalSumStr);
         //订单现总价
         float orderCurrentSum = Float.valueOf(orderCurrentSumStr);
-        //订单编号=时间+随机数
-        String orderNum=getOrderIdByTime();
+
 
 
         /**
@@ -80,7 +71,7 @@ public class OrderService extends BaseService {
         w_orderform.set("odesc","");
         boolean orderFormFlag = Db.save("w_orderform","oid",w_orderform);
         if(orderFormFlag == false){
-            jhm.putCode(0).putMessage("提交失败!");
+            jhm.putCode(0).putMessage("订单提交失败!");
             return jhm;
         }
         /**
@@ -113,11 +104,11 @@ public class OrderService extends BaseService {
             w_orderform_detail.set("oddesc","");
             orderFormDetailFlag = Db.save("w_orderform_detail","odid",w_orderform_detail);
             if(orderFormDetailFlag == false){
-                jhm.putCode(0).putMessage("提交失败！");
+                jhm.putCode(0).putMessage("订单详情提交失败！");
                 return jhm;
             }
         }
-        jhm.putCode(1).putMessage("提交成功！");
+        jhm.putCode(1).putMessage("订单详情提交成功！");
 
         return jhm;
     }

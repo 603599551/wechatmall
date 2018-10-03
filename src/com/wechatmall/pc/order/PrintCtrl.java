@@ -35,7 +35,7 @@ public class PrintCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        Record dataRecord = Db.findFirst("SELECT o.oid AS order_num,o.ocreate_time AS buy_time,o.oname AS receiver_name,o.ophone AS phone,o.oaddress AS address,d.name AS pay_status,dd.name AS transport_type ,ddd.name AS pay_type,o.ooriginal_sum AS product_sum,o.ocurrent_sum AS should_pay FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE o.oid=?", orderId);
+        Record dataRecord = Db.findFirst("SELECT o.onum AS order_num,o.ocreate_time AS buy_time,o.oname AS receiver_name,o.ophone AS phone,o.oaddress AS address,d.name AS pay_status,dd.name AS transport_type ,ddd.name AS pay_type,o.ooriginal_sum AS product_sum,o.ocurrent_sum AS should_pay FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE o.oid=?", orderId);
         if(dataRecord == null){
             jhm.putCode(-1).putMessage("订单号有错误，请确认订单！");
             renderJson(jhm);
