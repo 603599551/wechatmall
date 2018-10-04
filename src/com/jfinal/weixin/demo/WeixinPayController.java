@@ -2,8 +2,10 @@ package com.jfinal.weixin.demo;
 
 import com.jfinal.Config;
 import com.jfinal.core.Controller;
+import com.jfinal.json.Json;
 import com.jfinal.kit.HttpKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.weixin.sdk.api.PaymentApi;
 import com.jfinal.weixin.sdk.api.PaymentApi.TradeType;
 import com.jfinal.weixin.sdk.api.SnsAccessTokenApi;
@@ -11,6 +13,7 @@ import com.jfinal.weixin.sdk.kit.IpKit;
 import com.jfinal.weixin.sdk.kit.PaymentKit;
 import com.jfinal.weixin.sdk.utils.HttpUtils;
 import com.jfinal.weixin.sdk.utils.JsonUtils;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import com.wechatmall.mobile.order.OrderService;
 import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
@@ -46,6 +49,7 @@ public class WeixinPayController extends Controller {
      * 公众号支付js-sdk
      */
     public void index() {
+
         JsonHashMap jhm=new JsonHashMap();
         /**
          * 接收前端参数
@@ -68,6 +72,22 @@ public class WeixinPayController extends Controller {
         String orderOriginalSumStr = getPara("orderOriginalSum");
         //订单现总价
         String orderCurrentSumStr = getPara("orderCurrentSum");
+        //openId
+        String openId=getPara("openId");
+
+
+        if (Config.devMode){
+            System.out.println("WEIXINPAY userId:"+userId);
+            System.out.println("WEIXINPAY address:"+address);
+            System.out.println("WEIXINPAY name:"+name);
+            System.out.println("WEIXINPAY phone:"+phone);
+            System.out.println("WEIXINPAY goodsString:"+goodsString);
+            System.out.println("WEIXINPAY receivingMethod:"+receivingMethod);
+            System.out.println("WEIXINPAY payMethod:"+payMethod);
+            System.out.println("WEIXINPAY orderOriginalSumStr:"+orderOriginalSumStr);
+            System.out.println("WEIXINPAY orderCurrentSumStr:"+orderCurrentSumStr);
+            System.out.println("WEIXINPAY openId:"+openId);
+        }
 
         //非空验证
         if (StringUtils.isEmpty(userId)){
@@ -139,8 +159,13 @@ public class WeixinPayController extends Controller {
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
 
+
+        double orderCurrentSum=Double.parseDouble(orderCurrentSumStr)*100;
+        int orderCurrentSumInt=(int)orderCurrentSum;
+
         // openId，采用 网页授权获取 access_token API：SnsAccessTokenApi获取
-        String openId = getSessionAttr("wx_open_id");
+//        String openId = getSessionAttr("wx_open_id");
+//        String openId ="oTPru00BC-z6Pf_skCBKGDfi0kM0";
 
         // 统一下单文档地址：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 
@@ -149,12 +174,14 @@ public class WeixinPayController extends Controller {
         params.put("mch_id", Config.partner);
         params.put("body", "面对面-食品");
         params.put("out_trade_no", orderNum);//订单号唯一
-        params.put("total_fee", orderCurrentSumStr);//总金额
+//        params.put("total_fee", ""+orderCurrentSumInt);//总金额
+        params.put("total_fee", "1");
 
         String ip = IpKit.getRealIp(getRequest());
         if (StrKit.isBlank(ip)) {
             ip = "127.0.0.1";
         }
+
 
         params.put("spbill_create_ip", ip);
         params.put("trade_type", TradeType.JSAPI.name());
@@ -172,16 +199,21 @@ public class WeixinPayController extends Controller {
         String return_code = result.get("return_code");
         String return_msg = result.get("return_msg");
         if (StrKit.isBlank(return_code) || !"SUCCESS".equals(return_code)) {
-            renderText(return_msg);
+            jhm.putCode(0).putMessage(return_msg);
+            System.out.println("result::::::::::"+result);
+            renderJson(jhm);
             return;
         }
         String result_code = result.get("result_code");
         if (StrKit.isBlank(result_code) || !"SUCCESS".equals(result_code)) {
-            renderText(return_msg);
+            jhm.putCode(0).putMessage(return_msg);
+            renderJson(jhm);
             return;
         }
         // 以下字段在return_code 和result_code都为SUCCESS的时候有返回
         String prepay_id = result.get("prepay_id");
+
+        System.out.println(Config.appid);
 
         Map<String, String> packageParams = new HashMap<String, String>();
         packageParams.put("appId", Config.appid);
@@ -192,19 +224,16 @@ public class WeixinPayController extends Controller {
         String packageSign = PaymentKit.createSign(packageParams, Config.paternerKey);
         packageParams.put("paySign", packageSign);
 
-        String jsonStr = JsonUtils.toJson(packageParams);
-        setAttr("json", jsonStr);
-        System.out.println(jsonStr);
-
-        jhm.put("json", jsonStr);
+        jhm.put("json", packageParams);
         renderJson(jhm);
-//        renderJsp("/jsp/pay.jsp");
     }
 
     /**
      * 支付成功通知
      */
     public void pay_notify() {
+        JsonHashMap jhm=new JsonHashMap();
+
         // 支付结果通用通知文档: https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_7
         String xmlMsg = HttpKit.readData(getRequest());
         System.out.println("支付通知="+xmlMsg);
@@ -226,17 +255,31 @@ public class WeixinPayController extends Controller {
         if(PaymentKit.verifyNotify(params, Config.paternerKey)){
             if (("SUCCESS").equals(result_code)) {
                 //更新订单信息
-                System.out.println("更新订单信息");
-
-                Map<String, String> xml = new HashMap<String, String>();
-                xml.put("return_code", "SUCCESS");
-                xml.put("return_msg", "OK");
-                renderText(PaymentKit.toXml(xml));
-                return;
+//                System.out.println("更新订单信息");
+                int flag=Db.update("UPDATE w_orderform SET ostatus='paid',omodify_time=? WHERE onum=?",timeEnd,orderId);
+                if (flag==0){
+                    jhm.putCode(-1).putMessage("更新订单信息失败");
+                    System.out.println("failllllll");
+                }else {
+                    jhm.putCode(1).putMessage("更新订单信息成功");
+                    System.out.println("successssss");
+                }
+//                Map<String, String> xml = new HashMap<String, String>();
+//                xml.put("return_code", "SUCCESS");
+//                xml.put("return_msg", "OK");
+//                renderText(PaymentKit.toXml(xml));
+//                return;
+            }else {
+                jhm.putCode(0).putMessage("支付失败");
+                System.out.println("payFailllllll");
             }
         }
-        renderText("");
+
+//        renderText("");
+        renderJson(jhm);
     }
+
+
     /**
      *
      * @author Javen

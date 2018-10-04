@@ -139,7 +139,7 @@ public class MallCtrl extends BaseCtrl {
             /**
              //             *根据w_notice查询:最新公告：ncontent
              //             */
-            String noticeSql = "SELECT ncontent from w_notice ORDER BY nmodify_time desc";
+            String noticeSql = "SELECT ncontent from w_notice ORDER BY nmodify_time desc LIMIT 1";
             Record record = Db.findFirst(noticeSql);
             if (record==null){
                 jhm.put("notice", "");
@@ -477,9 +477,9 @@ public class MallCtrl extends BaseCtrl {
             *消息查询
             * 从w_notice表中查询ncontent和nmodify_time字段
              */
-            String sql = "select ncontent content,nmodify_time time from w_notice ORDER BY nmodify_time desc LIMIT 1";
-            Record record = Db.findFirst(sql);
-            jhm.putCode(1).put("notice",record);
+            String sql = "select ncontent content,nmodify_time time from w_notice ORDER BY nmodify_time desc";
+            List <Record> recordList = Db.find(sql);
+            jhm.putCode(1).put("notice",recordList);
         } catch (Exception e) {
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常!");
