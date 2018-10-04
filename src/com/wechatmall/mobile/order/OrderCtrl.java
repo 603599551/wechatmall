@@ -100,7 +100,7 @@ public class OrderCtrl extends BaseCtrl {
         //查询store表得到所有的自提点地址address， 还没有查距离
         String sql1="SELECT saddress AS address FROM w_store ";
         //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
-        String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
+        String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,castreet,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
         //根据value值查询dictionary表得到 物流类型和支付类型
         String sql3="SELECT value,name,`desc` FROM w_dictionary d WHERE parent_id = (SELECT id FROM w_dictionary WHERE value =?) AND d.`desc` LIKE CONCAT('%',?,'%')";
 
@@ -378,7 +378,7 @@ public class OrderCtrl extends BaseCtrl {
              */
             String sql1="SELECT o.oid AS orderId,o.onum AS orderNum,o.ostatus AS status,o.otransport_type AS receivingMethod,o.opay_type AS payMethod,\n" +
                     "FORMAT(o.ooriginal_sum,2)AS originalPriceAll,FORMAT(o.ocurrent_sum,2)AS presentPriceAll,o.oaddress AS goodsAddress,\n" +
-                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_customer c,w_orderform o WHERE c.cid=? AND o.cid=? ORDER BY o.ocreate_time DESC";
+                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_customer c,w_orderform o WHERE  c.cid=o.cid and c.cid=? AND o.cid=? ORDER BY o.ocreate_time DESC";
             //订单列表orderList
             List<Record> orderList= Db.find(sql1,userId,userId);
 

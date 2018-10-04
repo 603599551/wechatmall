@@ -23,7 +23,7 @@ public class ProductCategoryService  extends BaseService{
         JsonHashMap jhm=new JsonHashMap();
         String id = (String) paraMap.get("id");
 
-        Db.update("UPDATE w_product SET pcid=(SELECT pcid FROM w_product_category WHERE pcname='默认分类') WHERE pcid=?",id);
+        Db.update("UPDATE w_product SET pcid=(SELECT pcid FROM w_product_category WHERE pcname='默认类') WHERE pcid=?",id);
         Db.delete("DELETE FROM w_product_category WHERE pcid=?",id);
         jhm.putCode(1).putMessage("删除成功");
 
