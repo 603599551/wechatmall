@@ -30,38 +30,38 @@ public class LoginCtrl extends BaseCtrl {
             }
             Record r;
             if(StringUtils.equals(username,"admin")){
-                r = Db.findFirst("select * from h_admin where username=? and password=?", username, password);
+                r = Db.findFirst("select * from w_admin where username=? and password=?", username, password);
             }else {
-                r = Db.findFirst("select *, (select store_color from h_store s where s.id=h_staff.dept_id) store_color,(select city from h_store s where s.id=h_staff.dept_id) city from h_staff where username=? and password=?", username, password);
+                r = Db.findFirst("SELECT id,username,job_id,`status`,name FROM w_admin WHERE username=? AND `password`=?", username, password);
             }
             if (r != null) {
                 String status=r.get("status");
-                if("6".equals(status)){
+                if("quit".equals(status)){
                     jhm.putCode(-1).putMessage("离职员工不能登录！");
                     renderJson(jhm);
                     return;
                 }
-                if (!(StringUtils.equals(username,"admin")||StringUtils.equals(r.get("job"),"store_manager"))){
-                    jhm.putCode(-1).putMessage("员工不能登录！");
-                    renderJson(jhm);
-                    return;
-                }
+//                if (!(StringUtils.equals(username,"admin")||StringUtils.equals(r.get("job"),"store_manager"))){
+//                    jhm.putCode(-1).putMessage("员工不能登录！");
+//                    renderJson(jhm);
+//                    return;
+//                }
 
                 UserBean ub=new UserBean();
                 ub.setId(r.get("id"));
                 ub.setName(r.getStr("username"));
                 ub.setRealName(r.getStr("name" ));
-                ub.setDeptId(r.getStr("dept_id"));
-                ub.setDeptName(r.getStr("dept_name"));
-                ub.put("store_id", r.getStr("dept_id"));
-                if (StringUtils.equals(username,"admin")){
-                    ub.put("store_color", "");
-                    ub.put("city","");
-                }else {
-                    ub.put("store_color", r.getStr("store_color"));
-                    ub.put("city", r.getStr("city"));
-                }
-                Object job=r.get("job");
+//                ub.setDeptId(r.getStr("dept_id"));
+//                ub.setDeptName(r.getStr("dept_name"));
+//                ub.put("store_id", r.getStr("dept_id"));
+//                if (StringUtils.equals(username,"admin")){
+//                    ub.put("store_color", "");
+//                    ub.put("city","");
+//                }else {
+//                    ub.put("store_color", r.getStr("store_color"));
+//                    ub.put("city", r.getStr("city"));
+//                }
+                Object job=r.get("job_id");
                 if(job==null){
                     job="";
                 }
@@ -69,7 +69,7 @@ public class LoginCtrl extends BaseCtrl {
                     job=job+"";
                 }
                 ub.setJobId((String)job);
-                ub.setJobName(r.getStr("job_name"));
+//                ub.setJobName(r.getStr("job_name"));
                 setSessionAttr(KEY.SESSION_USER,ub);
                 setCookie("userId", r.get("id"), 60 * 60 * 24 * 3);
 
@@ -77,11 +77,11 @@ public class LoginCtrl extends BaseCtrl {
                 user.set("name", ub.getRealName());
                 user.set("id", ub.getId());
                 user.set("roles", new ArrayList<>());
-                if (StringUtils.equals(username,"admin")){
-                    user.set("dept_id","");
-                }else {
-                    user.set("dept_id",ub.getDeptId());
-                }
+//                if (StringUtils.equals(username,"admin")){
+//                    user.set("dept_id","");
+//                }else {
+//                    user.set("dept_id",ub.getDeptId());
+//                }
 
                 jhm.put("data", user);
                 jhm.put("sessionId",getSession().getId());
