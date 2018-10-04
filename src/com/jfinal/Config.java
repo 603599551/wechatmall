@@ -131,8 +131,9 @@ public class Config extends JFinalConfig {
 		routes.add("/pay", WeixinPayController.class);
 		routes.add("/wxa/user", WxaUserApiController.class);
 		routes.add("/subscribemsg", SubscribeMsgController.class);
-
+		routes.add("/sdk", JsSDKController.class);
 		routes.add("/wx/home", HomeController.class);
+
 	}
 
 	@Override

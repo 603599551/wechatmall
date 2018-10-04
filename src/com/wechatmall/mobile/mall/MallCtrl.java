@@ -139,7 +139,7 @@ public class MallCtrl extends BaseCtrl {
             /**
              //             *根据w_notice查询:最新公告：ncontent
              //             */
-            String noticeSql = "SELECT ncontent from w_notice ORDER BY nmodify_time desc";
+            String noticeSql = "SELECT ncontent from w_notice ORDER BY nmodify_time desc LIMIT 1";
             Record record = Db.findFirst(noticeSql);
             if (record==null){
                 jhm.put("notice", "");
