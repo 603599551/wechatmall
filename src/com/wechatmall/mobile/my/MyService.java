@@ -36,6 +36,7 @@ public class MyService extends BaseService {
         String castreet = (String) paraMap.get("castreet");
         String caaddress = (String) paraMap.get("caaddress");
 
+        String time=DateTool.GetDateTime();
         /**
          * 增加的收货地址记录
          */
@@ -46,11 +47,11 @@ public class MyService extends BaseService {
         Record record=new Record();
         if(count == 0 ){
             record.set("castatus", "1");
-            modifyCustomerInformation(cid,caname,caphone);
+            modifyCustomerInformation(cid,caname,caphone,time);
         }else{
             if(castatus.equals("1")){
                Db.update("UPDATE w_customer_address SET castatus='0' WHERE cid =?",cid);
-               modifyCustomerInformation(cid,caname,caphone);
+               modifyCustomerInformation(cid,caname,caphone,time);
             }
                 record.set("castatus",castatus);
         }
@@ -65,8 +66,8 @@ public class MyService extends BaseService {
         record.set("cadistrict", cadistrict);
         record.set("castreet", castreet);
         record.set("caaddress", caaddress);
-        record.set("cacreate_time", DateTool.GetDateTime());
-        record.set("camodify_time", DateTool.GetDateTime());
+        record.set("cacreate_time",time );
+        record.set("camodify_time", time);
         record.set("cacreator_id", cid);
         record.set("camodifier_id", cid);
         record.set("cadesc", "");
@@ -101,7 +102,7 @@ public class MyService extends BaseService {
             if("1".equals(r.get("castatus"))){
                 List<Record> rr = Db.find("select caid,caname,caphone from w_customer_address where cid = ?",cid);
                 Db.update("UPDATE w_customer_address SET castatus='1' WHERE caid =?",rr.get(0).getStr("caid"));
-                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"));
+                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"),DateTool.GetDateTime());
             }
             jhm.putCode(1).putMessage("删除成功！");
         }else{
@@ -128,6 +129,9 @@ public class MyService extends BaseService {
         String cacity = (String) paraMap.get("cacity");
         String castreet = (String) paraMap.get("castreet");
         String caaddress = (String) paraMap.get("caaddress");
+
+        String time=DateTool.GetDateTime();
+
         /**
          * 修改的收货地址记录
          */
@@ -139,11 +143,11 @@ public class MyService extends BaseService {
         if(!castatus.equals(r.getStr("castatus"))){
             if("1".equals(castatus)){
                 Db.update("UPDATE w_customer_address SET castatus='0' WHERE cid =?",cid);
-                modifyCustomerInformation(cid,caname,caphone);
+                modifyCustomerInformation(cid,caname,caphone,time);
             }else{
                 List<Record> rr = Db.find("select caid,caname,caphone from w_customer_address where castatus='0'and  cid = ?",cid);
                 Db.update("UPDATE w_customer_address SET castatus='1' WHERE caid =?",rr.get(0).getStr("caid"));
-                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"));
+                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"),time);
             }
         }
         Record modifyHarvestAddress = new Record();
@@ -170,12 +174,12 @@ public class MyService extends BaseService {
     }
 
     //修改默认地址时自动修改客户表里的信息：姓名，电话，修改时间
-    private void modifyCustomerInformation(String cid,String name,String phone){
+    private void modifyCustomerInformation(String cid,String name,String phone,String time){
         Record r = new Record();
         r.set("cid",cid);
         r.set("cname",name);
         r.set("cphone",phone);
-        r.set("cmodify_time",DateTool.GetDateTime());
+        r.set("cmodify_time",time);
         Db.update("w_customer","cid",r);
     }
 }
