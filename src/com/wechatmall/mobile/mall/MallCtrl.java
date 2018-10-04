@@ -477,13 +477,9 @@ public class MallCtrl extends BaseCtrl {
             *消息查询
             * 从w_notice表中查询ncontent和nmodify_time字段
              */
-            String sql = "select ncontent content,nmodify_time time from w_notice ORDER BY nmodify_time desc";
-            List<Record> showHarvestMassageList = Db.find(sql);
-            if(showHarvestMassageList != null && showHarvestMassageList.size()>0) {
-                jhm.put("notice",showHarvestMassageList);
-            } else {
-                jhm.putCode(0).putMessage("查询失败!");
-            }
+            String sql = "select ncontent content,nmodify_time time from w_notice ORDER BY nmodify_time desc LIMIT 1";
+            Record record = Db.findFirst(sql);
+            jhm.putCode(1).put("notice",record);
         } catch (Exception e) {
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常!");
