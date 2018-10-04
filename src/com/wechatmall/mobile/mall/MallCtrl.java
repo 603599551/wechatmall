@@ -461,17 +461,6 @@ public class MallCtrl extends BaseCtrl {
      */
     public void queryMessage(){
         JsonHashMap jhm = new JsonHashMap();
-        /**
-        * 接收前端参数
-        */
-        //用户的id
-        String userId = getPara("userId");
-        //非空验证
-        if(StringUtils.isEmpty(userId)) {
-            jhm.putCode(0).putMessage("客户id为空");
-            renderJson(jhm);
-            return;
-        }
         try {
             /*
             *消息查询
