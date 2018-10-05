@@ -96,7 +96,7 @@ public class ProductManageCtrl extends BaseCtrl {
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间" "modifyTime" : "修改时间"
          * "value":"上架状态对应的value值" , "introduction":"简要描述" , "keyword":["keyword1","keyword2","keyword3"] , "detail":"详细内容",
          */
-        String select = "SELECT wp.pid AS id,wp.pcid AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS status,wd.`name` AS value,wp.pcreator_id AS creator,wp.pcreate_time AS createTime ";
+        String select = "SELECT wp.pid AS id,wp.pcid AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS value,wd.`name` AS valueName,wp.pcreator_id AS creator,wp.pcreate_time AS createTime ";
 
         StringBuilder sql = new StringBuilder(" FROM w_product wp,w_dictionary wd WHERE wp.pstatus=wd.`value` ");
 
