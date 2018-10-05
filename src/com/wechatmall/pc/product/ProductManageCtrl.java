@@ -300,6 +300,12 @@ public class ProductManageCtrl extends BaseCtrl {
         String sketch = getPara("sketch");
 
         //进行非空判断
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+
         if(StringUtils.isEmpty(type)){
             jhm.putCode(0).putMessage("分类不能为空！");
             renderJson(jhm);
@@ -343,7 +349,7 @@ public class ProductManageCtrl extends BaseCtrl {
         }
 
         try {
-            Record record = Db.findById("w_product", "pid", id);
+            Record record = Db.findFirst("SELECT * FROM w_product WHERE pid=? ", id);
             if(record == null){
                 jhm.putCode(0).putMessage("id有误！");
                 renderJson(jhm);
