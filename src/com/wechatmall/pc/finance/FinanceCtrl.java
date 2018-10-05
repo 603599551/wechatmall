@@ -174,7 +174,7 @@ public class FinanceCtrl extends BaseCtrl{
             //定义个人应付款、已付款、未付款和总体应付款、已付款和未付款
             float shouldPayInvid = 0.00f;
             float shouldPay = 0.00f;
-            float notPayInvid = 0.00f;
+            //float notPayInvid = 0.00f;
             float havePaid = 0.00f;
             float noPay = 0.00f;
             for(Record r : page.getList()){
@@ -205,7 +205,9 @@ public class FinanceCtrl extends BaseCtrl{
                 havePaid = weChatHavePaidF + cashOnHavePaidF;
 
             //应付款
+            if(shouldPayRecord.getFloat("shouldPay") != null){
                 shouldPay = shouldPayRecord.getFloat("shouldPay");
+            }
             //计算未付款金额
                 noPay = shouldPay - havePaid;
                     jhm.put("shouldPay",shouldPay);
