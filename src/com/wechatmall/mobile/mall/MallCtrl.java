@@ -91,7 +91,7 @@ public class MallCtrl extends BaseCtrl {
             int i = 0 , t = 0;
             List<Record> resultList = new ArrayList<>();
             for(Record r : recordList){
-                r.set("label", r.getStr("keyword").split(","));
+                r.set("label", r.getStr("keyword").split(" "));
                 r.remove("keyword");
                 t++;
                 if(!StringUtils.isEmpty(classify[i]) && StringUtils.equals(classify[i],r.getStr("pcname")) && t != recordList.size()){  //上一段与本条数据分类名相同
