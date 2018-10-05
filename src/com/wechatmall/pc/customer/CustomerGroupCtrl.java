@@ -94,7 +94,7 @@ public class CustomerGroupCtrl extends BaseCtrl{
 
         //查询添加，按照分组名称模糊查询
         if (StringUtils.isNotEmpty(keyword)){
-            sql=sql.append("WHERE cgname LIKE CONCAT('%',?,'%')");
+            sql=sql.append(" WHERE cgname LIKE CONCAT('%',?,'%')");
             params.add(keyword);
         }
 

@@ -95,9 +95,9 @@ public class CustomerInfoCtrl extends BaseCtrl{
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
         //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
-        String select="SELECT c.cid AS id,c.cname AS name,d.name AS gender,c.ctype AS value,dd.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group',c.cremark AS 'desc' ";
+        String select="SELECT c.cid AS id,c.cname AS name,c.cwechat AS openId,c.ctype AS value,dd.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group',c.cremark AS 'desc' ";
 
-        StringBuilder sql=new StringBuilder("FROM w_customer c LEFT JOIN w_dictionary d ON c.cgender=d.value LEFT JOIN w_dictionary dd ON c.ctype=dd.value,w_customer_group cg WHERE c.cgid=cg.cgid ");
+        StringBuilder sql=new StringBuilder("FROM w_customer c LEFT JOIN w_dictionary dd ON c.ctype=dd.value,w_customer_group cg WHERE c.cgid=cg.cgid ");
 
         List<Object> params = new ArrayList<>();
 
@@ -277,11 +277,11 @@ public class CustomerInfoCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(desc)){
-            jhm.putCode(0).putMessage("客户备注为空");
-            renderJson(jhm);
-            return;
-        }
+//        if (StringUtils.isEmpty(desc)){
+//            jhm.putCode(0).putMessage("客户备注为空");
+//            renderJson(jhm);
+//            return;
+//        }
 
         try{
             Db.update("UPDATE w_customer SET cgid=?,cremark=?,cmodify_time=? WHERE cid=?",group,desc, DateTool.GetDateTime(),id);
