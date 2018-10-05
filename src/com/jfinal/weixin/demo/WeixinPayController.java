@@ -6,6 +6,7 @@ import com.jfinal.json.Json;
 import com.jfinal.kit.HttpKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.weixin.sdk.api.PaymentApi;
 import com.jfinal.weixin.sdk.api.PaymentApi.TradeType;
 import com.jfinal.weixin.sdk.api.SnsAccessTokenApi;
@@ -74,6 +75,8 @@ public class WeixinPayController extends Controller {
         String orderCurrentSumStr = getPara("orderCurrentSum");
         //openId
         String openId=getPara("openId");
+        //订单编号
+        String orderNum=getPara("orderNum");
 
 
         if (Config.devMode){
@@ -87,6 +90,7 @@ public class WeixinPayController extends Controller {
             System.out.println("WEIXINPAY orderOriginalSumStr:"+orderOriginalSumStr);
             System.out.println("WEIXINPAY orderCurrentSumStr:"+orderCurrentSumStr);
             System.out.println("WEIXINPAY openId:"+openId);
+            System.out.println("WEIXINPAY orderNum:"+orderNum);
         }
 
         //非空验证
@@ -136,29 +140,30 @@ public class WeixinPayController extends Controller {
             return;
         }
 
-        //订单编号=时间+随机数
-        String orderNum=getOrderIdByTime();
+        if (StringUtils.isEmpty(orderNum)){
+            //订单编号=时间+随机数
+            orderNum=getOrderIdByTime();
 
-        try{
-            Map paraMap=new HashMap();
-            paraMap.put("userId", userId);
-            paraMap.put("address", address);
-            paraMap.put("name", name);
-            paraMap.put("phone", phone);
-            paraMap.put("goodsString", goodsString);
-            paraMap.put("receivingMethod", receivingMethod);
-            paraMap.put("payMethod", payMethod);
-            paraMap.put("orderOriginalSumStr", orderOriginalSumStr);
-            paraMap.put("orderCurrentSumStr", orderCurrentSumStr);
-            paraMap.put("orderNum", orderNum);
-            OrderService srv = enhance(OrderService.class);
-            srv.placeOrder(paraMap);
+            try{
+                Map paraMap=new HashMap();
+                paraMap.put("userId", userId);
+                paraMap.put("address", address);
+                paraMap.put("name", name);
+                paraMap.put("phone", phone);
+                paraMap.put("goodsString", goodsString);
+                paraMap.put("receivingMethod", receivingMethod);
+                paraMap.put("payMethod", payMethod);
+                paraMap.put("orderOriginalSumStr", orderOriginalSumStr);
+                paraMap.put("orderCurrentSumStr", orderCurrentSumStr);
+                paraMap.put("orderNum", orderNum);
+                OrderService srv = enhance(OrderService.class);
+                jhm=srv.placeOrder(paraMap);
 
-        }catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常！");
+            }catch (Exception e){
+                e.printStackTrace();
+                jhm.putCode(-1).putMessage("服务器发生异常！");
+            }
         }
-
 
         double orderCurrentSum=Double.parseDouble(orderCurrentSumStr)*100;
         int orderCurrentSumInt=(int)orderCurrentSum;

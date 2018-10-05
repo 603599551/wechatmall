@@ -51,8 +51,10 @@ public class HomeController extends Controller{
         try{
             Record rf=Db.findFirst("SELECT count(*) AS count FROM w_customer WHERE cwechat=?",openId);
             if (StringUtils.equals(rf.getStr("count"),"0")){
+                int len=openId.length();
                 Record r=new Record();
                 r.set("cid",id);
+                r.set("cname", "微信新用户"+openId.substring(len-5,len));
                 r.set("cwechat", openId);
                 r.set("cgid","0fa26d8989954540855013d9659b0ba6");
                 r.set("ctype","individual");

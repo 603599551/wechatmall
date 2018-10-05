@@ -44,7 +44,7 @@ public class OrderService extends BaseService {
         float orderOriginalSum = Float.valueOf(orderOriginalSumStr);
         //订单现总价
         float orderCurrentSum = Float.valueOf(orderCurrentSumStr);
-
+        String orderId=UUIDTool.getUUID();
 
 
         /**
@@ -52,7 +52,7 @@ public class OrderService extends BaseService {
          */
         //订单信息表对象
         Record w_orderform = new Record();
-        w_orderform.set("oid", UUIDTool.getUUID());
+        w_orderform.set("oid", orderId);
         w_orderform.set("onum", orderNum);
         w_orderform.set("caid","");
         w_orderform.set("cid",userId);
@@ -108,8 +108,8 @@ public class OrderService extends BaseService {
                 return jhm;
             }
         }
-        jhm.putCode(1).putMessage("订单详情提交成功！");
-
+        //jhm.putCode(1).putMessage("订单详情提交成功！");
+        jhm.put("orderId",orderId);
         return jhm;
     }
 }
