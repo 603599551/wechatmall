@@ -98,6 +98,8 @@ public class ProductCategoryCtrl extends BaseCtrl {
             params.add(keyword);
         }
 
+        sql=sql.append(" ORDER BY pcsort ASC");
+
         try{
             //分页查询
             Page<Record> page = Db.paginate(pageNum, pageSize, select, sql.toString(), params.toArray());
