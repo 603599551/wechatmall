@@ -112,7 +112,8 @@ public class OrderCtrl extends BaseCtrl{
 
             //对检索条件进行判断
             if(!StringUtils.isEmpty(number)){
-                sql.append(" and o.oid = ? ");
+                number = "%" + number + "%";
+                sql.append(" and o.onum like ? ");
                 params.add(number);
             }
 
@@ -127,8 +128,7 @@ public class OrderCtrl extends BaseCtrl{
             }
 
             if(!StringUtils.isEmpty(customerName)) {
-                customerName = "%" + customerName + "%";
-                sql.append(" and wc.cname like ? ");
+                sql.append(" and wc.cname LIKE CONCAT('%',?,'%') ");
                 params.add(customerName);
             }
                 sql.append(" )wo LEFT JOIN w_dictionary wd ON wo.ostatus = wd.`value` LEFT JOIN w_dictionary wdd ON wo.ctype = wdd.`value` ORDER BY wo.ocreate_time desc");
