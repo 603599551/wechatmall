@@ -109,7 +109,7 @@ public class OrderService extends BaseService {
             }
         }
         //jhm.putCode(1).putMessage("订单详情提交成功！");
-        jhm.put("orderId",orderId);
+//        jhm.put("orderId",orderId);
         return jhm;
     }
 }

@@ -187,7 +187,6 @@ public class WeixinPayController extends Controller {
             ip = "127.0.0.1";
         }
 
-
         params.put("spbill_create_ip", ip);
         params.put("trade_type", TradeType.JSAPI.name());
         params.put("nonce_str", System.currentTimeMillis() / 1000 + "");
@@ -217,9 +216,6 @@ public class WeixinPayController extends Controller {
         }
         // 以下字段在return_code 和result_code都为SUCCESS的时候有返回
         String prepay_id = result.get("prepay_id");
-
-        System.out.println(Config.appid);
-
         Map<String, String> packageParams = new HashMap<String, String>();
         packageParams.put("appId", Config.appid);
         packageParams.put("timeStamp", System.currentTimeMillis() / 1000 + "");
@@ -228,6 +224,7 @@ public class WeixinPayController extends Controller {
         packageParams.put("signType", "MD5");
         String packageSign = PaymentKit.createSign(packageParams, Config.paternerKey);
         packageParams.put("paySign", packageSign);
+        packageParams.put("orderNum", orderNum);
 
         jhm.put("json", packageParams);
         renderJson(jhm);
