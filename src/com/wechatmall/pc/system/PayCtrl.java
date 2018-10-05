@@ -418,6 +418,7 @@ public class PayCtrl extends BaseCtrl{
             sql += "  and d.value = ? ";
             params.add(name);
         }
+        sql += "order by d.sort";
         try{
             /**
              * 查询型列表

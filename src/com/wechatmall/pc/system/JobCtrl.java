@@ -440,7 +440,7 @@ public class JobCtrl extends BaseCtrl{
         }
 
         //分页查询，在job表查询职务列表id，职务名称。查询职位的员工数，根据用户名分组查询
-        String select = "select id, name, ( select count(1) from w_admin where job_id = h_job.id ) staffCount, ( select GROUP_CONCAT(username) from w_admin ) staffsName  ";
+        String select = "select id, name, ( select count(1) from w_admin where job_id = h_job.id ) staffCount, ( select GROUP_CONCAT(username) from w_admin where job_id = h_job.id ) staffsName  ";
         String sql = " from h_job ";
         try{
             /**

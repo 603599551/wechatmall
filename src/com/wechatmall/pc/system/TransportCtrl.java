@@ -415,6 +415,7 @@ public class TransportCtrl extends BaseCtrl {
             sql += "  and d.value like ? ";
             params.add(type);
         }
+        sql += " order by d.sort ";
         try{
             /**
              * 查询物流类型列表

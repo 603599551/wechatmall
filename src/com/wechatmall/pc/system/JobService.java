@@ -35,7 +35,7 @@ public class JobService extends BaseService{
         String usu = (String) paraMap.get("userId");
 
         //根据系统用户id，查找对应的姓名
-        String sql = "select username from w_admin where username = ?";
+        String sql = "select username from w_admin where id = ?";
         Record adminNameRecord = Db.findFirst(sql,usu);
 
         String adminName = adminNameRecord.get("username");
@@ -93,7 +93,7 @@ public class JobService extends BaseService{
         JSONArray jobPermission = (JSONArray) paraMap.get("jobPermissionList");
         String usu = (String) paraMap.get("userId");
         //根据系统用户id，查找对应的姓名
-        String sql = "select username from w_admin where username = ?";
+        String sql = "select username from w_admin where id = ?";
         Record adminNameRecord = Db.findFirst(sql,usu);
 
         String adminName = adminNameRecord.get("username");
