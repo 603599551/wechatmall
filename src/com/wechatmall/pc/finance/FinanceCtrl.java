@@ -122,9 +122,9 @@ public class FinanceCtrl extends BaseCtrl{
              * */
             String select = "select wor.oid as id,wor.onum as orderNum, wor.ocreate_time as createTime, wor.ocurrent_sum as shouldPay,  wor.ostatus as payStatus, wor.opay_type as payType, wor.otransport_type as transportModel, wcu.cname as customerName, wcu.ctype as customerType, wca.caname as receiverName, wca.caphone as phone, wca.caaddress address, ( select name from w_dictionary w where wor.opay_type = w.`value` and w.parent_id = 800 ) payType_text, ( select name from w_dictionary w where wor.ostatus = w. value and w.parent_id = 100 ) payStatus_text, ( select name from w_dictionary w where wor.otransport_type = w.`value` and w.parent_id = 700 ) transportModel_text   ";
             String sql = "  from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid   ";
-            String sql1 = " select SUM(wor.ocurrent_sum) as weChatHavePaid  from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'wechat_pay') and wor.ostatus in ( 'finished', 'paid', 'shipped' )";
-            String sql2 = " select SUM(wor.ocurrent_sum) as cashOnHavePaid from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'cashOn_delivery') and wor.ostatus in ( 'finished', 'paid' )  ";
-            String sql3 = " select SUM(wor.ocurrent_sum) as shouldPay from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid ";
+            String sql1 = " select ROUND(SUM(wor.ocurrent_sum),2) as weChatHavePaid  from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'wechat_pay') and wor.ostatus in ( 'finished', 'paid', 'shipped' )";
+            String sql2 = " select ROUND(SUM(wor.ocurrent_sum),2) as cashOnHavePaid from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'cashOn_delivery') and wor.ostatus in ( 'finished', 'paid' )  ";
+            String sql3 = " select ROUND(SUM(wor.ocurrent_sum),2) as shouldPay from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid ";
             if(customerName != null && customerName.length() > 0){
                 customerName = "%" + customerName + "%";
                 sql += "  and wcu.cname like ? ";
@@ -177,15 +177,12 @@ public class FinanceCtrl extends BaseCtrl{
             float notPayInvid = 0.00f;
             float havePaid = 0.00f;
             float noPay = 0.00f;
-            //遍历page，notPay = shouldPay - havePaid;
             for(Record r : page.getList()){
                  shouldPayInvid = r.getFloat("shouldPay");
                  //保留两位小数，把未付款放入page集合中
                 String shouldPayStr = NumberFormat.doubleFormatStr(shouldPayInvid);
                 //把个人的应付款，已付款，未付款放在page中
                 r.set("price",shouldPayStr);
-                //r.set("havePaid",havePaidStr);
-                //r.set("notPay",notPayStr);
                 //求出所有记录的应付款
             }
             //根据支付方式为微信支付计算已付款的金额
@@ -194,8 +191,18 @@ public class FinanceCtrl extends BaseCtrl{
             Record cashOnHavePaid = Db.findFirst(sql2,params.toArray());
             //查询所有应付款的金额
             Record shouldPayRecord = Db.findFirst(sql3,params.toArray());
+            Float weChatHavePaidF = 0.0f;
+            Float cashOnHavePaidF = 0.0f;
+
+            //判断微信付款和货到付款的已付款是否为空
+            if( weChatHavePaid.get("weChatHavePaid") != null){
+                weChatHavePaidF += weChatHavePaid.getFloat("weChatHavePaid");
+            }
+            if(cashOnHavePaid.get("cashOnHavePaid") != null ){
+                cashOnHavePaidF += cashOnHavePaid.getFloat("cashOnHavePaid");
+            }
             //把两种方式付款的应付金额相加
-                havePaid = weChatHavePaid.getFloat("weChatHavePaid") + cashOnHavePaid.getFloat("cashOnHavePaid");
+                havePaid = weChatHavePaidF + cashOnHavePaidF;
 
             //应付款
                 shouldPay = shouldPayRecord.getFloat("shouldPay");
