@@ -54,6 +54,11 @@ public class HomeController extends Controller{
                 int len=openId.length();
                 Record r=new Record();
                 r.set("cid",id);
+                r.set("cgender","unknown");
+                r.set("cphone","unknown");
+                r.set("cwxName","unknown");
+                r.set("ccreator_id","weChat");
+                r.set("cmodifier_id","weChat");
                 r.set("cname", "微信新用户"+openId.substring(len-5,len));
                 r.set("cwechat", openId);
                 r.set("cgid","0fa26d8989954540855013d9659b0ba6");
