@@ -466,7 +466,7 @@ public class MallCtrl extends BaseCtrl {
             *消息查询
             * 从w_notice表中查询ncontent和nmodify_time字段
              */
-            String sql = "select ncontent content,nmodify_time time from w_notice ORDER BY nmodify_time desc";
+            String sql = "SELECT ncontent content,nmodify_time time FROM w_notice ORDER BY nmodify_time DESC LIMIT 10";
             List <Record> recordList = Db.find(sql);
             jhm.putCode(1).put("notice",recordList);
         } catch (Exception e) {
