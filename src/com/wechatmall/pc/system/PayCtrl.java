@@ -168,6 +168,10 @@ public class PayCtrl extends BaseCtrl{
         String name = getPara("name");
         //支付方式备注
         String desc = getPara("desc");
+        //排序
+        String sort = getPara("sort");
+        //value
+        String value = getPara("value");
         //非空验证
         if(StringUtils.isEmpty(id)){
             jhm.putCode(0).putMessage("支付方式编号为空!");
@@ -188,6 +192,8 @@ public class PayCtrl extends BaseCtrl{
         modifyPayType.set("id",id);
         modifyPayType.set("name",name);
         modifyPayType.set("desc",desc);
+        modifyPayType.set("value",value);
+        modifyPayType.set("sort",sort);
         try{
             /**
              * 修改支付类型
@@ -323,16 +329,15 @@ public class PayCtrl extends BaseCtrl{
             renderJson(jhm);
             return;
         }
-        String sql = "select name ,'desc' from w_dictionary where id = ?";
+        String sql = "select name ,`desc`,value,sort from w_dictionary where id = ?";
         try{
             /**
              * 根据id查询支付方式
              */
             Record showPayType = Db.findFirst(sql,id);
             if(showPayType != null){
-                jhm.putMessage("查询成功");
-                jhm.put("name",showPayType.get("name"));
-                jhm.put("desc",showPayType.get("desc"));
+                jhm.putCode(1);
+                jhm.put("data",showPayType);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }
@@ -412,13 +417,13 @@ public class PayCtrl extends BaseCtrl{
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select d.id id ,d.name name, d.desc  'desc'  ";
+        String select = "select d.id id ,d.name name, d.`desc`  'desc'  ";
         String sql = " from w_dictionary d where d.parent_id = '800'  ";
         if(name != null && name.length() > 0){
             sql += "  and d.value = ? ";
             params.add(name);
         }
-        sql += "order by d.sort";
+        sql += "order by d.sort ASC";
         try{
             /**
              * 查询型列表

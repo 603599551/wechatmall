@@ -169,6 +169,8 @@ public class TransportCtrl extends BaseCtrl {
         String name = getPara("name");
         //物流类型备注
         String desc = getPara("desc");
+        String value = getPara("value");
+        String sort = getPara("sort");
         //非空验证
         if(StringUtils.isEmpty(id)){
             jhm.putCode(0).putMessage("物流类型id为空!");
@@ -190,6 +192,8 @@ public class TransportCtrl extends BaseCtrl {
         modifyTransportType.set("id",id);
         modifyTransportType.set("name",name);
         modifyTransportType.set("desc",desc);
+        modifyTransportType.set("value",value);
+        modifyTransportType.set("sort",sort);
         try{
             /**
              * 修改物流类型
@@ -321,16 +325,15 @@ public class TransportCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        String sql = "select name ,'desc' from w_dictionary where id = ?";
+        String sql = "select name ,`desc`,value,sort from w_dictionary where id = ?";
         try{
             /**
              * 根据id查询物流分类
              */
             Record transportType = Db.findFirst(sql,id);
             if(transportType != null){
-                jhm.putMessage("查询成功");
-                jhm.put("name",transportType.get("name"));
-                jhm.put("desc",transportType.get("desc"));
+                jhm.putCode(1);
+                jhm.put("data",transportType);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");
             }
@@ -408,7 +411,7 @@ public class TransportCtrl extends BaseCtrl {
         }
         //新建集合，放入替换参数
         List<Object> params = new ArrayList<>();
-        String select = "select d.id id ,d.name name, d.desc  'desc'  ";
+        String select = "select d.id id ,d.name name, d.`desc`  'desc'  ";
         String sql = " from w_dictionary d  where d.parent_id = '700'  ";
         if(type != null && type.length() > 0){
             type = "%" + type + "%";

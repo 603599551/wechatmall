@@ -576,14 +576,14 @@ public class StoreCtrl extends BaseCtrl {
             return;
         }
         //查询自提点id，自提点名字，自提点城市，自提点联系人姓名，自提点地址，自提点联系电话，自提点经度，纬度
-        String sql = "select sid id,sname storeName,scity cityName,sadmin managerName,saddress address,sphone phone,slongitude longitude,slatitude latitude from w_store where  sid = ? ";
+        String sql = "select stime AS time,sid id,sname storeName,scity cityName,sadmin managerName,saddress address,sphone phone,slongitude longitude,slatitude latitude from w_store where  sid = ? ";
         try{
             /**
              * 根据id查询物流分类
              */
             Record showStore = Db.findFirst(sql,id);
             if(showStore != null){
-                jhm.putMessage("查询成功");
+                jhm.putCode(1);
                 jhm.put("data",showStore);
             }else{
                 jhm.putCode(0).putMessage("查询失败！");

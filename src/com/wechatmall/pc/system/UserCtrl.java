@@ -486,16 +486,13 @@ public class UserCtrl extends BaseCtrl{
             /**
              * 查询该用户
              */
-            String sql = "select wa.username, wa.`password`, wa. name nickname, ( select name from h_job where wa.job_id = h_job.id ) job, wa.status from w_admin wa where id=?";
+            String sql = "select wa.username, wa.`password`, wa. name nickname, ( select id from h_job where wa.job_id = h_job.id ) job, wa.status from w_admin wa where id=?";
             Record idRecord = Db.findFirst(sql,id);
             if(idRecord!=null){
-                jhm.putCode(1).putMessage("查询成功");
-                renderJson(jhm);
-                return;
+                jhm.putCode(1);
+                jhm.put("data",idRecord);
             }else{
                 jhm.putCode(0).putMessage("查询失败");
-                renderJson(jhm);
-                return;
             }
         }catch (Exception e){
             e.printStackTrace();

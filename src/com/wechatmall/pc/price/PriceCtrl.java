@@ -288,6 +288,7 @@ public class PriceCtrl extends BaseCtrl{
             for(int i = 0; i < recordList.size(); i++){
                 for(int j = 0; j < records.size(); j++){
                     if(StringUtils.equals(records.get(j).getStr("cgid"), recordList.get(i).getStr("id"))){
+                        records.get(j).set("disabled",true);
                         records.get(j).set("parent_id", recordList.get(i).getStr("id"));
                         records.get(j).remove("cgid");
                         result.add(records.get(j));
