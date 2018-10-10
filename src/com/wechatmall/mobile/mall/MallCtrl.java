@@ -9,7 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import utils.bean.JsonHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * customerCtrl class
@@ -153,7 +155,70 @@ public class MallCtrl extends BaseCtrl {
         renderJson(jhm);
     }
 
+    public void showGoodsList2() {
+        JsonHashMap jhm = new JsonHashMap();
 
+        String userId = getPara("userId");
+
+        //进行非空验证
+        if(StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        try {
+            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,ww.pcid as pcid,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcsort ";
+            List<Record> recordList = Db.find(sql, userId);
+
+            List<Map> dataList=new ArrayList<Map>();
+            Map<String,Integer> pcnameMap=new HashMap();
+            for(Record r:recordList){
+                String pcname=r.get("pcname");
+                String pcid=r.get("pcid");
+                //当keyword不为空时，拆分成数组
+                String keyword=r.get("keyword");
+                if(StringUtils.isNotBlank(keyword)) {
+                    String[] labels = keyword.split(" ");
+                    r.set("label",labels);
+                    r.remove("keyword");
+                }
+                //数量
+                r.set("num",0);
+                /*
+                从pcnameMap中根据分类名取出索引值，
+                如果索引值为空，说明该商品的分类第一次出现，需要构建数据，
+                并放入到dataList中，索引值也要放入pcnameMap中
+                如果索引值不为空，说明该商品的分类不是第一次出现，根据索引值从dataList取出数据做处理
+
+                 */
+                Integer pcnameIndex=pcnameMap.get(pcname);
+                if(pcnameIndex==null){
+                    Map map=new HashMap();
+                    dataList.add(map);
+                    pcnameMap.put(pcname,dataList.size()-1);
+                    map.put("classifyname",pcname);
+                    map.put("classifyid",pcid);
+                    List goodsList=new ArrayList();
+                    map.put("list",goodsList);
+                    goodsList.add(r);
+                }else{
+                    Map map=dataList.get(pcnameIndex);
+                    List list=(List)map.get("list");
+                    list.add(r);
+                }
+            }
+
+            jhm.put("data",dataList);
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage(e.toString());
+        }
+
+        renderJson(jhm);
+    }
 
 
 //    public void showGoodsList() {
@@ -466,9 +531,9 @@ public class MallCtrl extends BaseCtrl {
             *消息查询
             * 从w_notice表中查询ncontent和nmodify_time字段
              */
-            String sql = "SELECT ncontent content,nmodify_time time FROM w_notice ORDER BY nmodify_time DESC LIMIT 10";
+            String sql = "SELECT ncontent content,substr(nmodify_time,1,10) time FROM w_notice ORDER BY nmodify_time DESC LIMIT 20";
             List <Record> recordList = Db.find(sql);
-            jhm.putCode(1).put("notice",recordList);
+            jhm.putCode(1).put("list",recordList);
         } catch (Exception e) {
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常!");

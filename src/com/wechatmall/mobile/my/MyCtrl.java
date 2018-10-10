@@ -291,46 +291,34 @@ public class MyCtrl extends BaseCtrl {
 //         renderJson("{\"code\":1,\"message\":\"删除成功！\"}");
     }
 
-    /**
-     * @author liushiwen
-     * @date 2018-9-22
-     * 名称  	查看收货地址
-     * 描述     显示收货地址
-     * 验证
-     * 权限	    无
-     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/showHarvestAddress
-     * 请求方式     post
-     *
-     * 请求参数：
-     * 参数名	类型	       最大长度	允许空	 描述
-     * userId	string		            不允许	 用户的id
-     * 返回数据：
-     * 返回格式：JSON
-     * 成功：
-     * {
-    "code":1,
-    "list":[{
-    "address":"地址",
-    "name":"小明",
-    "phone":13130005589
-    },{
-    "address":"地址",
-    "name":"小米",
-    "phone":13130005589
-    }]
-    }
-     * 失败：
-     * {
-    "code": 0,
-    "message": "查询失败！"
-    }
 
-     * 报错：
-     * {
-    "code": -1,
-    "message": "服务器发生异常！"
-     * }
-     */
+    public void showHarvestAddressById(){
+        JsonHashMap jhm = new JsonHashMap();
+        String id = getPara("id");
+        //非空验证
+        if (StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+        try {
+            /**
+             * 查看收货地址
+             */
+            String sql="select caid id,caname name,caphone phone,caprovince province,cacity city,cadistrict district,castreet street,caaddress address,castatus isDefault from w_customer_address  where caid = ?";
+            Record  showHarvestAddressRecord = Db.findFirst(sql,id);
+            if(showHarvestAddressRecord != null ){
+                jhm.put("data",showHarvestAddressRecord);
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
+//         renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
+    }
     public void showHarvestAddress(){
         JsonHashMap jhm = new JsonHashMap();
         /**
@@ -362,7 +350,6 @@ public class MyCtrl extends BaseCtrl {
         renderJson(jhm);
 //         renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
     }
-
     /**
      * @author liushiwen
      * @date 2018-9-22
