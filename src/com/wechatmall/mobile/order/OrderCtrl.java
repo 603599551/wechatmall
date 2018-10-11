@@ -1,6 +1,7 @@
 package com.wechatmall.mobile.order;
 
 import com.common.controllers.BaseCtrl;
+import com.jfinal.Config;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.wechatmall.pc.customer.CustomerGroupService;
@@ -100,7 +101,7 @@ public class OrderCtrl extends BaseCtrl {
         //查询store表得到所有的自提点地址address， 还没有查距离
         String sql1="SELECT saddress AS address FROM w_store ";
         //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
-        String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,castreet,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
+        String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
         //根据value值查询dictionary表得到 物流类型和支付类型
         String sql3="SELECT value,name,`desc` FROM w_dictionary d WHERE parent_id = (SELECT id FROM w_dictionary WHERE value =?) AND d.`desc` LIKE CONCAT('%',?,'%')";
 
@@ -408,25 +409,25 @@ public class OrderCtrl extends BaseCtrl {
             //订单列表orderList
             List<Record> orderList= Db.find(sql1Sb.toString(),sql1ParaList.toArray());
             List<String> orderIdList=new ArrayList<>();
-            if (orderList!=null||orderList.size()>0) {
+            if (orderList!=null && orderList.size()>0) {
                 //遍历订单列表
                 for (Record order : orderList) {
                     orderIdList.add(order.get("orderId"));
                     sql2.append("?,");
                 }
-            }
-            String sql2Str=sql2.substring(0,sql2.length()-1)+")";
+
+                String sql2Str=sql2.substring(0,sql2.length()-1)+")";
 
 
 
-            //将订单地址与自提点表的地址比较，得到storePhone
-            String sql3="SELECT sphone AS storePhone FROM w_store WHERE saddress=?";
+                //将订单地址与自提点表的地址比较，得到storePhone
+                String sql3="SELECT sphone AS storePhone FROM w_store WHERE saddress=?";
 
-            //根据userId查询
-            //订单详情列表
-            List<Record> orderDetailList= Db.find(sql2Str,orderIdList.toArray());
+                //根据userId查询
+                //订单详情列表
+                List<Record> orderDetailList= Db.find(sql2Str,orderIdList.toArray());
 
-            if (orderList!=null||orderList.size()>0){
+
                 //遍历订单列表
                 for (Record order:orderList){
                     Record phone=Db.findFirst(sql3,order.getStr("goodsAddress"));
@@ -489,9 +490,14 @@ public class OrderCtrl extends BaseCtrl {
              * 根据userId查询orderform表的cid得到多个订单编号oid，订单状态status，物流类型otransport_type，支付方式opay_type，
              * 订单原价ooriginal_sum，订单现价ocurrent_sum，订单地址oaddress，收货人姓名oname，联系电话ophone，
              */
-            StringBuilder sql1Sb=new StringBuilder("SELECT o.oid AS orderId,o.onum AS orderNum,o.ostatus AS status,case o.ostatus when 'pending_pay' then '待付款' when 'paid' then '已付款' when 'shipped' then '已发货' when 'finished' then '已完成' when 'canceled' then '已取消'  end as status_text,o.otransport_type AS receivingMethod,o.opay_type AS payMethod,\n" +
+            StringBuilder sql1Sb=new StringBuilder("SELECT o.oid AS orderId,o.onum AS orderNum,o.ostatus AS status,\n" +
+                    "(select name from w_dictionary d where d.parent_id='100' and d.value=o.ostatus ) as status_text,\n" +
+                    "o.otransport_type AS receivingMethod,\n" +
+                    "(select name from w_dictionary d where d.parent_id='700' and d.value=o.otransport_type ) as receivingMethod_text,\n" +
+                    "o.opay_type AS payMethod,\n" +
+                    "(select name from w_dictionary d where d.parent_id='800' and d.value=o.opay_type ) as payMethod_text,\n" +
                     "FORMAT(o.ooriginal_sum,2)AS originalPriceAll,FORMAT(o.ocurrent_sum,2)AS presentPriceAll,o.oaddress AS goodsAddress,\n" +
-                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_orderform o WHERE   o.oid=? ");
+                    "o.oname AS consigneeName,o.ophone AS consigneePhone FROM w_orderform o  WHERE   o.oid=? ");
             //根据oid查询orderform_detail表的oid得到多个 商品名称odname、商品数量odquantity、商品原价odoriginal_price、商品现价odcurrent_price
             StringBuilder sql2=new StringBuilder("SELECT oid AS orderId,GROUP_CONCAT(odname) AS productsN,GROUP_CONCAT(odquantity) AS productsQ,\n" +
                     "GROUP_CONCAT(FORMAT(odoriginal_price,2)) AS productsOP,GROUP_CONCAT(FORMAT(odcurrent_price,2))AS productsCP,GROUP_CONCAT(pid) AS goodsId \n" +

@@ -60,15 +60,17 @@ public class WeixinPayController extends Controller {
         //自提地址/收货地址
         String address = getPara("address");
         //用户姓名
-        String name = getPara("name");
+//        String name = getPara("name");
         //用户手机号
-        String phone = getPara("phone");
+//        String phone = getPara("phone");
+        //联系人信息
+        String contact=getPara("contact");
         //订单商品列表
         String goodsString = getPara("goodsList");
         //收货方式
-        String receivingMethod = getPara("receivingMethod");
+        String receivingMethod = getPara("receive");
         //支付方式
-        String payMethod = getPara("payMothod");
+        String payMethod = getPara("payMethod");
         //订单原总价
         String orderOriginalSumStr = getPara("orderOriginalSum");
         //订单现总价
@@ -79,68 +81,88 @@ public class WeixinPayController extends Controller {
         String orderNum=getPara("orderNum");
 
 
-        if (Config.devMode){
-            System.out.println("WEIXINPAY userId:"+userId);
-            System.out.println("WEIXINPAY address:"+address);
-            System.out.println("WEIXINPAY name:"+name);
-            System.out.println("WEIXINPAY phone:"+phone);
-            System.out.println("WEIXINPAY goodsString:"+goodsString);
-            System.out.println("WEIXINPAY receivingMethod:"+receivingMethod);
-            System.out.println("WEIXINPAY payMethod:"+payMethod);
-            System.out.println("WEIXINPAY orderOriginalSumStr:"+orderOriginalSumStr);
-            System.out.println("WEIXINPAY orderCurrentSumStr:"+orderCurrentSumStr);
-            System.out.println("WEIXINPAY openId:"+openId);
-            System.out.println("WEIXINPAY orderNum:"+orderNum);
-        }
-
-        //非空验证
-        if (StringUtils.isEmpty(userId)){
-            jhm.putCode(0).putMessage("用户的id为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(address)){
-            jhm.putCode(0).putMessage("自提地址/收货地址为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(name)){
-            jhm.putCode(0).putMessage("用户姓名为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(phone)){
-            jhm.putCode(0).putMessage("用户手机号为空！");
-            renderJson(jhm);
-            return;
-        }
-        if(StringUtils.isEmpty(goodsString)){
-            jhm.putCode(0).putMessage("订单商品列表为空!");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(receivingMethod)){
-            jhm.putCode(0).putMessage("收货方式为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(payMethod)){
-            jhm.putCode(0).putMessage("支付方式为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(orderOriginalSumStr)){
-            jhm.putCode(0).putMessage("订单原总价为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(orderCurrentSumStr)){
-            jhm.putCode(0).putMessage("订单现总价为空！");
-            renderJson(jhm);
-            return;
-        }
-
+        /*
+        如果订单编号为空，说明是新提交的订单
+        如果不为空，说明是从待支付进行支付
+         */
         if (StringUtils.isEmpty(orderNum)){
+            if (StringUtils.isEmpty(contact)){
+                jhm.putCode(0).putMessage("联系方式不能为空！");
+                renderJson(jhm);
+                return;
+            }
+            System.out.println("contact::"+contact);
+            String name=null;
+            String phone=null;
+            try {
+                name = contact.substring(contact.indexOf(":") + 1, contact.indexOf("　")).trim();
+                phone = contact.substring(contact.lastIndexOf(":") + 1).trim();
+            }catch (Exception e){
+                jhm.putCode(0).putMessage("请正确填写联系方式！");
+                renderJson(jhm);
+                return;
+            }
+            if (Config.devMode){
+                System.out.println("WEIXINPAY userId:"+userId);
+                System.out.println("WEIXINPAY address:"+address);
+                System.out.println("WEIXINPAY name:"+name);
+                System.out.println("WEIXINPAY phone:"+phone);
+                System.out.println("WEIXINPAY goodsString:"+goodsString);
+                System.out.println("WEIXINPAY receivingMethod:"+receivingMethod);
+                System.out.println("WEIXINPAY payMethod:"+payMethod);
+                System.out.println("WEIXINPAY orderOriginalSumStr:"+orderOriginalSumStr);
+                System.out.println("WEIXINPAY orderCurrentSumStr:"+orderCurrentSumStr);
+                System.out.println("WEIXINPAY openId:"+openId);
+                System.out.println("WEIXINPAY orderNum:"+orderNum);
+            }
+            //非空验证
+            if (StringUtils.isEmpty(userId)){
+                jhm.putCode(0).putMessage("用户的id为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(address)){
+                jhm.putCode(0).putMessage("自提地址/收货地址为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(name)){
+                jhm.putCode(0).putMessage("用户姓名为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(phone)){
+                jhm.putCode(0).putMessage("用户手机号为空！");
+                renderJson(jhm);
+                return;
+            }
+
+            if (StringUtils.isEmpty(receivingMethod)){
+                jhm.putCode(0).putMessage("收货方式为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(payMethod)){
+                jhm.putCode(0).putMessage("支付方式为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(orderOriginalSumStr)){
+                jhm.putCode(0).putMessage("订单原总价为空！");
+                renderJson(jhm);
+                return;
+            }
+            if (StringUtils.isEmpty(orderCurrentSumStr)){
+                jhm.putCode(0).putMessage("订单现总价为空！");
+                renderJson(jhm);
+                return;
+            }
+            if(StringUtils.isEmpty(goodsString)){
+                jhm.putCode(0).putMessage("订单商品列表为空!");
+                renderJson(jhm);
+                return;
+            }
+
             //订单编号=时间+随机数
             orderNum=getOrderIdByTime();
 
@@ -157,11 +179,18 @@ public class WeixinPayController extends Controller {
                 paraMap.put("orderCurrentSumStr", orderCurrentSumStr);
                 paraMap.put("orderNum", orderNum);
                 OrderService srv = enhance(OrderService.class);
-                jhm=srv.placeOrder(paraMap);
+                jhm=srv.placeOrder2(paraMap);
 
             }catch (Exception e){
                 e.printStackTrace();
                 jhm.putCode(-1).putMessage("服务器发生异常！");
+            }
+            /*
+            如果不是微信支付，就直接返回提交成功！
+             */
+            if(!"wechat_pay".equals(payMethod)){
+                jhm.putCode(1).putMessage("提交成功！");
+                renderJson(jhm);
             }
         }
 
@@ -179,8 +208,8 @@ public class WeixinPayController extends Controller {
         params.put("mch_id", Config.partner);
         params.put("body", "面对面-食品");
         params.put("out_trade_no", orderNum);//订单号唯一
-//        params.put("total_fee", ""+orderCurrentSumInt);//总金额
-        params.put("total_fee", "1");
+        params.put("total_fee", ""+orderCurrentSumInt);//总金额
+//        params.put("total_fee", "1");
 
         String ip = IpKit.getRealIp(getRequest());
         if (StrKit.isBlank(ip)) {
@@ -210,7 +239,9 @@ public class WeixinPayController extends Controller {
         }
         String result_code = result.get("result_code");
         if (StrKit.isBlank(result_code) || !"SUCCESS".equals(result_code)) {
-            jhm.putCode(0).putMessage(return_msg);
+//            jhm.putCode(0).putMessage(return_msg);
+            String err_code_des = result.get("err_code_des");
+            jhm.putCode(0).putMessage(err_code_des);
             renderJson(jhm);
             return;
         }
@@ -226,7 +257,10 @@ public class WeixinPayController extends Controller {
         packageParams.put("paySign", packageSign);
         packageParams.put("orderNum", orderNum);
 
-        jhm.put("json", packageParams);
+        jhm.putCode(1).put("json", packageParams);
+        if(Config.devMode) {
+            System.out.println("json:"+packageParams);
+        }
         renderJson(jhm);
     }
 

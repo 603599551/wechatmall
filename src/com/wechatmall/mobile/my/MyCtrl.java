@@ -96,7 +96,49 @@ public class MyCtrl extends BaseCtrl {
         renderJson(jhm);
 //        renderJson("{\"code\":1,\"name\":\"小明\",\"phone\":131355589,\"sex\":\"男\",\"type\":1}");
     }
+    public void queryInfo2(){
+        JsonHashMap jhm=new JsonHashMap();
+        /**
+         * 接收前端参数
+         */
+        //客户id
+        String userId  = getPara("userId");
 
+        //非空验证
+        if (StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("客户id为空！");
+            renderJson(jhm);
+            return;
+        }
+        try {
+            /**
+             * 查询客户信息
+             */
+            String sql = "select cname name, cphone phone, ( select name from w_dictionary where parent_id = 900 and value = cgender ) sex, ctype type from w_customer where cid = ? ";
+            Record record = Db.findFirst(sql,userId);
+            if(record != null ){
+                String type = record.get("type");
+                if(type.equals("merchant")){
+                    record.set("type",1);
+                }else{
+                    record.set("type",0);
+                }
+                Map data=new HashMap();
+                data.put("name",record.get("name"));
+                data.put("phone",record.get("phone"));
+                data.put("sex",record.get("sex"));
+                data.put("type",record.get("type"));
+                jhm.put("data",data);
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+//        renderJson("{\"code\":1,\"name\":\"小明\",\"phone\":131355589,\"sex\":\"男\",\"type\":1}");
+    }
     /**
      * @author liushiwen
      * @date 2018-9-22
