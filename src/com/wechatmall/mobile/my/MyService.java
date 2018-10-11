@@ -33,7 +33,6 @@ public class MyService extends BaseService {
         String caprovince = (String) paraMap.get("caprovince");
         String cadistrict = (String) paraMap.get("cadistrict");
         String cacity = (String) paraMap.get("cacity");
-        String castreet = (String) paraMap.get("castreet");
         String caaddress = (String) paraMap.get("caaddress");
 
         String time=DateTool.GetDateTime();
@@ -49,11 +48,11 @@ public class MyService extends BaseService {
             record.set("castatus", "1");
             modifyCustomerInformation(cid,caname,caphone,time);
         }else{
-            if(castatus.equals("1")){
+            if("1".equals(castatus)){
                Db.update("UPDATE w_customer_address SET castatus='0' WHERE cid =?",cid);
                modifyCustomerInformation(cid,caname,caphone,time);
             }
-                record.set("castatus",castatus);
+            record.set("castatus",castatus);
         }
         //新增地址记录
         record.set("caid", caid);
@@ -64,7 +63,6 @@ public class MyService extends BaseService {
         record.set("caprovince", caprovince);
         record.set("cacity", cacity);
         record.set("cadistrict", cadistrict);
-        record.set("castreet", castreet);
         record.set("caaddress", caaddress);
         record.set("cacreate_time",time );
         record.set("camodify_time", time);
@@ -118,7 +116,6 @@ public class MyService extends BaseService {
     @Before(Tx.class)
     public JsonHashMap modifyHarvestInformation(Map paraMap){
         JsonHashMap jhm=new JsonHashMap();
-        //接收MyCtrl的参数
         String caid = (String) paraMap.get("caid");
         String cid = (String) paraMap.get("cid");
         String caname = (String) paraMap.get("caname");
@@ -127,7 +124,6 @@ public class MyService extends BaseService {
         String caprovince = (String) paraMap.get("caprovince");
         String cadistrict = (String) paraMap.get("cadistrict");
         String cacity = (String) paraMap.get("cacity");
-        String castreet = (String) paraMap.get("castreet");
         String caaddress = (String) paraMap.get("caaddress");
 
         String time=DateTool.GetDateTime();
@@ -145,9 +141,10 @@ public class MyService extends BaseService {
                 Db.update("UPDATE w_customer_address SET castatus='0' WHERE cid =?",cid);
                 modifyCustomerInformation(cid,caname,caphone,time);
             }else{
-                List<Record> rr = Db.find("select caid,caname,caphone from w_customer_address where castatus='0'and  cid = ?",cid);
-                Db.update("UPDATE w_customer_address SET castatus='1' WHERE caid =?",rr.get(0).getStr("caid"));
-                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"),time);
+                Record address = Db.findFirst("select caid,caname,caphone from w_customer_address where castatus='0' and cid = ? order by cacreate_time desc",cid);
+                address.set("castatus", 1);
+                Db.update("w_customer_address", "caid", address);
+                modifyCustomerInformation(cid,address.getStr("caname"), address.getStr("caphone"),time);
             }
         }
         Record modifyHarvestAddress = new Record();
@@ -158,14 +155,12 @@ public class MyService extends BaseService {
         modifyHarvestAddress.set("caprovince",caprovince);
         modifyHarvestAddress.set("cacity",cacity);
         modifyHarvestAddress.set("cadistrict",cadistrict);
-        modifyHarvestAddress.set("castreet",castreet);
         modifyHarvestAddress.set("caaddress",caaddress);
         modifyHarvestAddress.set("camodify_time",DateTool.GetDateTime());
         modifyHarvestAddress.set("camodifier_id", UUIDTool.getUUID());
         modifyHarvestAddress.set("castatus",castatus);
         boolean flag = Db.update("w_customer_address","caid" ,modifyHarvestAddress);
         if(flag){
-               // modifyCustomerInformation(cid,caname,caphone);
             jhm.putMessage("修改成功！");
         }else {
             jhm.putCode(0).putMessage("修改失败！");

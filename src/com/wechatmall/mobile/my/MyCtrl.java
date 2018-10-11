@@ -139,8 +139,6 @@ public class MyCtrl extends BaseCtrl {
      */
     public void addHarvestAddress(){
         JsonHashMap jhm=new JsonHashMap();
-        Map<String, String[]> paramsMaps = getParaMap();
-        //Map<String, String> paramsMap = MethodCommon.converMapArrayToMapStr(paramsMaps);
         /**
          * 接收前端参数
          */
@@ -150,18 +148,12 @@ public class MyCtrl extends BaseCtrl {
         String name=getPara("name");
         //联系电话
         String phone=getPara("phone");
-        //自提点所在省
-        String province=getPara("province");
-        //市
-        String city=getPara("city");
-        //区
-        String district=getPara("district");
-        //街道
-        String street=getPara("street");
         //详细地址
         String address=getPara("address");
+        //省市区
+        String addr=getPara("addr");
         //默认状态 0：不是 1：是
-        String isDefault=getPara("isDefault");
+        String isDefault = "true".equals(getPara("isDefault")) ? "1" : "0";
 
         //非空验证
         if (StringUtils.isEmpty(userId)){
@@ -179,18 +171,28 @@ public class MyCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(province)){
-            province = "";
+
+        String province = "";
+        String city = "";
+        String district = "";
+
+        if(!StringUtils.isEmpty(addr)){
+            String[] addrArr = addr.split("/");
+            if(addrArr != null && addrArr.length == 3){
+                province = addrArr[0];
+                city = addrArr[1];
+                district = addrArr[2];
+            }else{
+                jhm.putCode(0).putMessage("省市区为空！");
+                renderJson(jhm);
+                return;
+            }
+        }else{
+            jhm.putCode(0).putMessage("省市区为空！");
+            renderJson(jhm);
+            return;
         }
-        if (StringUtils.isEmpty(city)){
-            city = "";
-        }
-        if (StringUtils.isEmpty(district)){
-            district = "";
-        }
-        if (StringUtils.isEmpty(street)){
-            street = "";
-        }
+
         if (StringUtils.isEmpty(address)){
             address = "";
         }
@@ -208,7 +210,6 @@ public class MyCtrl extends BaseCtrl {
             paraMap.put("caprovince", province);
             paraMap.put("cacity", city);
             paraMap.put("cadistrict", district);
-            paraMap.put("castreet", street);
             paraMap.put("caaddress", address);
             MyService srv = enhance(MyService.class);
             jhm = srv.addHarvestAddress(paraMap);
@@ -216,7 +217,6 @@ public class MyCtrl extends BaseCtrl {
             e.printStackTrace();
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
-
         renderJson(jhm);
 //         renderJson("{\"code\":1,\"message\":\"新增成功！\"}");
     }
@@ -263,7 +263,7 @@ public class MyCtrl extends BaseCtrl {
         //客户的id
         String userId = getPara("userId");
         //记录的id（收货地址id）
-        String listId = getPara("listId");
+        String listId = getPara("id");
         //非空验证
         if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
@@ -292,33 +292,33 @@ public class MyCtrl extends BaseCtrl {
     }
 
 
-    public void showHarvestAddressById(){
-        JsonHashMap jhm = new JsonHashMap();
-        String id = getPara("id");
-        //非空验证
-        if (StringUtils.isEmpty(id)){
-            jhm.putCode(0).putMessage("id不能为空！");
-            renderJson(jhm);
-            return;
-        }
-        try {
-            /**
-             * 查看收货地址
-             */
-            String sql="select caid id,caname name,caphone phone,caprovince province,cacity city,cadistrict district,castreet street,caaddress address,castatus isDefault from w_customer_address  where caid = ?";
-            Record  showHarvestAddressRecord = Db.findFirst(sql,id);
-            if(showHarvestAddressRecord != null ){
-                jhm.put("data",showHarvestAddressRecord);
-            }else{
-                jhm.putCode(0).putMessage("查询失败！");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            jhm.putCode(-1).putMessage("服务器发生异常!");
-        }
-        renderJson(jhm);
-//         renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
-    }
+//    public void showHarvestAddressById(){
+//        JsonHashMap jhm = new JsonHashMap();
+//        String id = getPara("id");
+//        //非空验证
+//        if (StringUtils.isEmpty(id)){
+//            jhm.putCode(0).putMessage("id不能为空！");
+//            renderJson(jhm);
+//            return;
+//        }
+//        try {
+//            /**
+//             * 查看收货地址
+//             */
+//            String sql="select caid id,caname name,caphone phone,caprovince province,cacity city,cadistrict district,castreet street,caaddress address,castatus isDefault from w_customer_address  where caid = ?";
+//            Record  showHarvestAddressRecord = Db.findFirst(sql,id);
+//            if(showHarvestAddressRecord != null ){
+//                jhm.put("data",showHarvestAddressRecord);
+//            }else{
+//                jhm.putCode(0).putMessage("查询失败！");
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            jhm.putCode(-1).putMessage("服务器发生异常!");
+//        }
+//        renderJson(jhm);
+////         renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
+//    }
     public void showHarvestAddress(){
         JsonHashMap jhm = new JsonHashMap();
         /**
@@ -350,6 +350,78 @@ public class MyCtrl extends BaseCtrl {
         renderJson(jhm);
 //         renderJson("{\"code\":1,\"list\":[{\"address\":\"地址\",\"name\":\"小明\",\"phone\":13130005589},{\"address\":\"地址\",\"name\":\"小米\",\"phone\":13130005589}]}");
     }
+    /**
+     * @author wangze
+     * @date 2018-10-10
+     * 名称  	通过id查看收货地址
+     * 描述     显示收货地址
+     * 验证
+     * 权限	    无
+     * URL	    http://localhost:8080/weChatMallMgr/wm/mobile/my/showHarvestAddressById
+     * 请求方式     post
+     *
+     * 请求参数：
+     * 参数名	类型	       最大长度	允许空	 描述
+     * userId	string		            不允许	 用户的id
+     * id   	string		            不允许	 地址id
+     * 返回数据：
+     * 返回格式：JSON
+     * 成功：
+     * {
+    "code":1,
+    "list":[{
+    "address":"地址",
+    "name":"小明",
+    "phone":13130005589
+    },{
+    "address":"地址",
+    "name":"小米",
+    "phone":13130005589
+    }]
+    }
+     * 失败：
+     * {
+    "code": 0,
+    "message": "查询失败！"
+    }
+
+     * 报错：
+     * {
+    "code": -1,
+    "message": "服务器发生异常！"
+     * }
+     */
+    public void showHarvestAddressById(){
+        JsonHashMap jhm = new JsonHashMap();
+        String userId = getPara("userId");
+        String id = getPara("id");
+        if (StringUtils.isEmpty(userId)){
+            jhm.putCode(0).putMessage("客户id为空！");
+            renderJson(jhm);
+            return;
+        }
+        try {
+            Record address = Db.findById("w_customer_address", "caid", id);
+            if(address != null){
+                String[] removeColumns = {"caid","cid","sid","caname","caphone","castatus","caprovince","cacity","cadistrict","castreet","caaddress","cacreate_time","camodify_time","cacreator_id","camodifier_id","cadesc"};
+                address.set("id", address.getStr("caid"));
+                address.set("name", address.getStr("caname"));
+                address.set("phone", address.getStr("caphone"));
+                address.set("addr", address.getStr("caprovince") + "/" + address.getStr("cacity") + "/" + address.getStr("cadistrict"));
+                address.set("address", address.getStr("caaddress"));
+                address.set("isDefault", "0".equals(address.getStr("castatus")) ? false : true);
+                address.remove(removeColumns);
+                jhm.put("data", address);
+            }else{
+                jhm.putCode(0).putMessage("查询失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常!");
+        }
+        renderJson(jhm);
+    }
+
     /**
      * @author liushiwen
      * @date 2018-9-22
@@ -608,38 +680,24 @@ public class MyCtrl extends BaseCtrl {
      */
     public void modifyHarvestInformation(){
         JsonHashMap jhm = new JsonHashMap();
-        /**
-         * 接收前端参数
-         */
         //客户id
         String userId=getPara("userId");
         //记录id
-        String listId = getPara("listId");
+        String id = getPara("id");
         //收货人姓名
         String name=getPara("name");
         //联系电话
         String phone=getPara("phone");
-        //自提点所在省
-        String province=getPara("province");
-        //市
-        String city=getPara("city");
-        //区
-        String district=getPara("district");
-        //街道
-        String street=getPara("street");
         //详细地址
         String address=getPara("address");
-        //默认状态
-        String isDefault=getPara("isDefault");
+        //省市区
+        String addr=getPara("addr");
+        //默认状态 0：不是 1：是
+        String isDefault = "true".equals(getPara("isDefault")) ? "1" : "0";
 
         //非空验证
         if (StringUtils.isEmpty(userId)){
             jhm.putCode(0).putMessage("客户id为空！");
-            renderJson(jhm);
-            return;
-        }
-        if (StringUtils.isEmpty(listId)){
-            jhm.putCode(0).putMessage("记录id为空！");
             renderJson(jhm);
             return;
         }
@@ -653,30 +711,34 @@ public class MyCtrl extends BaseCtrl {
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(isDefault)){
-            jhm.putCode(0).putMessage("默认状态为空！");
+
+        String province = "";
+        String city = "";
+        String district = "";
+
+        if(!StringUtils.isEmpty(addr)){
+            String[] addrArr = addr.split("/");
+            if(addrArr != null && addrArr.length == 3){
+                province = addrArr[0];
+                city = addrArr[1];
+                district = addrArr[2];
+            }else{
+                jhm.putCode(0).putMessage("省市区为空！");
+                renderJson(jhm);
+                return;
+            }
+        }else{
+            jhm.putCode(0).putMessage("省市区为空！");
             renderJson(jhm);
             return;
         }
-        if (StringUtils.isEmpty(province)){
-            province = "";
-        }
-        if (StringUtils.isEmpty(city)){
-            city = "";
-        }
-        if (StringUtils.isEmpty(district)){
-            district = "";
-        }
-        if (StringUtils.isEmpty(street)){
-            street = "";
-        }
+
         if (StringUtils.isEmpty(address)){
             address = "";
         }
         try{
-            //向MyService里面传参
             Map paraMap=new HashMap();
-            paraMap.put("caid", listId);
+            paraMap.put("caid", id);
             paraMap.put("cid", userId);
             paraMap.put("caname", name);
             paraMap.put("caphone", phone);
@@ -684,7 +746,6 @@ public class MyCtrl extends BaseCtrl {
             paraMap.put("caprovince", province);
             paraMap.put("cacity", city);
             paraMap.put("cadistrict", district);
-            paraMap.put("castreet", street);
             paraMap.put("caaddress", address);
             MyService srv = enhance(MyService.class);
             jhm = srv.modifyHarvestInformation(paraMap);
@@ -693,7 +754,6 @@ public class MyCtrl extends BaseCtrl {
             jhm.putCode(-1).putMessage("服务器发生异常！");
         }
         renderJson(jhm);
-//        renderJson("{\"code\":1,\"message\":\"修改成功！\"}");
     }
 
     /**

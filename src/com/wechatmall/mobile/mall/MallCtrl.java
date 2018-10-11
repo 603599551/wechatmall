@@ -168,7 +168,7 @@ public class MallCtrl extends BaseCtrl {
         }
 
         try {
-            String sql = "SELECT wp.pid AS goodsId,wp.pname as name,ww.pcname,ww.pcid as pcid,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcsort ";
+            String sql = "SELECT '' content, wp.pid AS goodsId,wp.pname as name,ww.pcname,ww.pcid as pcid,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcsort ";
             List<Record> recordList = Db.find(sql, userId);
 
             List<Map> dataList=new ArrayList<Map>();
@@ -540,6 +540,23 @@ public class MallCtrl extends BaseCtrl {
         }
         renderJson(jhm);
 //        renderJson("{\"code\":1,\"notice\":[{\"content\":\"内容\",\"time\":\"2018-01-01\"},{\"content\":\"内容\",\"time\":\"2018-01-01\"}]}");
+    }
+
+    public void getProductDetail(){
+        JsonHashMap jhm = new JsonHashMap();
+        String id = getPara("id");
+        try{
+            Record product = Db.findById("w_product", "pid", id);
+            if(product != null){
+                jhm.put("data", product.getStr("pdetail"));
+            }else{
+                jhm.putCode(0).putMessage("数据加载失败！");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器异常！");
+        }
+        renderJson(jhm);
     }
 
 }
