@@ -133,7 +133,6 @@ public class Config extends JFinalConfig {
 		routes.add("/subscribemsg", SubscribeMsgController.class);
 		routes.add("/sdk", JsSDKController.class);
 		routes.add("/wx/home", HomeController.class);
-
 	}
 
 	@Override
