@@ -99,8 +99,10 @@ public class MyService extends BaseService {
         if(num > 0){
             if("1".equals(r.get("castatus"))){
                 List<Record> rr = Db.find("select caid,caname,caphone from w_customer_address where cid = ?",cid);
-                Db.update("UPDATE w_customer_address SET castatus='1' WHERE caid =?",rr.get(0).getStr("caid"));
-                modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"),DateTool.GetDateTime());
+                if(rr != null && rr.size() > 0){
+                    Db.update("UPDATE w_customer_address SET castatus='1' WHERE caid =?",rr.get(0).getStr("caid"));
+                    modifyCustomerInformation(cid,rr.get(0).getStr("caname"), rr.get(0).getStr("caphone"),DateTool.GetDateTime());
+                }
             }
             jhm.putCode(1).putMessage("删除成功！");
         }else{
@@ -114,7 +116,7 @@ public class MyService extends BaseService {
      * 修改收货地址
      * */
     @Before(Tx.class)
-    public JsonHashMap modifyHarvestInformation(Map paraMap){
+    public JsonHashMap modifyHarvestInformation(Map paraMap) {
         JsonHashMap jhm=new JsonHashMap();
         String caid = (String) paraMap.get("caid");
         String cid = (String) paraMap.get("cid");
@@ -128,6 +130,13 @@ public class MyService extends BaseService {
 
         String time=DateTool.GetDateTime();
 
+        if("0".equals(castatus)){
+            List<Record> addressList = Db.find("select castatus from w_customer_address where cid = ?", cid);
+            if(addressList == null || addressList.size() <= 1){
+                jhm.putCode(0).putMessage("必须有默认地址！");
+                return jhm;
+            }
+        }
         /**
          * 修改的收货地址记录
          */
@@ -142,9 +151,11 @@ public class MyService extends BaseService {
                 modifyCustomerInformation(cid,caname,caphone,time);
             }else{
                 Record address = Db.findFirst("select caid,caname,caphone from w_customer_address where castatus='0' and cid = ? order by cacreate_time desc",cid);
-                address.set("castatus", 1);
-                Db.update("w_customer_address", "caid", address);
-                modifyCustomerInformation(cid,address.getStr("caname"), address.getStr("caphone"),time);
+                if(address != null){
+                    address.set("castatus", 1);
+                    Db.update("w_customer_address", "caid", address);
+                    modifyCustomerInformation(cid,address.getStr("caname"), address.getStr("caphone"),time);
+                }
             }
         }
         Record modifyHarvestAddress = new Record();
