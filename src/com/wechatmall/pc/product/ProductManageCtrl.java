@@ -557,7 +557,7 @@ public class ProductManageCtrl extends BaseCtrl {
     public void showProductCategory(){
         JsonHashMap jhm = new JsonHashMap();
 
-        String sql="SELECT pcid AS value,pcname AS name FROM w_product_category";
+        String sql="SELECT pcid AS value,pcname AS name FROM w_product_category ORDER BY pcsort ASC";
 
         try {
             List<Record> list=Db.find(sql);
