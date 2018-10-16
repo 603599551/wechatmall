@@ -534,7 +534,7 @@ public class OrderCtrl extends BaseCtrl{
 
 
                 String fileName = exportXlsFile(content, getSession().getServletContext().getRealPath("") + "/exportOrderXls/" + order.getStr("onum") + ".xls");
-                jhm.put("pageUrl", getRequest().getScheme()+"://"+getRequest().getServerName()+":"+getRequest() .getServerPort()  + "/exportOrderXls/" + order.getStr("onum") + ".xls");
+                jhm.put("pageUrl", getRequest().getScheme()+"://"+getRequest().getServerName()+":"+getRequest() .getServerPort()  +getRequest().getContextPath()+  "/exportOrderXls/" + order.getStr("onum") + ".xls");
             }else{
                 jhm.putCode(0);
                 jhm.putMessage("订单无数据，不能导出！");
