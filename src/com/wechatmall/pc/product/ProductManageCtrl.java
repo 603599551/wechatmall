@@ -96,7 +96,7 @@ public class ProductManageCtrl extends BaseCtrl {
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间" "modifyTime" : "修改时间"
          * "value":"上架状态对应的value值" , "introduction":"简要描述" , "keyword":["keyword1","keyword2","keyword3"] , "detail":"详细内容",
          */
-        String select = "SELECT wp.pkeyword AS keyword,wp.pintroduction AS introduction,wp.pdetail AS detail,wp.pid AS id,wpc.pcname AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS value,wd.`name` AS valueName,wp.pcreator_id AS creator,wp.pcreate_time AS createTime  ";
+        String select = "SELECT wp.pnum AS productNum,wp.pkeyword AS keyword,wp.pintroduction AS introduction,wp.pdetail AS detail,wp.pid AS id,wpc.pcname AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS value,wd.`name` AS valueName,wp.pcreator_id AS creator,wp.pcreate_time AS createTime  ";
 
         StringBuilder sql = new StringBuilder(" FROM w_product wp,w_dictionary wd,w_product_category wpc WHERE wp.pstatus=wd.`value` AND wpc.pcid = wp.pcid  ");
 
@@ -174,6 +174,7 @@ public class ProductManageCtrl extends BaseCtrl {
             JsonHashMap jhm = new JsonHashMap();
             UserSessionUtil usu = new UserSessionUtil(getRequest());
 
+            String num=getPara("productNum");
             String type = getPara("type");
             String name = getPara("name");
             String price = getPara("price");
@@ -183,6 +184,12 @@ public class ProductManageCtrl extends BaseCtrl {
             String sketch = getPara("sketch");
 
             //进行非空判断
+            if(StringUtils.isEmpty(num)){
+                jhm.putCode(0).putMessage("商品编号不能为空！");
+                renderJson(jhm);
+                return;
+            }
+
             if(StringUtils.isEmpty(type)){
                 jhm.putCode(0).putMessage("分类不能为空！");
                 renderJson(jhm);
@@ -226,6 +233,7 @@ public class ProductManageCtrl extends BaseCtrl {
             }
 
             Map paraMap=new HashMap();
+            paraMap.put("num",num);
             paraMap.put("type",type);
             paraMap.put("name",name);
             paraMap.put("price",price);
@@ -291,6 +299,7 @@ public class ProductManageCtrl extends BaseCtrl {
         UserSessionUtil usu = new UserSessionUtil(getRequest());
 
         String id = getPara("id");
+        String num = getPara("productNum");
         String type = getPara("type");
         String name = getPara("name");
         String price = getPara("price");
@@ -302,6 +311,12 @@ public class ProductManageCtrl extends BaseCtrl {
         //进行非空判断
         if(StringUtils.isEmpty(id)){
             jhm.putCode(0).putMessage("id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+
+        if(StringUtils.isEmpty(num)){
+            jhm.putCode(0).putMessage("商品编号不能为空！");
             renderJson(jhm);
             return;
         }
@@ -356,6 +371,7 @@ public class ProductManageCtrl extends BaseCtrl {
                 return;
             }
             record.set("pcid", type);
+            record.set("pnum", num);
             record.set("pname", name);
             record.set("price", price);
             record.set("pkeyword", keyword);
@@ -516,7 +532,7 @@ public class ProductManageCtrl extends BaseCtrl {
          *"keyword":"关键字1，关键字2，关键字3" , "pictureUrl":"商品图片" , "type":"商品分类"
          */
 
-        String sql = "SELECT pid as id, pname as name, price as price, pkeyword as keyword, picture as pictureUrl, pcid as type FROM w_product wp WHERE wp.pid = ? ";
+        String sql = "SELECT wp.pnum AS productNum,pid as id, pname as name, price as price, pkeyword as keyword, picture as pictureUrl, pcid as type FROM w_product wp WHERE wp.pid = ? ";
 
         try {
             Record record = Db.findFirst(sql, id);

@@ -9,10 +9,14 @@ import easy.util.DateTool;
 import easy.util.UUIDTool;
 import utils.bean.JsonHashMap;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class ProductManageService {
+
     /*
     增加事务
      */
@@ -20,6 +24,7 @@ public class ProductManageService {
     public JsonHashMap add(Map paraMap){
         JsonHashMap jhm = new JsonHashMap();
 
+        String num = (String)paraMap.get("num");
         String type = (String)paraMap.get("type");
         String name = (String)paraMap.get("name");
         String price = (String)paraMap.get("price");
@@ -35,6 +40,7 @@ public class ProductManageService {
             //装商品信息
             Record record = new Record();
             record.set("pid", pid);
+            record.set("pnum", num);
             record.set("pcid", type);
             record.set("pname", name);
             record.set("price", price);

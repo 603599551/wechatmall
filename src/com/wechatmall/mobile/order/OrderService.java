@@ -88,6 +88,7 @@ public class OrderService extends BaseService {
             w_orderform_detail.set("odid", UUIDTool.getUUID());
             w_orderform_detail.set("oid",w_orderform.get("oid"));
             w_orderform_detail.set("pid",goodsStringList.getJSONObject(i).getString("goodsId"));
+            w_orderform_detail.set("pnum",goodsStringList.getJSONObject(i).getString("goodsNum"));
             w_orderform_detail.set("odname",goodsStringList.getJSONObject(i).getString("goodsName"));
             w_orderform_detail.set("odoriginal_price",product.get("odoriginal_price"));
             w_orderform_detail.set("odcurrent_price",goodsStringList.getJSONObject(i).getString("goodsPresentPrice"));
