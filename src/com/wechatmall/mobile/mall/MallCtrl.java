@@ -168,7 +168,7 @@ public class MallCtrl extends BaseCtrl {
         }
 
         try {
-            String sql = "SELECT '' content, wp.pid AS goodsId,wp.pname as name,ww.pcname,ww.pcid as pcid,wpc.pcpcurrent_price AS presentPrice,wp.price AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcsort ";
+            String sql = "SELECT '' content, wp.pid AS goodsId,wp.pname as name,ww.pcname,ww.pcid as pcid,FORMAT(wpc.pcpcurrent_price,2) AS presentPrice,FORMAT(wp.price,2) AS originalPrice,wp.picture AS pic,wp.pkeyword AS keyword from w_customer wc,w_customer_group wcg,w_product_currentprice wpc,w_product wp,w_product_category ww WHERE ww.pcid = wp.pcid AND wc.cgid=wcg.cgid AND wcg.cgid=wpc.cgid AND wpc.pid = wp.pid AND wc.cid= ? AND wp.pstatus='on_sale' ORDER BY ww.pcsort ";
             List<Record> recordList = Db.find(sql, userId);
 
             List<Map> dataList=new ArrayList<Map>();
