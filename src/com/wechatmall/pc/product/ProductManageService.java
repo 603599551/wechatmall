@@ -29,7 +29,8 @@ public class ProductManageService {
         String name = (String)paraMap.get("name");
         String price = (String)paraMap.get("price");
         String keyword = (String)paraMap.get("keyword");
-        String pictureUrl = (String)paraMap.get("picture");
+        String pictureUrl = (String)paraMap.get("pictureUrl");
+        String bigPic = (String)paraMap.get("big_pic");
         String content = (String)paraMap.get("content");
         String sketch = (String)paraMap.get("sketch");
         UserSessionUtil usu = (UserSessionUtil)paraMap.get("usu");
@@ -46,6 +47,7 @@ public class ProductManageService {
             record.set("price", price);
             record.set("pkeyword", keyword);
             record.set("picture", pictureUrl);
+            record.set("big_pic", bigPic);
             record.set("pintroduction", sketch);
             record.set("pdetail", content);
             record.set("pcreate_time", DateTool.GetDateTime());

@@ -96,7 +96,7 @@ public class ProductManageCtrl extends BaseCtrl {
          *"name":"商品名称" , "pictureUrl":"商品图片" , "price":"商品价格" , "status":"上架状态" , "creator":"发布人" , "createTime":"创建时间" "modifyTime" : "修改时间"
          * "value":"上架状态对应的value值" , "introduction":"简要描述" , "keyword":["keyword1","keyword2","keyword3"] , "detail":"详细内容",
          */
-        String select = "SELECT wp.pnum AS productNum,wp.pkeyword AS keyword,wp.pintroduction AS introduction,wp.pdetail AS detail,wp.pid AS id,wpc.pcname AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS value,wd.`name` AS valueName,wp.pcreator_id AS creator,wp.pcreate_time AS createTime  ";
+        String select = "SELECT wp.pnum AS productNum,wp.pkeyword AS keyword,wp.pintroduction AS introduction,wp.pdetail AS detail,wp.pid AS id,wpc.pcname AS type,wp.pname AS name,wp.picture AS pirtureUrl,wp.price AS price,wp.pstatus AS value,wd.`name` AS valueName,wp.pcreator_id AS creator,wp.pcreate_time AS createTime,big_pic  ";
 
         StringBuilder sql = new StringBuilder(" FROM w_product wp,w_dictionary wd,w_product_category wpc WHERE wp.pstatus=wd.`value` AND wpc.pcid = wp.pcid  ");
 
@@ -179,7 +179,8 @@ public class ProductManageCtrl extends BaseCtrl {
             String name = getPara("name");
             String price = getPara("price");
             String keyword = getPara("keyword");
-            String pictureUrl = getPara("picture");
+            String pictureUrl = getPara("pictureUrl");
+            String big_pic = getPara("big_pic");
             String content = getPara("content");
             String sketch = getPara("sketch");
 
@@ -215,7 +216,12 @@ public class ProductManageCtrl extends BaseCtrl {
             }
 
             if(StringUtils.isEmpty(pictureUrl)){
-                jhm.putCode(0).putMessage("图片不能为空！");
+                jhm.putCode(0).putMessage("列表图片不能为空！");
+                renderJson(jhm);
+                return;
+            }
+            if(StringUtils.isEmpty(big_pic)){
+                jhm.putCode(0).putMessage("详情图片不能为空！");
                 renderJson(jhm);
                 return;
             }
@@ -239,6 +245,7 @@ public class ProductManageCtrl extends BaseCtrl {
             paraMap.put("price",price);
             paraMap.put("keyword",keyword);
             paraMap.put("pictureUrl",pictureUrl);
+            paraMap.put("big_pic",big_pic);
             paraMap.put("content",content);
             paraMap.put("sketch",sketch);
             paraMap.put("usu",usu);
