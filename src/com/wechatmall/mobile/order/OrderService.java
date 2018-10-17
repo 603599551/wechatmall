@@ -12,9 +12,7 @@ import net.sf.json.JSONArray;
 import utils.bean.JsonHashMap;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class OrderService extends BaseService {
 
@@ -173,7 +171,7 @@ public class OrderService extends BaseService {
         //定义新增订单后的布尔值
         boolean orderFormDetailFlag = false;
 
-        String sql = "select pkeyword odkeyword,price odoriginal_price from w_product where pid=?";
+        String sql = "select pkeyword odkeyword,price odoriginal_price,pnum from w_product where pid=?";
         //获取商品  goodsStringList 里面是{{id,name..}{id,name..}{id,name..}}
         for(int i = 0; i < goodsStringList.size(); i++){
             //遍历json数组，转换成json对象
@@ -193,6 +191,7 @@ public class OrderService extends BaseService {
             w_orderform_detail.set("odcreator_id",userId);
             w_orderform_detail.set("odmodifier_id",userId);
             w_orderform_detail.set("oddesc","");
+            w_orderform_detail.set("pnum",product.get("pnum"));
             orderFormDetailFlag = Db.save("w_orderform_detail","odid",w_orderform_detail);
             if(orderFormDetailFlag == false){
                 jhm.putCode(0).putMessage("订单详情提交失败！");
