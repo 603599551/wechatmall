@@ -99,7 +99,7 @@ public class OrderCtrl extends BaseCtrl {
         String transportType="transport_type";
         String payType="pay_type";
         //查询store表得到所有的自提点地址address， 还没有查距离
-        String sql1="SELECT saddress AS address FROM w_store ";
+        String sql1="SELECT saddress AS address FROM w_store WHERE sstatus='start_using'";
         //根据userId查询customer_address表得到多个 收货人姓名name，联系电话phone，收货地址province+city+district+address,默认状态isDefault
         String sql2="SELECT caname AS name,caphone AS phone,CONCAT(caprovince,cacity,cadistrict,caaddress) AS address,castatus AS isDefault FROM w_customer_address WHERE cid=?";
         //根据value值查询dictionary表得到 物流类型和支付类型

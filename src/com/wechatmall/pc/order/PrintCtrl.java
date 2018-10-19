@@ -78,9 +78,11 @@ public class PrintCtrl extends BaseCtrl {
         List<Record> dataList = Db.find(order_detail_sql, orderId);
         if(dataList != null && dataList.size() > 0){
             int i = 1;
+            int k=0;
             for(int j = 0; j < dataList.size(); j++,i++){
+                k=j+1;
                 Record r = dataList.get(j);
-                tableStr += "<tr><td>" + r.get("productNum") + "</td><td>" + r.get("product_name") + "</td><td>" + r.get("product_quantity") + "</td><td>" + r.get("product_price") + "</td></tr>";
+                tableStr += "<tr><td>"+ k +"</td><td>"+ r.get("productNum") + "</td><td>" + r.get("product_name") + "</td><td>" + r.get("product_quantity") + "</td><td>" + r.get("product_price") + "</td></tr>";
                 if(i % 29 == 0){
                     table += onePageTempStr.replace("${table}", tableStr);
                     table += "<div class='pageNext'></div>";

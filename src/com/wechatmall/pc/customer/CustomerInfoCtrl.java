@@ -284,7 +284,14 @@ public class CustomerInfoCtrl extends BaseCtrl{
 //        }
 
         try{
-            Db.update("UPDATE w_customer SET cgid=?,cremark=?,cmodify_time=? WHERE cid=?",group,desc, DateTool.GetDateTime(),id);
+
+            //如果转到个人组，客户类型自动转为个人
+            if (StringUtils.equals(group,"0fa26d8989954540855013d9659b0ba6")){
+                Db.update("UPDATE w_customer SET cgid=?,cremark=?,cmodify_time=?,ctype='individual' WHERE cid=?",group,desc, DateTool.GetDateTime(),id);
+            }else {
+                Db.update("UPDATE w_customer SET cgid=?,cremark=?,cmodify_time=? WHERE cid=?",group,desc, DateTool.GetDateTime(),id);
+            }
+
             jhm.putCode(1).putMessage("修改成功");
         }catch (ActiveRecordException e){
             e.printStackTrace();
@@ -351,7 +358,12 @@ public class CustomerInfoCtrl extends BaseCtrl{
 
 
         try{
-            Db.update("UPDATE w_customer SET ctype=? WHERE cid=?",type,id);
+
+            if (StringUtils.equals(type,"individual")){
+                Db.update("UPDATE w_customer SET ctype=?,cgid=(SELECT cgid FROM w_customer_group WHERE cgname='个人组') WHERE cid=?",type,id);
+            }else {
+                Db.update("UPDATE w_customer SET ctype=? WHERE cid=?",type,id);
+            }
             jhm.putCode(1).putMessage("设置成功");
         }catch (ActiveRecordException e){
             e.printStackTrace();
