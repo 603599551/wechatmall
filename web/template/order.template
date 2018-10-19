@@ -28,10 +28,11 @@
         </thead>
         <tbody>
         <tr>
+            <th width="10%">商品序号</th>
             <th width="15%">商品编号</th>
             <th width="55%">商品名称</th>
-            <th width="15%">数量</th>
-            <th width="15%">商品金额</th>
+            <th width="10%">数量</th>
+            <th width="10%">商品金额</th>
         </tr>
         ${table}
         </tbody>
