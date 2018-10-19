@@ -122,9 +122,9 @@ public class FinanceCtrl extends BaseCtrl{
              * */
             String select = "select wor.oid as id,wor.onum as orderNum, wor.ocreate_time as createTime, wor.ocurrent_sum as shouldPay,  wor.ostatus as payStatus, wor.opay_type as payType, wor.otransport_type as transportModel, wcu.cname as customerName, wcu.ctype as customerType, wor.oname as receiverName, wor.ophone as phone, wor.oaddress address, ( select name from w_dictionary w where wor.opay_type = w.`value` and w.parent_id = 800 ) payType_text, ( select name from w_dictionary w where wor.ostatus = w. value and w.parent_id = 100 ) payStatus_text, ( select name from w_dictionary w where wor.otransport_type = w.`value` and w.parent_id = 700 ) transportModel_text   ";
             String sql = "  from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid  ";
-            String sql1 = " select ROUND(SUM(wor.ocurrent_sum),2) as weChatHavePaid  from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'wechat_pay') and wor.ostatus in ( 'finished', 'paid', 'shipped' )";
-            String sql2 = " select ROUND(SUM(wor.ocurrent_sum),2) as cashOnHavePaid from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid and (wor.opay_type = 'cashOn_delivery') and wor.ostatus in ( 'finished', 'paid' )  ";
-            String sql3 = " select ROUND(SUM(wor.ocurrent_sum),2) as shouldPay from w_customer wcu, w_customer_address wca, w_orderform wor where wor.cid = wcu.cid and wor.caid = wca.caid ";
+            String sql1 = " select ROUND(SUM(wor.ocurrent_sum),2) as weChatHavePaid  from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid and (wor.opay_type = 'wechat_pay') and wor.ostatus in ( 'finished', 'paid', 'shipped' )";
+            String sql2 = " select ROUND(SUM(wor.ocurrent_sum),2) as cashOnHavePaid from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid  and (wor.opay_type = 'cashOn_delivery') and wor.ostatus in ( 'finished', 'paid' )  ";
+            String sql3 = " select ROUND(SUM(wor.ocurrent_sum),2) as shouldPay from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid  ";
             if(customerName != null && customerName.length() > 0){
                 customerName = "%" + customerName + "%";
                 sql += "  and wcu.cname like ? ";
@@ -165,10 +165,10 @@ public class FinanceCtrl extends BaseCtrl{
                 params.add(payType);
             }
             //按时间倒序排列
-            sql += " ORDER BY wor.omodify_time  desc ";
-            sql1 += " ORDER BY wor.omodify_time  desc ";
-            sql2 += " ORDER BY wor.omodify_time  desc ";
-            sql3 += " ORDER BY wor.omodify_time  desc";
+            sql += " ORDER BY wor.ocreate_time  desc ";
+            sql1 += " ORDER BY wor.ocreate_time  desc ";
+            sql2 += " ORDER BY wor.ocreate_time  desc ";
+            sql3 += " ORDER BY wor.ocreate_time  desc";
             //分页查询
             Page<Record> page = Db.paginate(pageNum, pageSize,select, sql,params.toArray());
             //定义个人应付款、已付款、未付款和总体应付款、已付款和未付款
