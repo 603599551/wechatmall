@@ -120,7 +120,7 @@ public class FinanceCtrl extends BaseCtrl{
              * dictionary表     payStatus_text订单状态的中文名，payType_text支付状态的中文名，transportModel_text订单物流类型的中文名
              * 根据字段模糊查询或完全匹配查询
              * */
-            String select = "select wor.oid as id,wor.onum as orderNum, wor.ocreate_time as createTime, wor.ocurrent_sum as shouldPay,  wor.ostatus as payStatus, wor.opay_type as payType, wor.otransport_type as transportModel, wcu.cname as customerName, wcu.ctype as customerType, wor.oname as receiverName, wor.ophone as phone, wor.oaddress address, ( select name from w_dictionary w where wor.opay_type = w.`value` and w.parent_id = 800 ) payType_text, ( select name from w_dictionary w where wor.ostatus = w. value and w.parent_id = 100 ) payStatus_text, ( select name from w_dictionary w where wor.otransport_type = w.`value` and w.parent_id = 700 ) transportModel_text   ";
+            String select = "select wor.oid as id,wor.onum as orderNum, wor.ocreate_time as createTime, wor.ocurrent_sum as shouldPay,  wor.ostatus as payStatus, wor.opay_type as payType, wor.otransport_type as transportModel, wcu.cname as customerName, wcu.ctype as customerType, wor.oname as receiverName, wor.ophone as phone, wor.oaddress address, ( select name from w_dictionary w where wor.opay_type = w.`value` and w.parent_id = 800 ) payType_text, ( select name from w_dictionary w where wor.ostatus = w. value and w.parent_id = 100 ) payStatus_text, ( select name from w_dictionary w where wor.otransport_type = w.`value` and w.parent_id = 700 ) transportModel_text , ( select name from w_dictionary w where wcu.ctype = w.`value` and w.parent_id = 500 ) customerType_text ";
             String sql = "  from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid  ";
             String sql1 = " select ROUND(SUM(wor.ocurrent_sum),2) as weChatHavePaid  from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid and (wor.opay_type = 'wechat_pay') and wor.ostatus in ( 'finished', 'paid', 'shipped' )";
             String sql2 = " select ROUND(SUM(wor.ocurrent_sum),2) as cashOnHavePaid from w_customer wcu,  w_orderform wor where wor.cid = wcu.cid  and (wor.opay_type = 'cashOn_delivery') and wor.ostatus in ( 'finished', 'paid' )  ";
@@ -224,4 +224,46 @@ public class FinanceCtrl extends BaseCtrl{
         renderJson(jhm);
         //renderJson("{\"code\":\"1\",\"data\":{\"totalRow\":\"1\",\"pageNumber\":\"1\",\"firstPage\":\"true\",\"lastPage\":\"true\",\"totalPage\":\"1\",\"shouldPay\":\"2000\",\"havePaid\":\"800\",\"notPay\":\"1200\",\"list\":[{\"id\":\"订单编号\",\"createTime\":\"创建时间\",\"customerName\":\"客户姓名\",\"customerType\":\"客户类型\",\"receiverName\":\"收货人姓名\",\"phone\":\"联系电话\",\"address\":\"收货地址\",\"realPay\":\"实付金额\",\"payType\":\"支付方式\",\"payStatus\":\"支付状态\"},{\"id\":\"订单编号\",\"createTime\":\"创建时间\",\"customerName\":\"客户姓名\",\"customerType\":\"客户类型\",\"receiverName\":\"收货人姓名\",\"phone\":\"联系电话\",\"address\":\"收货地址\",\"realPay\":\"实付金额\",\"payType\":\"支付方式\",\"payStatus\":\"支付状态\"}]}}");
     }
+
+
+    public void updateOrderStatus(){
+        JsonHashMap jhm = new JsonHashMap();
+        Map map = getParaMap();
+        /**
+         * 接收前台参数
+         **/
+        //订单id
+        String id = getPara("id");
+        //订单状态
+        String status = getPara("status");
+        /**
+        * 非空验证
+        * */
+        if(StringUtils.isEmpty(id)){
+            jhm.putCode(0).putMessage("订单id不能为空！");
+            renderJson(jhm);
+            return;
+        }
+        if(StringUtils.isEmpty(status)){
+            jhm.putCode(0).putMessage("订单状态不能为空！");
+            renderJson(jhm);
+            return;
+        }
+        try{
+            Record record = new Record();
+            record.set("oid",id);
+            record.set("ostatus",status);
+            boolean flag = Db.update("w_orderform","oid",record);
+            if(flag){
+                jhm.putMessage("操作成功!");
+            }else{
+                jhm.putCode(0).putMessage("操作失败！");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            jhm.putCode(-1).putMessage("服务器发生异常！");
+        }
+        renderJson(jhm);
+    }
+
 }
