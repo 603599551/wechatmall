@@ -203,16 +203,17 @@ public class FinanceCtrl extends BaseCtrl{
             }
             //把两种方式付款的应付金额相加
                 havePaid = weChatHavePaidF + cashOnHavePaidF;
-
+                String havePaidStr = NumberFormat.doubleFormatStr(havePaid);
             //应付款
             if(shouldPayRecord.getFloat("shouldPay") != null){
                 shouldPay = shouldPayRecord.getFloat("shouldPay");
             }
             //计算未付款金额
                 noPay = shouldPay - havePaid;
+                String noPayStr = NumberFormat.doubleFormatStr(noPay);
                     jhm.put("shouldPay",shouldPay);
-                    jhm.put("havePaid",havePaid);
-                    jhm.put("notPay",noPay);
+                    jhm.put("havePaid",havePaidStr);
+                    jhm.put("notPay",noPayStr);
                     jhm.put("list",page);
                     jhm.putMessage("查询成功！");
 
