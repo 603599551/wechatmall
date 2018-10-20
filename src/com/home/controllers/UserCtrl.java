@@ -24,14 +24,14 @@ public class UserCtrl extends BaseCtrl {
         JsonHashMap jhm=new JsonHashMap();
         try{
             //JSONObject json= RequestTool.getJson(getRequest());
-            String currentPwd=getPara("currentPwd");
+//            String currentPwd=getPara("currentPwd");
             String confirmPwd=getPara("confirmPwd");
-            if(currentPwd==null || "".equalsIgnoreCase(currentPwd)){
-                jhm.putCode(-1);
-                jhm.putMessage("请输入原密码！");
-                renderJson(jhm);
-                return;
-            }
+//            if(currentPwd==null || "".equalsIgnoreCase(currentPwd)){
+//                jhm.putCode(-1);
+//                jhm.putMessage("请输入原密码！");
+//                renderJson(jhm);
+//                return;
+//            }
             if(confirmPwd==null || "".equalsIgnoreCase(confirmPwd)){
                 jhm.putCode(-1);
                 jhm.putMessage("请输入新密码！");
@@ -39,9 +39,9 @@ public class UserCtrl extends BaseCtrl {
                 return;
             }
             UserSessionUtil usu=new UserSessionUtil(getRequest());
-            Record r= Db.findFirst("select * from h_staff where username=? and password=?",usu.getUsername(),currentPwd);
-            if(r!=null){
-                int sqlNum= Db.update("update h_staff set password=? where id=? ",confirmPwd,usu.getUserId());
+//            Record r= Db.findFirst("select * from w_admin where id=? and password=?",usu.getUserId(),currentPwd);
+//            if(r!=null){
+                int sqlNum= Db.update("update w_admin set password=? where id=? ",confirmPwd,usu.getUserId());
                 if(sqlNum>0){
                     jhm.putCode(1);
                     jhm.putMessage("更新成功！");
@@ -49,10 +49,10 @@ public class UserCtrl extends BaseCtrl {
                     jhm.putCode(-1);
                     jhm.putMessage("更新失败！");
                 }
-            }else{
-                jhm.putCode(-1);
-                jhm.putMessage("密码错误！");
-            }
+//            }else{
+//                jhm.putCode(-1);
+//                jhm.putMessage("密码错误！");
+//            }
         }catch(Exception e){
             e.printStackTrace();
 
