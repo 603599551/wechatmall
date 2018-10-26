@@ -216,7 +216,7 @@ public class OrderCtrl extends BaseCtrl{
                  * 根据订单表w_orderform和客户信息表w_customer双表关联查询: 订单id : orderId , 客户类型 : customerType , 物流类型 : transportType
                  * 支付类型 : payType , 订单原总价 : orderOriginalSum , 订单应付金额 : orderPresentSum , 支付类型名称 : payTypeName 还有个类型相应的中文
                  */
-                String orderSearch  = "SELECT wo.oid as orderId,wo.onum AS orderNum, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType,FORMAT(wo.ooriginal_sum,2)as orderOriginalSum,FORMAT(wo.ocurrent_sum,2)as orderPresentSum,wo.ocreate_time AS createTime, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
+                String orderSearch  = "SELECT wo.odesc AS `desc`,wo.oid AS orderId,wo.onum AS orderNum, wc.ctype as customerType, wo.otransport_type transportType, wo.opay_type as payType,FORMAT(wo.ooriginal_sum,2)as orderOriginalSum,FORMAT(wo.ocurrent_sum,2)as orderPresentSum,wo.ocreate_time AS createTime, wd. NAME AS transportTypeName, wdd. NAME AS payTypeName, wddd. NAME AS customerTypeName FROM w_orderform wo LEFT JOIN w_dictionary wd ON wd. VALUE = wo.otransport_type LEFT JOIN w_dictionary wdd ON wdd. VALUE = wo.opay_type, w_customer wc LEFT JOIN w_dictionary wddd ON wc.ctype = wddd.`value` WHERE wo.oid = ? AND wc.cid = ( SELECT cid FROM w_orderform WHERE oid = ? )";
                 Record record = Db.findFirst(orderSearch, orderId, orderId);
 
                 /**
@@ -379,6 +379,7 @@ public class OrderCtrl extends BaseCtrl{
         //获取参数
         String id = getPara("id");
         String status = getPara("status");
+        String desc = getPara("desc");
 
         //进行非空判断
         if(StringUtils.isEmpty(id)){
@@ -405,6 +406,8 @@ public class OrderCtrl extends BaseCtrl{
                 case "canceled" : record.set("ostatus", "canceled"); break;
                 case "shipped" : record.set("ostatus", "shipped"); break;
             }
+
+            record.set("odesc",desc);
 
             boolean flag = Db.update("w_orderform","oid", record);
 
