@@ -474,33 +474,33 @@ public class OrderCtrl extends BaseCtrl{
                 List<List<String>> content = new ArrayList<>();
 
                 Record order=Db.findFirst("SELECT o.*,d.name AS 'status',dd.name AS 'transport_type',ddd.name AS 'pay_type' FROM w_orderform o LEFT JOIN w_dictionary d ON d.value=o.ostatus LEFT JOIN w_dictionary dd ON dd.value=o.otransport_type LEFT JOIN w_dictionary ddd ON ddd.value=o.opay_type WHERE  oid=?",orderId);
-                List<String> sumList = new ArrayList<>();
+                List<String> sumList = new ArrayList<String>();
                 sumList.add("订单编号");
                 sumList.add(order.getStr("onum"));
-                sumList.add("  ");
+                //sumList.add("  ");
                 sumList.add("订单状态");
                 sumList.add(order.getStr("status"));
-                sumList.add("  ");
+                //sumList.add("  ");
                 sumList.add("客户姓名");
                 sumList.add(order.getStr("oname"));
                 content.add(sumList);
                 List<String> sumList2 = new ArrayList<>();
                 sumList2.add("创建时间");
                 sumList2.add(order.getStr("ocreate_time"));
-                sumList2.add("  ");
+                //sumList2.add("  ");
                 sumList2.add("物流类型");
                 sumList2.add(order.getStr("transport_type"));
-                sumList2.add("  ");
+                //sumList2.add("  ");
                 sumList2.add("联系电话");
                 sumList2.add(order.getStr("ophone"));
                 content.add(sumList2);
                 List<String> sumList3 = new ArrayList<>();
                 sumList3.add("订单应付");
                 sumList3.add(order.getStr("ooriginal_sum"));
-                sumList3.add("  ");
+                //sumList3.add("  ");
                 sumList3.add("支付方式");
                 sumList3.add(order.getStr("pay_type"));
-                sumList3.add("  ");
+                //sumList3.add("  ");
                 sumList3.add("收货地址");
                 sumList3.add(order.getStr("oaddress"));
                 content.add(sumList3);
@@ -555,7 +555,7 @@ public class OrderCtrl extends BaseCtrl{
             HSSFSheet sheet = workbook.createSheet("1");
 
             sheet.setColumnWidth(1, 8000);
-            sheet.setColumnWidth(7, 8000);
+            sheet.setColumnWidth(5, 8000);
             for(int i = 0; i < content.size(); i++){
                 List<String> list = content.get(i);
                 HSSFRow row = sheet.createRow(i);
