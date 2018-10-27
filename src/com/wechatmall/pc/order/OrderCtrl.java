@@ -5,27 +5,30 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.upload.UploadFile;
-import com.utils.UnitConversion;
 import easy.util.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import utils.WX_Message.TemplateData;
+import utils.WX_Message.WX_MessageUtil;
 import utils.bean.JsonHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * OrderCtrl class
  * @author liushiwen
  * @date   2018-9-25
  */
-public class OrderCtrl extends BaseCtrl{
+public class OrderCtrl extends BaseCtrl implements utils.WX_Message.Constants {
 
     /**
      * @author liushiwen
@@ -412,7 +415,31 @@ public class OrderCtrl extends BaseCtrl{
             boolean flag = Db.update("w_orderform","oid", record);
 
             if(flag){
-                jhm.putCode(1).putMessage("修改成功！");
+                jhm.putMessage("修改成功！");
+
+                /**
+                 * {{first.DATA}}
+                 * 订单号：{{keyword1.DATA}}
+                 * 订单状态：{{keyword2.DATA}}
+                 * {{remark.DATA}}
+                 */
+                String openIdSql="SELECT c.cwechat AS openId,o.ocreate_time AS createTime,o.onum AS orderNum,d.name  FROM w_customer c,w_orderform o,w_dictionary d WHERE c.cid=o.cid AND oid=? AND d.value=?";
+                Record openIdRecord=Db.findFirst(openIdSql,id,status);
+                String openId=openIdRecord.getStr("openId");
+                String orderNum=openIdRecord.getStr("orderNum");
+                String createTime=openIdRecord.getStr("createTime");
+                String statusName=openIdRecord.getStr("name");
+
+                Map<String,TemplateData> param = new HashMap<>();
+                param.put("first",new TemplateData("您好，您有一个订单状态已更新","#000000"));
+                param.put("keyword1",new TemplateData(orderNum,"#000000"));
+                param.put("keyword2",new TemplateData(statusName,"#000000"));
+                param.put("keyword3",new TemplateData(createTime,"#000000"));
+                param.put("remark",new TemplateData(desc,"#000000"));
+
+                //新增用户成功 - 推送微信消息
+                WX_MessageUtil.senMsg(openId,templateId,"", param);
+                jhm.putCode(1);
             } else {
                 jhm.putCode(0).putMessage("修改数据库失败！");
             }
