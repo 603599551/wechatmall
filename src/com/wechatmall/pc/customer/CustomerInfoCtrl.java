@@ -95,7 +95,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
         int pageSize = NumberUtils.parseInt(pageSizeStr, 10);
 
         //关联查询customer,customer_group,dictionary表得到 客户id，性别，类型，联系电话，创建时间，所在组
-        String select="SELECT c.cid AS id,c.cname AS name,c.cwechat AS openId,c.ctype AS value,dd.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'group',c.cremark AS 'desc' ";
+        String select="SELECT c.cid AS id,c.cname AS name,c.cwechat AS openId,c.ctype AS value,dd.name AS 'type',c.cphone AS phone,c.ccreate_time AS createTime,cg.cgname AS 'groupName',cg.cgid AS 'groupId',c.cremark AS 'desc' ";
 
         StringBuilder sql=new StringBuilder("FROM w_customer c LEFT JOIN w_dictionary dd ON c.ctype=dd.value,w_customer_group cg WHERE c.cgid=cg.cgid ");
 
@@ -262,7 +262,7 @@ public class CustomerInfoCtrl extends BaseCtrl{
         //客户id
         String id=getPara("id");
         //客户分组id
-        String group=getPara("group");
+        String group=getPara("groupId");
         //客户备注
         String desc=getPara("desc");
 
